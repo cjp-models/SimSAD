@@ -79,9 +79,7 @@ class projection:
         return 
     def load_suppliers(self):
         self.eesad = eesad()
-        self.eesad.load_registry()
         self.clsc = clsc()
-        self.clsc.load_registry()
         self.prive = prive()
         self.suppliers = ['eesad','clsc','prive']
         return
@@ -117,9 +115,9 @@ class projection:
                                   columns=['none','home','rpa','ri','nsa','chsld'])
 
         self.count.columns.names = ['milieu']
-        self.count.index.names = ['region','smaf','age']
+        self.count.index.names = ['region_id','iso_smaf','gr_age']
         self.count_waiting.columns.names = ['milieu']
-        self.count_waiting.index.names = ['region','smaf','age']
+        self.count_waiting.index.names = ['region','smaf','gr_age']
         # figure out distribution of smaf by region
         init_smafs = self.iso.collapse(rowvars=['region_id','smaf'],colvars=['age'])
         init_smafs['18-64'] = init_smafs[[x for x in range(18,65)]].sum(axis=1)
@@ -229,9 +227,8 @@ class projection:
             #self.ri.create_users(self.count['ri'])
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
             #self.rpa.create_users(self.count['rpa'])
-            self.home.assign(nb_usagers[:,0] + nb_usagers[:,1],nb_waiting[1],r)
-            #self.home.create_users(self.count[['home','none']].sum(axis=1))
-
+            self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
+            self.home.create_users(self.count['none'],self.count['home'])
         return 
     
     def welfare(self):
@@ -251,13 +248,9 @@ class projection:
         # now assign users to each living arrangement
         self.dispatch()
 
-        # create user sets for each milieu
-        #print(len(self.chsld.users), len(self.ri.users), len(self.rpa.users), len(self.home.users),self.home.users.wgt.sum())
-        #print(self.home.users.head())
-
-
-        # determine financing
-
+        # determine services SAD
+        self.home.users = self.clsc.assign(self.home.users,'home')
+        print(self.home.users[['clsc_inf_any','clsc_avq_any']].mean())
         # compute aggregate service rates
         self.chsld.compute_serv_rate()
         #self.ri.compute_serv_rate()

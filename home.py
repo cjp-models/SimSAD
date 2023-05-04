@@ -19,16 +19,31 @@ class home:
         # reset smaf allocation of patients
         self.registry = reg
         return
-    def assign(self,applicants,waiting_months, region_id):
-        self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
-        self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
+    def assign(self,applicants_none, applicants_svc, waiting_months, region_id):
+        self.registry.loc[region_id,['iso_smaf_svc'+str(s) for s in range(1,15)]] = applicants_svc
+        self.registry.loc[region_id,'nb_usagers_svc'] = np.sum(applicants_svc)
+        self.registry.loc[region_id,['iso_smaf_none'+str(s) for s in range(1,15)]] = applicants_none
+        self.registry.loc[region_id,'nb_usagers_none'] = np.sum(applicants_none)
         self.registry.loc[region_id,'attente_usagers_mois'] = waiting_months
         return
-    def create_users(self, users):
-        self.users = users.to_frame()
-        self.users.columns = ['wgt']
-        self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
-        self.users.wgt.clip(lower=0.0, inplace=True)
+    def create_users(self, users_none, users_svc):
+        # users with services
+        users_svc = users_svc.to_frame()
+        users_svc.columns = ['wgt']
+        users_svc['any_svc'] = True
+        users_svc.loc[users_svc.wgt.isna(), 'wgt'] = 0.0
+        users_svc.wgt.clip(lower=0.0, inplace=True)
+        users_svc = users_svc.reset_index()
+        users_svc.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
+        # users without services
+        users_none = users_none.to_frame()
+        users_none.columns = ['wgt']
+        users_none['any_svc'] = False
+        users_none.loc[users_none.wgt.isna(), 'wgt'] = 0.0
+        users_none.wgt.clip(lower=0.0, inplace=True)
+        users_none = users_none.reset_index()
+        users_none.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
+        self.users = pd.concat([users_svc,users_none],axis=0)
         self.users.wgt *= 0.1
         self.users.wgt = self.users.wgt.astype('int64')
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
@@ -41,6 +56,9 @@ class home:
         self.users['tx_serv_avd'] = 0.0
         self.users['wait_time'] = 0.0
         self.users['cost'] = 0.0
+        self.users = self.users.reset_index()
+        self.users['id'] = np.arange(len(self.users))
+        self.users.set_index('id',inplace=True)
         return
     def reset_users(self):
         self.users = []
