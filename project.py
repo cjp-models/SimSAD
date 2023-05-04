@@ -226,7 +226,7 @@ class projection:
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
             #self.ri.create_users(self.count['ri'])
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
-            #self.rpa.create_users(self.count['rpa'])
+            self.rpa.create_users(self.count['rpa'])
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
             self.home.create_users(self.count['none'],self.count['home'])
         return 
@@ -250,7 +250,11 @@ class projection:
 
         # determine services SAD
         self.home.users = self.clsc.assign(self.home.users,'home')
-        print(self.home.users[['clsc_inf_any','clsc_avq_any']].mean())
+        self.rpa.users = self.clsc.assign(self.rpa.users,'rpa')
+
+        print(self.home.users.loc[self.home.users.any_svc,['clsc_inf_any','clsc_avq_any','clsc_avd_any']].mean())
+        print(self.rpa.users[['clsc_inf_any','clsc_avq_any','clsc_avd_any']].mean())
+
         # compute aggregate service rates
         self.chsld.compute_serv_rate()
         #self.ri.compute_serv_rate()
