@@ -8,6 +8,7 @@ from .chsld import chsld
 from .ri import ri
 from .rpa import rpa
 from .home import home
+from .nsa import nsa
 from .prefs import prefs
 from .suppliers import eesad, clsc, prive
 from .financing import msss, pefsad, ces, cmd
@@ -20,7 +21,8 @@ pd.options.mode.chained_assignment = None
 
 class projection:
     def __init__(self,start_yr = 2020,stop_yr = 2040, base_yr = 2023, chsld_build = False, 
-                 ri_build = False, rpa_build = False, chsld_purchase = False):
+                 ri_build = False, rpa_build = False, chsld_purchase = False,
+                 nsa_open_capacity = 0.5):
         self.start_yr = start_yr 
         self.stop_yr = stop_yr 
         self.yr = self.start_yr
@@ -29,6 +31,7 @@ class projection:
         self.ri_build = ri_build
         self.rpa_build = rpa_build
         self.chsld_purchase = chsld_purchase
+        self.nsa_open_capacity = nsa_open_capacity
         self.load_params()
         self.init_tracker()
         self.milieux = ['none','home','rpa','ri','nsa','chsld']
@@ -41,6 +44,7 @@ class projection:
         self.load_home()
         self.load_rpa()
         self.load_ri()
+        self.load_nsa()
         self.load_chsld()
         self.load_suppliers()
         self.load_financing()
@@ -64,7 +68,10 @@ class projection:
     def load_chsld(self):
         self.chsld = chsld(opt_build = self.chsld_build, opt_purchase = self.chsld_purchase)
         self.chsld.load_register()
-        return 
+        return
+    def load_nsa(self):
+        self.nsa = nsa(open_capacity = self.nsa_open_capacity)
+        self.nsa.load_register()
     def load_ri(self):
         self.ri = ri(opt_build = self.ri_build)
         self.ri.load_register()
@@ -196,9 +203,9 @@ class projection:
             else :
                 cap_ri = self.ri.registry.loc[r, 'nb_places']
             if r>=17:
-                cap_nsa = 0
+                cap_nsa = self.nsa.registry.loc[r,'nb_places']
             else :
-                cap_nsa = self.cap_nsa[r]
+                cap_nsa = self.nsa.registry.loc[r,'nb_places']
             if r>=17:
                 cap_rpa = 0
             else :
@@ -214,6 +221,7 @@ class projection:
                 for a in [1,2,3]:
                     self.count.loc[(r,s,a),:] = agent.roster.loc[(s,a),:].values/12
                     self.count_waiting.loc[(r,s,a),:] = agent.waiting_list.loc[(s,a),:].values/12
+            #print('element negatif dans count ', (self.count<0).any().any())
             # save matrices of number of cases
             nb_usagers = np.zeros((self.nsmaf,self.nmilieux))
             nb_waiting = self.count_waiting.loc[(r,),:].sum().values
@@ -221,10 +229,12 @@ class projection:
                 nb_usagers[s-1,:] = self.count.loc[(r,s,),:].sum(axis=0)
             # people waiting in CHSLD (5) go to NSA (4)
             self.chsld.assign(nb_usagers[:,5],nb_waiting[5],r)
-            #self.chsld.create_users(self.count['chsld'])
+            self.chsld.create_users(self.count['chsld'])
+            self.nsa.assign(nb_usagers[:,4],r)
+            self.nsa.create_users(self.count['nsa'])
             # people in other milieux
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
-            #self.ri.create_users(self.count['ri'])
+            self.ri.create_users(self.count['ri'])
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
             self.rpa.create_users(self.count['rpa'])
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
@@ -248,12 +258,30 @@ class projection:
         # now assign users to each living arrangement
         self.dispatch()
 
-        # determine services SAD
+        # determine services SAD offered by CLSC
         self.home.users = self.clsc.assign(self.home.users,'home')
         self.rpa.users = self.clsc.assign(self.rpa.users,'rpa')
 
-        print(self.home.users.loc[self.home.users.any_svc,['clsc_inf_any','clsc_avq_any','clsc_avd_any']].mean())
-        print(self.rpa.users[['clsc_inf_any','clsc_avq_any','clsc_avd_any']].mean())
+        #print(self.home.users.loc[self.home.users.any_svc,['clsc_inf_any',
+        # 'clsc_avq_any','clsc_avd_any']].mean())
+        #print(self.rpa.users[['clsc_inf_any','clsc_avq_any',
+        # 'clsc_avd_any']].mean())
+
+        # other financing
+        self.home.users = self.ces.assign(self.home.users)
+        print('ces ', self.home.users.loc[self.home.users.ces_any,
+        'wgt'].sum())
+        print('ces hrs avq ', self.home.users.loc[self.home.users.ces_any,
+        ['wgt','ces_hrs_avq']].prod(axis=1).sum())
+        print('ces hrs avd ', self.home.users.loc[self.home.users.ces_any,
+        ['wgt','ces_hrs_avd']].prod(axis=1).sum())
+
+        print('clsc inf ', self.home.users.loc[self.home.users.clsc_inf_any,
+              'wgt'].sum())
+        print('clsc avq ',self.home.users.loc[self.home.users.clsc_avq_any,
+        'wgt'].sum())
+        print('clsc avd ', self.home.users.loc[self.home.users.clsc_avd_any,
+        'wgt'].sum())
 
         # compute aggregate service rates
         self.chsld.compute_serv_rate()
