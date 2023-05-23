@@ -121,8 +121,9 @@ class rpa:
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.wgt.clip(lower=0.0, inplace=True)
         self.users.wgt = self.users.wgt.astype('int64')
+        self.users.wgt *= 0.25
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 1
+        self.users.wgt = 4
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'rpa'
         self.users['supplier'] = 'public'

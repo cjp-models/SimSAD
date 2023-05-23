@@ -65,8 +65,13 @@ class chsld:
 
         return
     def assign(self, applicants, waiting_users, region_id):
-        share = self.registry.loc[region_id, 'nb_places_nc'] / (self.registry.loc[region_id, 'nb_places_pub'] +
+        tot = (self.registry.loc[region_id, 'nb_places_pub'] +
+               self.registry.loc[region_id, 'nb_places_nc'])
+        if tot>0:
+            share = self.registry.loc[region_id, 'nb_places_nc'] / (self.registry.loc[region_id, 'nb_places_pub'] +
                                                                 self.registry.loc[region_id, 'nb_places_nc'])
+        else :
+            share = 0
         self.registry.loc[region_id, ['iso_smaf_tot' + str(s) for s in range(1, 15)]] = applicants
         self.registry.loc[region_id, ['iso_smaf_pub' + str(s) for s in range(1, 15)]] = applicants*(1-share)
         self.registry.loc[region_id, ['iso_smaf_nc' + str(s) for s in range(1, 15)]] = applicants*share
@@ -112,10 +117,10 @@ class chsld:
     def compute_supply(self):
         # inf
         time_inf = self.registry['hours_per_etc_inf'].copy()
-        # take out indirect care
-        time_inf *= (1.0 - self.share_indirect_care)
         # take out pauses
         time_inf -= self.time_per_pause*(self.weeks_per_year-self.weeks_vacation_inf)*self.work_days_per_week
+        # take out indirect care
+        time_inf *= (1.0 - self.share_indirect_care)
         # blow up using number of nurses
         time_inf  = time_inf * self.registry['nb_etc_inf']
         ## avq
@@ -144,8 +149,9 @@ class chsld:
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.wgt.clip(lower=0.0, inplace=True)
         self.users.wgt = self.users.wgt.astype('int64')
+        self.users.wgt *= 0.25
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 1
+        self.users.wgt = 4
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'chsld'
         self.users['supplier'] = 'public'

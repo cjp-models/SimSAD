@@ -13,7 +13,6 @@ class isq:
         pop.annee = pop.annee.astype('int64')
         pop = pop[pop.annee<=stop_yr]
         pop = pop[pop.annee>=start_yr]
-        pop = pop[pop.region_id<18]
         for c in range(91):
             pop[str(c)] = pop[str(c)].astype('int64')
         pop.drop(labels=['geo','sexe'],axis=1,inplace=True)

@@ -194,22 +194,10 @@ class projection:
             agent.setup_params(init_prob = iprob, trans_prob = tprob, surv_prob = sprob, wait_count = wait_count,
                                wait_prob = wprob)
             # deal with capacity
-            if r>=17:
-                cap_chsld  = self.chsld.registry.loc[17,'nb_places_tot']
-            else :
-                cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
-            if r>=17:
-                cap_ri = 0
-            else :
-                cap_ri = self.ri.registry.loc[r, 'nb_places']
-            if r>=17:
-                cap_nsa = self.nsa.registry.loc[r,'nb_places']
-            else :
-                cap_nsa = self.nsa.registry.loc[r,'nb_places']
-            if r>=17:
-                cap_rpa = 0
-            else :
-                cap_rpa = self.rpa.registry.loc[r, 'nb_places']
+            cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
+            cap_ri = self.ri.registry.loc[r, 'nb_places']
+            cap_nsa = self.nsa.registry.loc[r,'nb_places']
+            cap_rpa = self.rpa.registry.loc[r, 'nb_places']
             agent.setup_capacity(cap_rpa, cap_ri, cap_nsa, cap_chsld)
             agent.assign()
             agent.collect()
@@ -229,17 +217,23 @@ class projection:
                 nb_usagers[s-1,:] = self.count.loc[(r,s,),:].sum(axis=0)
             # people waiting in CHSLD (5) go to NSA (4)
             self.chsld.assign(nb_usagers[:,5],nb_waiting[5],r)
-            self.chsld.create_users(self.count['chsld'])
             self.nsa.assign(nb_usagers[:,4],r)
-            self.nsa.create_users(self.count['nsa'])
-            # people in other milieux
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
-            self.ri.create_users(self.count['ri'])
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
-            self.rpa.create_users(self.count['rpa'])
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
-            self.home.create_users(self.count['none'],self.count['home'])
-        return 
+
+        # create user sets
+        self.chsld.create_users(self.count['chsld'])
+        #print('chsld = ', len(self.chsld.users))
+        self.nsa.create_users(self.count['nsa'])
+        #print('nsa = ', len(self.nsa.users))
+        self.ri.create_users(self.count['ri'])
+        #print('ri = ', len(self.ri.users))
+        self.rpa.create_users(self.count['rpa'])
+        #print('rpa = ', len(self.rpa.users))
+        self.home.create_users(self.count['none'], self.count['home'])
+        #print('home = ', len(self.home.users))
+        return
     
     def welfare(self):
         self.chsld.users = self.prefs.compute_utility(self.chsld.users)
@@ -260,7 +254,15 @@ class projection:
 
         # determine services SAD offered by CLSC
         self.home.users = self.clsc.assign(self.home.users,'home')
+        print('done with home')
         self.rpa.users = self.clsc.assign(self.rpa.users,'rpa')
+        print('done with rpa')
+        self.ri.users = self.clsc.assign(self.ri.users,'ri')
+        print('done with ri')
+
+        table = self.clsc.summary(self.home.users, self.rpa.users, self.ri.users)
+        table['total'] = table.sum(axis=1)
+        print(table)
 
         #print(self.home.users.loc[self.home.users.any_svc,['clsc_inf_any',
         # 'clsc_avq_any','clsc_avd_any']].mean())
@@ -268,20 +270,25 @@ class projection:
         # 'clsc_avd_any']].mean())
 
         # other financing
-        self.home.users = self.ces.assign(self.home.users)
-        print('ces ', self.home.users.loc[self.home.users.ces_any,
-        'wgt'].sum())
-        print('ces hrs avq ', self.home.users.loc[self.home.users.ces_any,
-        ['wgt','ces_hrs_avq']].prod(axis=1).sum())
-        print('ces hrs avd ', self.home.users.loc[self.home.users.ces_any,
-        ['wgt','ces_hrs_avd']].prod(axis=1).sum())
+        #self.home.users = self.ces.assign(self.home.users)
+        #print('ces ', self.home.users.loc[self.home.users.ces_any,
+        #'wgt'].sum())
+        #print('ces hrs avq ', self.home.users.loc[self.home.users.ces_any,
+        #['wgt','ces_hrs_avq']].prod(axis=1).sum())
+        #print('ces hrs avd ', self.home.users.loc[self.home.users.ces_any,
+        #['wgt','ces_hrs_avd']].prod(axis=1).sum())
 
-        print('clsc inf ', self.home.users.loc[self.home.users.clsc_inf_any,
-              'wgt'].sum())
-        print('clsc avq ',self.home.users.loc[self.home.users.clsc_avq_any,
-        'wgt'].sum())
-        print('clsc avd ', self.home.users.loc[self.home.users.clsc_avd_any,
-        'wgt'].sum())
+#        print('clsc inf ', self.home.users.loc[self.home.users.clsc_inf_any,
+#              'wgt'].sum())
+#        print('clsc avq ',self.home.users.loc[self.home.users.clsc_avq_any,
+#        'wgt'].sum())
+#        print('clsc avd ', self.home.users.loc[self.home.users.clsc_avd_any,
+#        'wgt'].sum())
+
+        #print('clsc inf ', self.ri.users.loc[self.ri.users.clsc_inf_any,
+        #      'wgt'].sum())
+        #print('clsc avq ',self.ri.users.loc[self.ri.users.clsc_avq_any,
+        #'wgt'].sum())
 
         # compute aggregate service rates
         self.chsld.compute_serv_rate()
