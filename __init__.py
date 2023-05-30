@@ -8,5 +8,6 @@ from .ri import ri
 from .rpa import rpa
 from .home import home
 from .nsa import nsa
+from .needs import needs
 from .suppliers import eesad, clsc, prive
 from .financing import msss, pefsad, ces, cmd

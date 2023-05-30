@@ -160,6 +160,9 @@ class chsld:
         self.users['tx_serv_avd'] = 0.0
         self.users['wait_time'] = 0.0
         self.users['cost'] = 0.0
+        self.users = self.users.reset_index()
+        self.users['id'] = np.arange(len(self.users))
+        self.users.set_index('id',inplace=True)
         return 
     def reset_users(self):
         self.users = []
@@ -167,10 +170,16 @@ class chsld:
     def update_users(self):
         # merge tx service on region
         return
-    def collapse(self,rowvars=['region_id'],colvars=['smaf']):
-        if 'smaf' in colvars:
-            table = self.registry.loc[:,['iso_smaf_tot'+str(s) for s in range(1,15)]]
-            table.columns = [s for s in range(1,15)]
-        else :
-            table = self.registry.loc[:,colvars]
+    def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
+        t = getattr(self, domain)
+        if domain == 'registry':
+            if 'smaf' in colvars:
+                table = self.registry.loc[:,['iso_smaf_tot'+str(s) for s in range(1,15)]]
+                table.columns = [s for s in range(1,15)]
+            else :
+                table = self.registry.loc[:,colvars]
+        if domain == 'users':
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table.columns = colvars
+                table = table[colvars]
         return table

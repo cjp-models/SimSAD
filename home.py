@@ -10,7 +10,7 @@ class home:
     def __init__(self):
         return
     def load_register(self,start_yr=2019):
-        reg = pd.read_csv(os.path.join(data_dir,'registre_home.csv'),
+        reg = pd.read_csv(os.path.join(data_dir,'registre_clsc.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
         reg = reg[reg.region_id!=99]
@@ -63,10 +63,16 @@ class home:
     def reset_users(self):
         self.users = []
         return
-    def collapse(self,rowvars=['region_id'],colvars=['smaf']):
-        if 'smaf' in colvars:
-            table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]
-            table.columns = [s for s in range(1,15)]
-        else :
-            table = self.registry.loc[:,colvars]
+    def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
+        t = getattr(self, domain)
+        if domain == 'registry':
+            if 'smaf' in colvars:
+                table = self.registry.loc[:,['iso_smaf_svc'+str(s) for s in range(1,15)]]
+                table.columns = [s for s in range(1,15)]
+            else :
+                table = self.registry.loc[:,colvars]
+        if domain == 'users':
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table.columns = colvars
+                table = table[colvars]
         return table

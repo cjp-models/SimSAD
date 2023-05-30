@@ -29,7 +29,7 @@ class dispatcher:
         self.n_cap[4] = n_nsa
         self.n_cap[5] = n_chsld
         return
-    def setup_params(self, init_prob, trans_prob, surv_prob, wait_count, wait_prob):
+    def setup_params(self, init_prob, trans_prob, surv_prob, wait_count, wait_prob_chsld, wait_prob_ri):
         # number of months (includes an initial state)
         self.m = 13
         # number of smafs
@@ -46,7 +46,8 @@ class dispatcher:
         # survival probability (month-to-month)
         self.ss = surv_prob
         self.wait_init = wait_count
-        self.wprob = wait_prob
+        self.wprob_chsld = wait_prob_chsld
+        self.wprob_ri = wait_prob_ri
         return
     def init_smaf(self,smafs):
         self.smafs = smafs
@@ -104,7 +105,7 @@ class dispatcher:
         return
     def next_state(self,m):
         self.count_states[:,:,:,m+1], self.count_wait[:,:,:,:,m+1] = transition(self.count_states[:,:,:,m],self.count_wait[:,:,:,:,m], self.pi,
-                     self.ss, self.n_cap, self.wprob)
+                     self.ss, self.n_cap, self.wprob_chsld, self.wprob_ri)
         return
     def assign(self):
         self.init_state()
@@ -148,8 +149,8 @@ class dispatcher:
                     self.last_state[s,a,:] = 0.0
         return
 
-@njit(Tuple((float64[:,:,:],float64[:,:,:,:]))(float64[:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:,:,:], float64[:], float64[:,:,:]))
-def transition(state, wait, pi, ss, ncaps, wprob):
+@njit(Tuple((float64[:,:,:],float64[:,:,:,:]))(float64[:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:,:,:], float64[:], float64[:,:,:], float64[:,:,:]))
+def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
     ns, na, nn = state.shape
     next_state = np.zeros(state.shape) 
     next_wait = np.zeros(wait.shape)
@@ -192,11 +193,25 @@ def transition(state, wait, pi, ss, ncaps, wprob):
                             pe = 1.0
                         for j in range(nn):
                             if pj[j]>0:
-                                pej[j] = wprob[s, a, j]*pe/pj[j]
+                                pej[j] = wprob_chsld[s, a, j]*pe/pj[j]
                             else :
                                 pej[j] = 1.0
-                    else:
+                    elif n == nn - 3:
+                        pw = np.sum(next_wait[s, a, :, n])
+                        if pw>0:
+                            pj = next_wait[s, a, :, n]/np.sum(next_wait[s, a, :, n])
+                            pe = avail_spots/np.sum(next_wait[s, a, :, n])
+                        else :
+                            pj = np.zeros(nn)
+                            pe = 1.0
+                        for j in range(nn):
+                            if pj[j]>0:
+                                pej[j] = wprob_ri[s, a, j]*pe/pj[j]
+                            else :
+                                pej[j] = 1.0
+                    else :
                         pej[:] = 1.0
+
                     for j in range(nn-1,-1,-1):
                         # not currently in n
                         if j!=n:

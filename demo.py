@@ -34,8 +34,9 @@ class isq:
     def evaluate(self,yr):
         self.count = self.count_isq.loc[self.count_isq.index.get_level_values(1)==yr,:].droplevel(1)
         return
-    def collapse(self,rowvars=['region_id'],colvars=['age']):
-        table = pd.pivot_table(self.count.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
+    def collapse(self,domain = 'count', rowvars=['region_id'],colvars=['age']):
+        t = getattr(self, domain)
+        table = pd.pivot_table(t.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
         if colvars!=[]:
             table.columns = [x[1] for x in table.columns]
         return table
@@ -82,8 +83,9 @@ class gps:
     def evaluate(self, pop, yr):
         self.count = pop.count * self.shares
         return
-    def collapse(self,rowvars=['region_id'],colvars=['gps']):
-        table = pd.pivot_table(self.count.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
+    def collapse(self,domain = 'count', rowvars=['region_id'],colvars=['gps']):
+        t = getattr(self,domain)
+        table = pd.pivot_table(t.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
         if colvars!=[]:
             table.columns = [x[1] for x in table.columns]
         return table
@@ -163,8 +165,9 @@ class smaf:
         # from those assign to smaf
         self.count_smaf = self.shares * self.count_eval
         return
-    def collapse(self,rowvars=['region_id'],colvars=['smaf']):
-        table = pd.pivot_table(self.count_smaf.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
+    def collapse(self, domain = 'count_smaf', rowvars=['region_id'],colvars=['smaf']):
+        t = getattr(self,domain)
+        table = pd.pivot_table(t.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
         if colvars!=[]:
             table.columns = [x[1] for x in table.columns]
         return table
