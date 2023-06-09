@@ -2,12 +2,13 @@ import pandas as pd
 import numpy as np
 import os
 from itertools import product
+from .needs import needs
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
 pd.options.mode.chained_assignment = None
 
 class rpa:
-    def __init__(self, opt_build = False):
-        self.opt_build = False
+    def __init__(self, opt_penetrate = False):
+        self.opt_penetrate = opt_penetrate
         return
     def load_register(self,start_yr=2019):
         reg = pd.read_csv(os.path.join(data_dir,'registre_rpa.csv'),
@@ -21,12 +22,14 @@ class rpa:
             keep_vars.append('iso_smaf'+str(s))
         reg = reg[keep_vars]
         reg.rename({'nb_usagers_sad':'nb_usagers'},axis=1,inplace=True)
-        reg['nb_places'] = reg.loc[:,'nb_usagers']
         # reset smaf allocation of patients
         self.registry = reg
         self.registry['tx_serv_inf'] = 0.0
         self.registry['tx_serv_avq'] = 0.0
         self.registry['tx_serv_avd'] = 0.0
+
+        self.registry['nb_places_sad'] = self.registry.loc[:,'nb_usagers']
+
         # needs weights (hours per day of care by smaf, Tousignant)
         self.needs_inf = [0.01,0.02,0.23,0.15,0.29,0.31,0.33,
                             0.38,0.43,0.48,0.58,0.47,0.69,0.95]
@@ -59,11 +62,18 @@ class rpa:
         self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
         self.registry.loc[region_id,'attente_usagers_mois'] = waiting_months
         return 
-    def build(self):
-        if self.opt_build:
-            work = self.registry[['nb_installations','places_per_installation','attente_usagers_mois','nb_places']].copy()
-            work['attente_usagers'] = work['attente_usagers_mois']/12.0
-            self.registry['nb_places'] += work['attente_usagers']
+    def build(self, pen_rate = 0.5, adapt_rate = 0.5):
+        if self.opt_penetrate:
+            work = self.registry.copy()
+            work['attente_usagers'] = adapt_rate * work['attente_usagers_mois']/12.0
+            work['cap'] = work['nb_places'] * pen_rate
+            for r in range(1,19):
+                row = work.loc[r,:]
+                if (row['nb_places_sad']+row['attente_usagers'])<=row['cap']:
+                    row['nb_places_sad'] += row['attente_usagers']
+                else :
+                    row['nb_places_sad'] = row['cap']
+                self.registry.loc[r,'nb_places_sad'] = row['nb_places_sad']
         return 
     def compute_occupancy_rate(self):
         # occupancy rate
@@ -127,6 +137,16 @@ class rpa:
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'rpa'
         self.users['supplier'] = 'public'
+        n = needs()
+        for c in ['inf','avq','avd']:
+            self.users['needs_'+c] = 0.0
+        for s in range(1,15):
+            self.users.loc[self.users.smaf==s,'needs_inf'] = n.inf[
+                                                                 s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_avq'] = n.avq[
+                                                                 s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_avd'] = n.avd[
+                                                                 s-1]*self.days_per_year
         self.users['tx_serv_inf'] = 0.0
         self.users['tx_serv_avq'] = 0.0
         self.users['tx_serv_avd'] = 0.0

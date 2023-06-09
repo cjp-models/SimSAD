@@ -10,18 +10,20 @@ from .rpa import rpa
 from .home import home
 from .nsa import nsa
 from .prefs import prefs
-from .suppliers import eesad, clsc, prive
-from .financing import msss, pefsad, ces, cmd
+from .eesad import eesad
+from .clsc import clsc
+from .prive import prive
+from .cmd import cmd
+from .msss import msss
+from .pefsad import pefsad
+from .ces import ces
 from .tracker import tracker
-from functools import partial
-#from alive_progress import alive_bar
-import time 
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
 pd.options.mode.chained_assignment = None
 
 class projection:
     def __init__(self,start_yr = 2020,stop_yr = 2040, base_yr = 2023, chsld_build = False, 
-                 ri_build = False, rpa_build = False, chsld_purchase = False,
+                 ri_build = False, rpa_penetrate = False, chsld_purchase = False,
                  nsa_open_capacity = 0.5, scn_name = 'reference'):
         self.start_yr = start_yr 
         self.stop_yr = stop_yr 
@@ -29,7 +31,7 @@ class projection:
         self.base_yr = base_yr
         self.chsld_build = chsld_build
         self.ri_build = ri_build
-        self.rpa_build = rpa_build
+        self.rpa_penetrate = rpa_penetrate
         self.chsld_purchase = chsld_purchase
         self.nsa_open_capacity = nsa_open_capacity
         self.load_params()
@@ -77,7 +79,7 @@ class projection:
         self.ri.load_register()
         return 
     def load_rpa(self):
-        self.rpa = rpa(opt_build = self.rpa_build)
+        self.rpa = rpa(opt_penetrate = self.rpa_penetrate)
         self.rpa.load_register()
         return 
     def load_home(self):
@@ -99,27 +101,37 @@ class projection:
         self.ces = ces()
         self.cmd = cmd()
         self.financing = ['pefsad','ces','cmd','msss']
-        return 
+        return
+    def set_macro(self, gr_lfp_inf = 0.0, gr_lfp_avq = 0.0, gr_lfp_avd = 0.0, real_int_rate = 0.03, gr_wages = 0.01):
+        self.gr_lfp_inf = gr_lfp_inf
+        self.gr_lfp_inf = gr_lfp_inf
+        self.gr_lfp_inf = gr_lfp_inf
+        self.gr_lfp_inf = gr_lfp_inf
+
+        return
+
     def init_tracker(self, scn_name):
         self.tracker = tracker(scn_name = scn_name)
         show_yr = 2023
         self.tracker.add_entry('pop_region_age','pop','count',['region_id'],
                                ['age'],'sum',show_yr,self.stop_yr)
+        self.tracker.add_entry('smaf_region_age','iso','count_smaf',['region_id'],
+                               ['smaf'],'sum',show_yr,self.stop_yr)
         self.tracker.add_entry('chsld_users', 'chsld', 'registry',
                             rowvars=['region_id'],
-                            colvars=['nb_usagers_tot'], aggfunc='sum', start_yr=
+                            colvars=['nb_usagers_tot', 'tx_serv_inf', 'tx_serv_avq'], aggfunc='sum', start_yr=
                             show_yr,
+                            stop_yr=self.stop_yr)
+        self.tracker.add_entry('nsa_users', 'nsa', 'registry',
+                            rowvars=['region_id'],
+                            colvars=['nb_usagers'], aggfunc='sum',
+                            start_yr=show_yr,
                             stop_yr=self.stop_yr)
         self.tracker.add_entry('ri_users', 'ri', 'registry', rowvars=['region_id'],
                             colvars=['nb_usagers'], aggfunc='sum',
                             start_yr=show_yr,
                             stop_yr=self.stop_yr)
         self.tracker.add_entry('rpa_users', 'rpa', 'registry',
-                            rowvars=['region_id'],
-                            colvars=['nb_usagers'], aggfunc='sum',
-                            start_yr=show_yr,
-                            stop_yr=self.stop_yr)
-        self.tracker.add_entry('nsa_users', 'nsa', 'registry',
                             rowvars=['region_id'],
                             colvars=['nb_usagers'], aggfunc='sum',
                             start_yr=show_yr,
@@ -135,22 +147,74 @@ class projection:
                             start_yr=show_yr,
                             stop_yr=self.stop_yr)
         self.tracker.add_entry('clsc_inf_hrs', 'clsc', 'registry',
-                            rowvars=['region_id'],
-                            colvars=['needs_inf', 'supply_inf'], aggfunc='sum',
-                            start_yr=show_yr,
-                            stop_yr=self.stop_yr)
+                          rowvars=['region_id'],
+                             colvars=['needs_inf'],
+                                    aggfunc='sum',
+                           start_yr=show_yr,
+                           stop_yr=self.stop_yr)
         self.tracker.add_entry('clsc_avq_hrs', 'clsc', 'registry',
-                            rowvars=['region_id'],
-                            colvars=['needs_avq', 'supply_avq'], aggfunc='sum',
-                            start_yr=
-                            show_yr,
-                            stop_yr=self.stop_yr)
+                           rowvars=['region_id'],
+                           colvars=['needs_avq'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
         self.tracker.add_entry('clsc_avd_hrs', 'clsc', 'registry',
-                            rowvars=['region_id'],
-                            colvars=['needs_avd', 'supply_avd'], aggfunc='sum',
-                            start_yr=
-                            show_yr,
-                            stop_yr=self.stop_yr)
+                           rowvars=['region_id'],
+                           colvars=['needs_avd'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+        self.tracker.add_entry('needs_hrs_inf_home', 'home', 'users',
+                           rowvars=['region_id'],
+                           colvars=['needs_inf'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+        self.tracker.add_entry('needs_hrs_avq_home', 'home', 'users',
+                           rowvars=['region_id'],
+                           colvars=['needs_avq'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+        self.tracker.add_entry('needs_hrs_avd_home', 'home', 'users',
+                           rowvars=['region_id'],
+                           colvars=['needs_avd'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+        self.tracker.add_entry('needs_hrs_inf_rpa', 'rpa', 'users',
+                           rowvars=['region_id'],
+                           colvars=['needs_inf'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+        self.tracker.add_entry('needs_hrs_avq_rpa', 'rpa', 'users',
+                           rowvars=['region_id'],
+                           colvars=['needs_avq'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+        self.tracker.add_entry('needs_hrs_avd_rpa', 'rpa', 'users',
+                           rowvars=['region_id'],
+                           colvars=['needs_avd'], aggfunc='sum',
+                           start_yr=
+                           show_yr,
+                           stop_yr=self.stop_yr)
+
+        self.tracker.add_entry('cost_chsld','chsld','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
+                               start_yr=show_yr,stop_yr=self.stop_yr)
+        self.tracker.add_entry('cost_ri','ri','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
+                               start_yr=show_yr,stop_yr=self.stop_yr)
+        self.tracker.add_entry('cost_nsa','nsa','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
+                               start_yr=show_yr,stop_yr=self.stop_yr)
+        self.tracker.add_entry('cost_clsc','clsc','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
+                               start_yr=show_yr,stop_yr=self.stop_yr)
+        self.tracker.add_entry('cost_eesad','eesad','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
+                               start_yr=show_yr,stop_yr=self.stop_yr)
+        self.tracker.add_entry('cost_prive','prive','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
+                               start_yr=show_yr,stop_yr=self.stop_yr)
+
+
         self.tracker.add_entry('eesad_avd', 'eesad', 'registry',
                             rowvars=['region_id'],
                             colvars=['supply_avd', 'needs_avd'], aggfunc='sum',
@@ -161,7 +225,8 @@ class projection:
                             start_yr=show_yr, stop_yr=self.stop_yr)
         self.tracker.add_entry('ces_users', 'home', 'users',
                             rowvars=['region_id'],
-                            colvars=['ces_any','ces_hrs_avd','ces_hrs_avq'], aggfunc='sum',
+                            colvars=['ces_any','ces_hrs_avd','ces_hrs_avq'],
+                            aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
         self.tracker.add_entry('pefsad_users', 'home', 'users',
                             rowvars=['region_id'],
@@ -183,54 +248,63 @@ class projection:
                 self.next()
         self.save('output')
         return
-    def dispatch(self):
-        # allocate to milieu 
-        tups = list(product(*[np.arange(1,self.last_region),np.arange(1,self.last_smaf),[1,2,3]]))
-        self.count = pd.DataFrame(index=pd.MultiIndex.from_tuples(tups),
-                                  columns=['none','home','rpa','ri','nsa','chsld'])
-        self.count_waiting = pd.DataFrame(index=pd.MultiIndex.from_tuples(tups),
-                                  columns=['none','home','rpa','ri','nsa','chsld'])
 
+    def init_dispatch(self, init_smafs):
+        gr_ages = [1,2,3]
+        self.init_pars = pd.read_csv(os.path.join(data_dir, 'nb_milieu_vie_init.csv'),
+                                     delimiter=';', low_memory=False)
+        self.init_pars.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
+        for r in range(1, self.last_region):
+            for s in range(1, self.last_smaf):
+                for a in gr_ages:
+                    self.init_pars.loc[(r, s, a), :] = self.init_pars.loc[(r, s, a), :] / init_smafs.loc[(r, a), s]
+        self.pars = pd.read_csv(os.path.join(data_dir, 'transition_mensuelles_milieu_vie.csv'),
+                                delimiter=';', low_memory=False)
+        self.pars.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
+        self.surv_pars = pd.read_csv(os.path.join(data_dir, 'prob_mensuelles_deces.csv'),
+                                     delimiter=';', low_memory=False)
+        self.surv_pars.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
+        for c in self.surv_pars.columns:
+            self.surv_pars[c] = 1.0 - self.surv_pars[c]
+        self.wait_pars_chsld = pd.read_csv(os.path.join(data_dir, 'prob_mv_attente.csv'),
+                                           delimiter=';', low_memory=False)
+        self.wait_pars_chsld.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
+        self.wait_pars_ri = pd.read_csv(os.path.join(data_dir, 'prob_mv_attente_ri.csv'),
+                                        delimiter=';', low_memory=False)
+        self.wait_pars_ri.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
+        return
+
+    def dispatch(self):
+
+        # initialize counts
+        gr_ages = [1,2,3]
+        nages = 3
+        tups = list(product(*[np.arange(1,self.last_region),np.arange(1,self.last_smaf),gr_ages]))
+        itups = pd.MultiIndex.from_tuples(tups)
+        self.count = pd.DataFrame(index=itups,
+                                  columns=self.milieux)
+        self.count_waiting = pd.DataFrame(index=itups,
+                                  columns=self.milieux)
         self.count.columns.names = ['milieu']
-        self.count.index.names = ['region_id','iso_smaf','gr_age']
+        merge_keys = ['region_id','iso_smaf','gr_age']
+        self.count.index.names = merge_keys
         self.count_waiting.columns.names = ['milieu']
-        self.count_waiting.index.names = ['region','smaf','gr_age']
+        self.count_waiting.index.names = merge_keys
+
         # figure out distribution of smaf by region
         init_smafs = self.iso.collapse(rowvars=['region_id','smaf'],colvars=['age'])
         init_smafs['18-64'] = init_smafs[[x for x in range(18,65)]].sum(axis=1)
         init_smafs['65-69'] = init_smafs[[x for x in range(65,70)]].sum(axis=1)
         init_smafs['70-91'] = init_smafs[[x for x in range(70,91)]].sum(axis=1)
         init_smafs = init_smafs.loc[:,['18-64','65-69','70-91']]
-        init_smafs.columns = [1,2,3]
+        init_smafs.columns = gr_ages
         init_smafs.columns.names = ['gr_age']
         init_smafs = pd.pivot_table(init_smafs.stack().to_frame(),
                                     index=['region_id','gr_age'],columns=['smaf'],aggfunc=sum)[0]
-        gr_ages = [1,2,3]
-        nages = 3
+
         # load parameters for transitions
         if self.yr == self.start_yr:
-            self.init_pars = pd.read_csv(os.path.join(data_dir,'nb_milieu_vie_init.csv'),
-                delimiter=';',low_memory=False)
-            self.init_pars.set_index(['region_id','iso_smaf','gr_age'],inplace=True)
-            self.cap_nsa = self.init_pars.groupby('region_id').sum()['nsa']
-            for r in range(1,self.last_region):
-                for s in range(1,self.last_smaf):
-                    for a in gr_ages:
-                        self.init_pars.loc[(r,s,a),:] = self.init_pars.loc[(r,s,a),:]/init_smafs.loc[(r,a),s]
-            self.pars = pd.read_csv(os.path.join(data_dir,'transition_mensuelles_milieu_vie.csv'),
-                delimiter=';',low_memory=False)
-            self.pars.set_index(['region_id','iso_smaf','gr_age'],inplace=True)
-            self.surv_pars = pd.read_csv(os.path.join(data_dir,'prob_mensuelles_deces.csv'),
-                delimiter=';',low_memory=False)
-            self.surv_pars.set_index(['region_id','iso_smaf','gr_age'],inplace=True)
-            for c in self.surv_pars.columns:
-                self.surv_pars[c] = 1.0 - self.surv_pars[c]
-            self.wait_pars_chsld = pd.read_csv(os.path.join(data_dir,'prob_mv_attente.csv'),
-                delimiter=';',low_memory=False)
-            self.wait_pars_chsld.set_index(['region_id','iso_smaf','gr_age'],inplace=True)
-            self.wait_pars_ri = pd.read_csv(os.path.join(data_dir,'prob_mv_attente_ri.csv'),
-                delimiter=';',low_memory=False)
-            self.wait_pars_ri.set_index(['region_id','iso_smaf','gr_age'],inplace=True)
+            self.init_dispatch(init_smafs)
 
             self.last_iprob = np.zeros((self.nregions,self.nsmaf,nages,self.nmilieux))
             self.last_wait = np.zeros((self.nregions,self.nsmaf,nages,self.nmilieux,self.nmilieux))
@@ -238,6 +312,8 @@ class projection:
                 for s in range(1,self.last_smaf):
                     for a in gr_ages:
                         self.last_iprob[r-1,s-1,a-1,:] = self.init_pars.loc[(r,s,a),:]
+
+        # main algorithm
         for r in range(1,self.last_region):
             agent = dispatcher()
             ismaf = np.zeros((self.nsmaf,nages))
@@ -267,7 +343,6 @@ class projection:
             for s in range(self.nsmaf):
                 for a in range(nages):
                     wprob_ri[s,a,:] = self.wait_pars_ri.loc[(r,s+1,a+1),:].values
-
             # wait
             wait_count = self.last_wait[r-1,:,:,:,:]
             agent.setup_params(init_prob = iprob, trans_prob = tprob, surv_prob = sprob, wait_count = wait_count,
@@ -276,16 +351,20 @@ class projection:
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']
             cap_nsa = self.nsa.registry.loc[r,'nb_places']
-            cap_rpa = self.rpa.registry.loc[r, 'nb_places']
+            cap_rpa = self.rpa.registry.loc[r, 'nb_places_sad']
             agent.setup_capacity(cap_rpa, cap_ri, cap_nsa, cap_chsld)
+
+            # now assign
             agent.assign()
+
+            # collect for output
             agent.collect()
             self.last_iprob[r-1,:,:,:] = agent.last_state
             self.last_wait = np.zeros((self.nregions, self.nsmaf, nages, self.nmilieux, self.nmilieux))
             self.last_wait[r-1,:,:,:,:] = agent.last_wait
             # full-time equivalent in each living arrangement
             for s in range(1,self.last_smaf):
-                for a in [1,2,3]:
+                for a in gr_ages:
                     self.count.loc[(r,s,a),:] = agent.roster.loc[(s,a),:].values/12
                     self.count_waiting.loc[(r,s,a),:] = agent.waiting_list.loc[(s,a),:].values/12
             self.count.clip(lower=0.0,inplace=True)
@@ -303,13 +382,17 @@ class projection:
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
 
         # create user sets
+        self.create_users()
+        return
+
+    def create_users(self):
         self.chsld.create_users(self.count['chsld'])
         self.nsa.create_users(self.count['nsa'])
         self.ri.create_users(self.count['ri'])
         self.rpa.create_users(self.count['rpa'])
         self.home.create_users(self.count['none'], self.count['home'])
         return
-    
+
     def welfare(self):
         self.chsld.users = self.prefs.compute_utility(self.chsld.users)
         self.ri.users = self.prefs.compute_utility(self.ri.users)
@@ -319,13 +402,14 @@ class projection:
 
     def chsld_services(self):
         self.chsld.compute_serv_rate()
+        self.chsld.compute_costs()
         return
     def nsa_services(self):
+        self.nsa.compute_costs()
         return
     def ri_services(self):
-        #self.ri.compute_serv_rate()
-        return
-    def rpa_services(self):
+        self.ri.compute_serv_rate()
+        self.ri.compute_costs()
         return
     def clsc_services(self):
         # determine services
@@ -334,33 +418,34 @@ class projection:
         self.ri.users = self.clsc.assign(self.ri.users,'ri')
         # adjust services to supply
         self.clsc.compute_supply()
-        self.home.users = self.clsc.cap(self.home.users)
-        self.rpa.users = self.clsc.cap(self.rpa.users)
-        self.ri.users = self.clsc.cap(self.ri.users)
+        #self.home.users = self.clsc.cap(self.home.users,'home')
+        #self.rpa.users = self.clsc.cap(self.rpa.users,'rpa')
+        #self.ri.users = self.clsc.cap(self.ri.users,'ri')
         # determine needs and compute service rate
         self.clsc.compute_needs()
         self.clsc.compute_serv_rate()
         # determine costs
+        self.clsc.compute_costs()
         return
-
     def eesad_services(self):
         self.home.users = self.pefsad.assign(self.home.users,'home')
         self.rpa.users = self.pefsad.assign(self.rpa.users,'rpa')
         self.eesad.assign(self.home.users, self.rpa.users)
         self.eesad.compute_supply()
-        #self.home.users = self.eesad.cap(self.home.users)
-        #self.rpa.users = self.eesad.cap(self.rpa.users)
+        self.home.users = self.eesad.cap(self.home.users)
+        self.rpa.users = self.eesad.cap(self.rpa.users)
         self.eesad.compute_needs()
         self.eesad.compute_serv_rate()
+        self.eesad.compute_costs()
         return
-
     def private_services(self):
         self.home.users = self.ces.assign(self.home.users)
         self.prive.assign(self.home.users)
         self.prive.compute_supply()
-        #self.home.users = self.prive.cap(self.home.users)
+        self.home.users = self.prive.cap(self.home.users)
         self.prive.compute_needs()
         self.prive.compute_serv_rate()
+        self.prive.compute_costs()
         return
     def cmd_payout(self):
         self.home.users = self.cmd.assign(self.home.users,'home')
@@ -405,8 +490,8 @@ class projection:
         if self.yr>self.base_yr:
             self.chsld.build()
             self.chsld.purchase()
-        #self.ri.build()
-        #self.rpa.build()
+            #self.ri.build()
+            self.rpa.build()
         # labor force transitions for Inf, AVQ
         
         return

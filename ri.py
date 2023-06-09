@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+from .needs import needs
 from itertools import product
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
 pd.options.mode.chained_assignment = None
@@ -17,20 +18,16 @@ class ri:
         reg = reg[reg.region_id!=99]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
-        keep_vars = ['nb_places','nb_installations','nb_usagers','tx_occupation']
-        for s in range(1,15):
-            keep_vars.append('iso_smaf'+str(s))
-        reg = reg[keep_vars]
         # reset smaf allocation of patients
         self.registry = reg
         self.registry['tx_serv_inf'] = 0.0
         self.registry['tx_serv_avq'] = 0.0
         self.registry['tx_serv_avd'] = 100.0
         # needs weights (hours per day of care by smaf, Tousignant)
-        self.needs_inf = [0.01,0.02,0.23,0.15,0.29,0.31,0.33,
-                            0.38,0.43,0.48,0.58,0.47,0.69,0.95]
-        self.needs_avq = [0.26,0.27,0.48,0.57,0.67,0.68,
-                            1.08,1.24,2.29,2.29,2.61,2.54,2.62,3.08]
+        n = needs()
+
+        self.needs_inf = n.inf
+        self.needs_avq = n.avq
         self.inf_indirect_per_day = 0.4
         self.days_per_week = 7
         self.days_per_year = 365
@@ -42,10 +39,11 @@ class ri:
         self.nsmafs = 14
         self.nmonths = 24
         self.weeks_per_year = (self.days_per_year/self.days_per_week)
+
         self.registry['nb_etc_inf'] = 0.3 * self.registry['nb_places']
         self.registry['nb_etc_avq'] = 0.6 * self.registry['nb_places']
         self.registry['heures_tot_trav_inf'] = self.registry['nb_etc_inf'] * 1500
-        self.registry['heures_tot_trav_avq'] = self.registry['nb_etc_avq'] * 1500
+        self.registry['heures_tot_trav_avq'] = self.registry['nb_etc_avq']
         self.registry['attente_usagers_mois'] = 0.0
 
         self.registry['hours_per_etc_inf'] = self.registry['heures_tot_trav_inf']/self.registry['nb_etc_inf']
@@ -104,6 +102,14 @@ class ri:
         result = pd.concat([time_inf,time_avq],axis=1)
         result.columns = ['inf','avq']
         return result
+    def compute_costs(self):
+        self.registry['cout_fixe'] = self.registry['nb_usagers'] * self.registry['cout_place_fixe']
+        self.registry['cout_var'] = 0.0
+        for s in range(1,15):
+            self.registry['cout_var'] += (self.registry['cout_place_var'+str(s)] * self.registry['iso_smaf'+str(s)])
+        self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
+        self.registry['cout_place_total'] = self.registry['cout_total']/self.registry['nb_usagers']
+        return
     def compute_serv_rate(self):
         self.compute_occupancy_rate()
         needs = self.compute_needs()
@@ -127,6 +133,13 @@ class ri:
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'ri'
         self.users['supplier'] = 'public'
+        n = needs()
+        for c in ['inf','avq','avd']:
+            self.users['needs_'+c] = 0.0
+        for s in range(1,15):
+            self.users.loc[self.users.smaf==s,'needs_inf'] = n.inf[s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_avq'] = n.avq[s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_avd'] = n.avd[s-1]*self.days_per_year
         self.users['tx_serv_inf'] = 0.0
         self.users['tx_serv_avq'] = 0.0
         self.users['tx_serv_avd'] = 0.0

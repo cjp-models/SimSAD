@@ -1,57 +1,45 @@
 import pandas as pd
 import numpy as np
 import os
-from .needs import needs
 from itertools import product
+from .needs import needs
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
 pd.options.mode.chained_assignment = None
 
-
-class home:
-    def __init__(self):
+class nsa:
+    def __init__(self, open_capacity = 0.5):
+        self.open_capacity = open_capacity
         return
     def load_register(self,start_yr=2019):
-        reg = pd.read_csv(os.path.join(data_dir,'registre_clsc.csv'),
+        reg = pd.read_csv(os.path.join(data_dir,'nb_lits_hopitaux.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
         reg = reg[reg.region_id!=99]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
-        # reset smaf allocation of patients
+        reg['nb_usagers'] = 0
+        keep_vars = ['nb_places','nb_usagers']
+        reg = reg[keep_vars]
+        reg[['iso_smaf'+str(s) for s in range(1,15)]] = 0.0
+        reg['nb_places'] *= self.open_capacity
         self.registry = reg
         self.days_per_year = 365
+        self.registry['cout_par_place'] = 1e3 * self.days_per_year
         return
-    def assign(self,applicants_none, applicants_svc, waiting_months, region_id):
-        self.registry.loc[region_id,['iso_smaf_svc'+str(s) for s in range(1,15)]] = applicants_svc
-        self.registry.loc[region_id,'nb_usagers_svc'] = np.sum(applicants_svc)
-        self.registry.loc[region_id,['iso_smaf_none'+str(s) for s in range(1,15)]] = applicants_none
-        self.registry.loc[region_id,'nb_usagers_none'] = np.sum(applicants_none)
-        self.registry.loc[region_id,'attente_usagers_mois'] = waiting_months
-        return
-    def create_users(self, users_none, users_svc):
-        # users with services
-        users_svc = users_svc.to_frame()
-        users_svc.columns = ['wgt']
-        users_svc['any_svc'] = True
-        users_svc.loc[users_svc.wgt.isna(), 'wgt'] = 0.0
-        users_svc.wgt.clip(lower=0.0, inplace=True)
-        users_svc = users_svc.reset_index()
-        users_svc.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
-        # users without services
-        users_none = users_none.to_frame()
-        users_none.columns = ['wgt']
-        users_none['any_svc'] = False
-        users_none.loc[users_none.wgt.isna(), 'wgt'] = 0.0
-        users_none.wgt.clip(lower=0.0, inplace=True)
-        users_none = users_none.reset_index()
-        users_none.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
-        self.users = pd.concat([users_svc,users_none],axis=0)
-        self.users.wgt *= 0.1
+    def assign(self,applicants,region_id):
+        self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
+        self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
+        return 
+    def create_users(self, users):
+        self.users = users.to_frame()
+        self.users.columns = ['wgt']
+        self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
+        self.users.wgt.clip(lower=0.0, inplace=True)
         self.users.wgt = self.users.wgt.astype('int64')
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 10
+        self.users.wgt = 1
         self.users['smaf'] = self.users.index.get_level_values(1)
-        self.users['milieu'] = 'home'
+        self.users['milieu'] = 'ri'
         self.users['supplier'] = 'public'
         n = needs()
         for c in ['inf','avq','avd']:
@@ -75,11 +63,14 @@ class home:
     def reset_users(self):
         self.users = []
         return
+    def compute_costs(self):
+        self.registry['cout_total'] = self.registry['cout_par_place'] * self.registry['nb_usagers']
+        return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
         t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
-                table = self.registry.loc[:,['iso_smaf_svc'+str(s) for s in range(1,15)]]
+                table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]
                 table.columns = [s for s in range(1,15)]
             else :
                 table = self.registry.loc[:,colvars]

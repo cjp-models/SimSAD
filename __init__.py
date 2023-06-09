@@ -9,5 +9,12 @@ from .rpa import rpa
 from .home import home
 from .nsa import nsa
 from .needs import needs
-from .suppliers import eesad, clsc, prive
-from .financing import msss, pefsad, ces, cmd
+from .prive import prive
+from .eesad import eesad
+from .clsc import clsc
+from .cmd import cmd
+from .pefsad import pefsad
+from .ces import ces
+from .msss import msss
+
+

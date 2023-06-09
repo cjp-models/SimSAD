@@ -1,5 +1,5 @@
-import pandas as pd 
-import numpy as np 
+import pandas as pd
+import numpy as np
 from itertools import product
 import os
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
@@ -8,82 +8,77 @@ from numba.types import Tuple
 from .needs import needs
 from itertools import product
 
-
-class eesad: 
-    def __init__(self):
-        self.load_registry()
-        return 
-    def load_registry(self, start_yr = 2019):
-        self.registry = pd.read_csv(os.path.join(data_dir, 'registre_eesad.csv'),
-                                        delimiter=';', low_memory=False)
-        self.registry = self.registry[self.registry.annee == start_yr]
-        self.registry = self.registry[['region_id', 'heures_tot_trav_avd', 'nb_etc_avd']]
-        self.registry.set_index('region_id', inplace=True)
-        self.registry['hrs_per_etc'] = self.registry['heures_tot_trav_avd']/self.registry['nb_etc_avd']
-        tups = list(product(*[np.arange(1,19),np.arange(1,15)]))
-        itups = pd.MultiIndex.from_tuples(tups)
-        itups.names = ['region_id','smaf']
-        self.count = pd.DataFrame(index=itups,columns =['users','hrs'],dtype='float64')
-        self.count.loc[:,:] = 0.0
-        self.days_per_year = 365
-        return
-    def assign(self, users_home, users_rpa):
-        for r in range(1,19):
-            for s in range(1,15):
-                select = (users_home['region_id']==r) & (users_home['smaf']==s) & (users_home['pefsad_avd_any'])
-                self.count.loc[(r,s),'users'] = users_home.loc[select,'wgt'].sum()
-                self.count.loc[(r,s),'hrs'] = users_home.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
-                select = (users_rpa['region_id']==r) & (users_rpa['smaf']==s) & (users_rpa['pefsad_avd_any'])
-                self.count.loc[(r,s),'users'] += users_rpa.loc[select,'wgt'].sum()
-                self.count.loc[(r,s),'hrs'] += users_rpa.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
-        return
-
-    def compute_needs(self):
-        users = pd.pivot_table(data=self.count,index='region_id', columns='smaf', values='users',aggfunc='sum')
-        n = needs()
-        self.registry['needs_avd'] = 0.0
-        for s in range(1,15):
-            self.registry['needs_avd'] += n.avd[s-1] * users.loc[:,s]
-        self.registry['needs_avd'] *= self.days_per_year
-        return
-    def cap(self, users):
-        hrs_free = self.count.groupby('region_id').sum()['hrs']
-        factor = self.registry['supply_avd']/hrs_free
-        users['pefsad_avd_hrs'] *= factor
-        return users
-    def compute_supply(self):
-        self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
-        return
-    def compute_serv_rate(self):
-        self.registry['tx_svc_avd'] = self.registry['supply_avd'] / self.registry['needs_avd']
-        self.registry['tx_svc_avd'].clip(upper=1.0, inplace=True)
-        return
-    def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
-        t = getattr(self, domain)
-        if domain == 'registry':
-            if 'smaf' in colvars:
-                table = self.registry.loc[:,['iso_smaf_svc'+str(s) for s in range(1,15)]]
-                table.columns = [s for s in range(1,15)]
-            else :
-                table = self.registry.loc[:,colvars]
-        if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
-                table.columns = colvars
-                table = table[colvars]
-        return table
-
 class clsc:
-    def __init__(self):
+    def __init__(self, purchase_prive = True, purchase_eesad = True, rate_prive = 0.01, rate_eesad = 0.01):
         self.care_types = ['inf','avq','avd']
+        self.purchase_prive = purchase_prive
+        self.purchase_eesad = purchase_eesad
+        if self.purchase_prive:
+            self.rate_prive = rate_prive
+        else :
+            self.rate_prive = 0.0
+        if self.purchase_eesad:
+            self.rate_eesad = rate_eesad
+        else :
+            self.rate_eesad = 0.0
         self.load_params()
         self.load_registry()
-        return 
+        return
     def load_registry(self, start_yr = 2019):
         self.registry = pd.read_csv(os.path.join(data_dir, 'registre_clsc.csv'),
                                         delimiter=';', low_memory=False)
         self.registry = self.registry[self.registry.annee==start_yr]
         self.registry.set_index('region_id',inplace=True)
         self.days_per_year = 365
+        for m in ['home','rpa','ri']:
+            if m!='ri':
+                for c in self.care_types:
+                    tag = c+'_'+m
+                    self.registry['hrs_etc_' + tag] = self.registry[
+                        'heures_tot_trav_'+tag]/self.registry[
+                        'nb_etc_'+tag]
+            else :
+                tag = 'inf_' + m
+                self.registry['hrs_etc_' + tag] = self.registry[
+                                                       'heures_tot_trav_' + tag] / \
+                                                   self.registry[
+                                                       'nb_etc_' + tag]
+
+        self.registry['cout_hr_achete_eesad_avq'] = self.registry.loc[:,'cout_hr_achete_prive_avq']
+        self.purchase_home = pd.DataFrame(index=['inf','avq','avd'],columns=['prive','eesad'])
+        self.purchase_home.loc[:,:] = False
+        if self.purchase_eesad:
+            self.purchase_home.loc['avq','eesad'] = True
+            self.purchase_home.loc['avd','eesad'] = True
+        else :
+            self.registry['hrs_sa_avq_eesad_home'] = 0.0
+            self.registry['hrs_sa_avd_eesad_home'] = 0.0
+
+        if self.purchase_prive:
+            self.purchase_home.loc['inf','prive'] = True
+            self.purchase_home.loc['avq','prive'] = True
+            self.purchase_home.loc['avd','prive'] = True
+        else :
+            self.registry['hrs_sa_inf_prive_home'] = 0.0
+            self.registry['hrs_sa_avq_prive_home'] = 0.0
+            self.registry['hrs_sa_avd_prive_home'] = 0.0
+
+
+        self.purchase_rpa = pd.DataFrame(index=['inf','avq','avd'],columns=['prive','eesad'])
+        self.purchase_rpa.loc[:,:] = False
+        if self.purchase_eesad:
+            self.purchase_rpa.loc['avq','eesad'] = True
+            self.purchase_rpa.loc['avd','eesad'] = True
+        else :
+            self.registry['hrs_sa_avq_eesad_rpa'] = 0.0
+            self.registry['hrs_sa_avd_eesad_rpa'] = 0.0
+
+        if self.purchase_prive:
+            self.purchase_rpa.loc['avq','prive'] = True
+            self.purchase_rpa.loc['avd','prive'] = True
+        else :
+            self.registry['hrs_sa_avq_prive_rpa'] = 0.0
+            self.registry['hrs_sa_avd_prive_rpa'] = 0.0
 
         return
     def load_params(self):
@@ -259,58 +254,141 @@ class clsc:
         hrs.columns = ['hrs']
         self.count.update(counts,join='left',overwrite=True)
         self.count.update(hrs, join='left', overwrite=True)
-
-        #data = users.loc[select, ['clsc_' + c + '_any',
-        #            'clsc_'+c+'_hrs','wgt']]
-
-        #for c in self.care_types:
-        #    for r in np.arange(1,19):
-        #        for s in np.arange(1,15):
-        #            tup = (milieu, r,  c, s)
-        #            select = (users['region_id']==r) & (users['smaf']==s)
-        #            data = users.loc[select,['clsc_'+c+'_any',
-        #            'clsc_'+c+'_hrs','wgt']]
-        #            self.count.loc[tup,'users'] = data.loc[data[
-        #            'clsc_'+c+'_any'],'wgt'].sum(axis=0)
-        #            self.count.loc[tup,'hrs'] = data[['clsc_'+c+'_hrs',
-        #            'wgt']].prod(axis=1).sum(axis=0)
         return users
     def compute_needs(self):
         # use count to get distribution of needs for each care type
         users = pd.pivot_table(data=self.count,index=['region_id'],columns=[
+            'milieux',
             'svc','iso_smaf'],values='users',aggfunc='sum')
         n = needs()
-        for c in self.care_types:
-            self.registry['needs_' + c] = 0.0
-        for s in range(1,15):
-            self.registry['needs_inf'] += n.inf[s-1] * users.loc[:,('inf',s)]
-            self.registry['needs_avq'] += n.avq[s-1] * users.loc[:,('avq',s)]
-            self.registry['needs_avd'] += n.avd[s-1] * users.loc[:,('avd',s)]
-        for c in self.care_types:
-            self.registry['needs_' + c] *= self.days_per_year
+        for m in ['home','rpa','ri']:
+            if m!='ri':
+                for c in self.care_types:
+                    tag = c+'_'+m
+                    self.registry['needs_' + tag] = 0.0
+                    for s in range(1,15):
+                        self.registry['needs_'+tag] += n.inf[s-1] * users.loc[:,
+                                                                 (m,c,
+                                                                  s)] \
+                                                       *self.days_per_year
+            else :
+                tag = 'inf_' + m
+                self.registry['needs_' + tag] = 0.0
+                for s in range(1, 15):
+                    self.registry['needs_' + tag] += n.inf[s - 1] * users.loc[:,
+                                                                (m, c, s)]*self.days_per_year
+        self.registry['needs_inf'] = self.registry[['needs_inf_'+c for c in
+                                                    ['home','rpa','ri']
+                                                    ]].sum(axis=1)
+        self.registry['needs_avq'] = self.registry[['needs_avq_'+c for c in
+                                                    ['home','rpa']
+                                                    ]].sum(axis=1)
+        self.registry['needs_avd'] = self.registry[['needs_avd_'+c for c in
+                                                    ['home','rpa']
+                                                    ]].sum(axis=1)
         return
 
 
     def compute_supply(self):
+
+        # hours supplied by CLSC
+        for m in ['home','rpa']:
+            for c in self.care_types:
+                tag = c+'_'+m
+                self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * \
+                                              self.registry['hrs_etc_'+tag]
+                self.registry['supply_'+tag] *= (1.0-self.registry[
+                    'tx_hrs_dep_'+c] - self.registry[
+                    'tx_hrs_admin_'+c])
+
+        tag = 'inf_ri'
+        self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * \
+                                              self.registry['hrs_etc_'+tag]
+        self.registry['supply_'+tag] *= (1.0-self.registry[
+                    'tx_hrs_dep_inf'] - self.registry[
+                    'tx_hrs_admin_inf'])
+
+        # add hours purchased from EESAD and PRIVE for home care
         for c in self.care_types:
-            self.registry['supply_'+c] = self.registry['nb_etc_'+c] * self.registry['hrs_moy_etc_'+c]
-            if c!='avd':
-                self.registry['supply_'+c] *= (1.0-self.registry['tx_hrs_indirect_'+c])
+            for s in ['prive','eesad']:
+                if self.purchase_home.loc[c,s]:
+                    self.registry['supply_'+c+'_home'] += self.registry['hrs_sa_'+c+'_'+s+'_home']
+        # add hours purchased add hours purchased from EESAD and PRIVE for RPA
+        for c in self.care_types:
+            for s in ['prive','eesad']:
+                if self.purchase_rpa.loc[c,s]:
+                    self.registry['supply_'+c+'_rpa'] += self.registry['hrs_sa_'+c+'_'+s+'_rpa']
+
+        # add up to get overall supply
+        self.registry['supply_inf'] = self.registry[['supply_inf_'+c for c in
+                                                    ['home','rpa','ri']
+                                                    ]].sum(axis=1)
+        self.registry['supply_avq'] = self.registry[['supply_avq_'+c for c in
+                                                    ['home','rpa']
+                                                    ]].sum(axis=1)
+        self.registry['supply_avd'] = self.registry[['supply_avd_'+c for c in
+                                                    ['home','rpa']
+                                                    ]].sum(axis=1)
+
         return
 
-    def cap(self, users):
+    def cap(self, users, milieu):
         hrs_free = pd.pivot_table(data=self.count, index=['region_id'], columns=['svc'], values='hrs',
                                aggfunc='sum')
-        for c in self.care_types:
-            factor = self.registry['supply_'+c]/hrs_free[c]
-            users['clsc_'+c+'_hrs'] *= factor
+        if milieu!='ri':
+            for c in self.care_types:
+                tag = c+'_'+milieu
+                factor = self.registry['supply_'+tag]/hrs_free[c]
+                for r in range(1,19):
+                    users.loc[users.region_id==r, 'clsc_'+c+'_hrs'] *= min(factor[r],1.0)
+        else :
+            tag = 'inf_ri'
+            factor = self.registry['supply_' + tag] / hrs_free['inf']
+            for r in range(1, 19):
+                users.loc[users.region_id == r, 'clsc_inf_hrs'] *= min(factor[r],1.0)
         return users
-
     def compute_serv_rate(self):
-        for c in self.care_types:
-            self.registry['tx_svc_'+c] = self.registry['supply_'+c]/self.registry['needs_'+c]
-            self.registry['tx_svc_'+c].clip(upper=1.0,inplace=True)
+        for m in ['home','rpa']:
+            for c in self.care_types:
+                tag = c+'_'+m
+                self.registry['tx_svc_'+tag] = self.registry[
+                                                 'supply_'+tag]/self.registry[
+                    'needs_'+tag]
+                self.registry['tx_svc_'+tag].clip(upper=1.0,inplace=True)
+        tag = 'inf_ri'
+        self.registry['tx_svc_' + tag] = self.registry[
+                                             'supply_' + tag] / self.registry[
+                                             'needs_' + tag]
+        self.registry['tx_svc_' + tag].clip(upper=1.0, inplace=True)
         return
+
+    def compute_costs(self):
+        # cout fixe par heure de service
+        self.registry['cout_fixe'] = 0.0
+        # cout salaire
+        self.registry['cout_var'] = 0.0
+        for m in ['home','rpa']:
+            for c in self.care_types:
+                tag = c+'_'+m
+                self.registry['cout_var'] += self.registry['nb_etc_'+tag] * \
+                                              self.registry['hrs_etc_'+tag] * self.registry['sal_'+c]
+        tag = 'inf_ri'
+        self.registry['cout_var'] += self.registry['nb_etc_'+tag] * \
+                                              self.registry['hrs_etc_'+tag] * self.registry['sal_inf']
+        # services acheté
+        self.registry['cout_achete'] = 0.0
+        for c in self.care_types:
+            for s in ['prive','eesad']:
+                if self.purchase_home.loc[c,s]:
+                    self.registry['cout_achete'] += self.registry['hrs_sa_'+c+'_'+s+'_home'] * self.registry['cout_hr_achete_'+s+'_'+c]
+        for c in self.care_types:
+            for s in ['prive','eesad']:
+                if self.purchase_rpa.loc[c,s]:
+                    self.registry['cout_achete'] += self.registry['hrs_sa_'+c+'_'+s+'_rpa'] * self.registry['cout_hr_achete_'+s+'_'+c]
+
+        self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_achete']
+        return
+
     def collapse_users(self,rowvars=['region_id','svc'],colvars=['iso_smaf']):
         table = pd.pivot_table(self.count.stack().to_frame(),index=rowvars,columns=colvars,aggfunc='sum')
         if colvars!=[]:
@@ -330,67 +408,6 @@ class clsc:
                 table = table[colvars]
         return table
 
-# autres services achetés, AVQ + soins infirmiers     
-class prive:
-    def __init__(self):
-        self.load_registry()
-        return
-    def load_registry(self, start_yr = 2019):
-        self.registry = pd.read_csv(os.path.join(data_dir, 'registre_prive.csv'),
-                                        delimiter=';', low_memory=False)
-        self.registry = self.registry[self.registry.annee == start_yr]
-        self.registry = self.registry[['region_id', 'hrs_avq', 'nb_etc_avq']]
-        self.registry.set_index('region_id', inplace=True)
-        self.registry['hrs_per_etc'] = self.registry['hrs_avq']/self.registry['nb_etc_avq']
-        tups = list(product(*[np.arange(1,19),np.arange(1,15)]))
-        itups = pd.MultiIndex.from_tuples(tups)
-        itups.names = ['region_id','smaf']
-        self.count = pd.DataFrame(index=itups,columns =['users','hrs'],dtype='float64')
-        self.count.loc[:,:] = 0.0
-        self.days_per_year = 365
-        return
-    def assign(self, users):
-        for r in range(1,19):
-            for s in range(1,15):
-                select = (users['region_id']==r) & (users['smaf']==s) & (users['ces_any'])
-                self.count.loc[(r,s),'users'] = users.loc[select,'wgt'].sum()
-                self.count.loc[(r,s),'hrs'] = users.loc[select,['wgt','ces_hrs_avq']].prod(axis=1).sum()
-        return
-
-    def compute_needs(self):
-        users = pd.pivot_table(data=self.count,index='region_id', columns='smaf', values='users',aggfunc='sum')
-        n = needs()
-        self.registry['needs_avq'] = 0.0
-        for s in range(1,15):
-            self.registry['needs_avq'] += n.avq[s-1] * users.loc[:,s]
-        self.registry['needs_avq'] *= self.days_per_year
-        return
-    def cap(self, users):
-        hrs_free = self.count.groupby('region_id').sum()['hrs']
-        factor = self.registry['supply_avq']/hrs_free
-        users['ces_hrs_avq'] *= factor
-        return users
-    def compute_supply(self):
-        self.registry['supply_avq'] = self.registry['nb_etc_avq'] * self.registry['hrs_per_etc']
-        return
-    def compute_serv_rate(self):
-        self.registry['tx_svc_avq'] = self.registry['supply_avq'] / self.registry['needs_avq']
-        self.registry['tx_svc_avq'].clip(upper=1.0, inplace=True)
-        return
-    def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
-        t = getattr(self, domain)
-        if domain == 'registry':
-            if 'smaf' in colvars:
-                table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]
-                table.columns = [s for s in range(1,15)]
-            else :
-                table = self.registry.loc[:,colvars]
-        if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
-                table.columns = colvars
-                table = table[colvars]
-        return table
-    
 
 @njit((int64[:])(float64[:,:]), cache=True, parallel=True)
 def draw_multinomial(prob):
@@ -406,4 +423,3 @@ def draw_multinomial(prob):
                     result[i] = j
                     break
         return result
-
