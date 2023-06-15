@@ -232,7 +232,11 @@ class projection:
                             rowvars=['region_id'],
                             colvars=['pefsad_avd_any','pefsad_avd_hrs'], aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
-        self.tracker.add_entry('cmd_cost', 'home', 'users',
+        self.tracker.add_entry('cmd_cost_home', 'home', 'users',
+                            rowvars=['region_id'],
+                            colvars=['cmd_mnt'], aggfunc='sum',
+                            start_yr=show_yr, stop_yr=self.stop_yr)
+        self.tracker.add_entry('cmd_cost_rpa', 'rpa', 'users',
                             rowvars=['region_id'],
                             colvars=['cmd_mnt'], aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)

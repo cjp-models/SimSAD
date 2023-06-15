@@ -11,20 +11,17 @@ class nsa:
         self.open_capacity = open_capacity
         return
     def load_register(self,start_yr=2019):
-        reg = pd.read_csv(os.path.join(data_dir,'nb_lits_hopitaux.csv'),
+        reg = pd.read_csv(os.path.join(data_dir,'registre_nsa.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
         reg = reg[reg.region_id!=99]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
         reg['nb_usagers'] = 0
-        keep_vars = ['nb_places','nb_usagers']
-        reg = reg[keep_vars]
         reg[['iso_smaf'+str(s) for s in range(1,15)]] = 0.0
         reg['nb_places'] *= self.open_capacity
         self.registry = reg
         self.days_per_year = 365
-        self.registry['cout_par_place'] = 1e3 * self.days_per_year
         return
     def assign(self,applicants,region_id):
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
@@ -64,7 +61,7 @@ class nsa:
         self.users = []
         return
     def compute_costs(self):
-        self.registry['cout_total'] = self.registry['cout_par_place'] * self.registry['nb_usagers']
+        self.registry['cout_total'] = self.registry['cout_place'] * self.registry['nb_usagers']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
         t = getattr(self, domain)

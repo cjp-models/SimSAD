@@ -7,10 +7,11 @@ pd.options.mode.chained_assignment = None
 
 
 class chsld:
-    def __init__(self, opt_build = False, opt_purchase = False, opt_mda = True):
+    def __init__(self, opt_build = False, opt_purchase = False, opt_mda = True, infl_construction = 0.013):
         self.opt_build = opt_build
         self.opt_purchase = opt_purchase
         self.opt_mda = opt_mda
+        self.infl_construction = infl_construction
         return
     def load_register(self,start_yr=2019):
         reg = pd.read_csv(os.path.join(data_dir,'registre_chsld.csv'),
@@ -65,7 +66,7 @@ class chsld:
             self.registry['cout_construction'] = self.registry['cout_construction_mda']
         else :
             self.registry['cout_construction'] = self.registry['cout_construction_chsld']
-        self.registry['cout_place_immo'] = self.registry['cout_construction'] * self.cost_rate
+        self.registry['cout_comptable_immo'] = 0.0
         return
     def assign(self, applicants, waiting_users, region_id):
         tot = (self.registry.loc[region_id, 'nb_places_pub'] +
@@ -92,10 +93,12 @@ class chsld:
         return
     def build(self, build_rate = 0.2):
         if self.opt_build:
+            self.registry['cout_construction'] *= (1.0 + self.infl_construction)
             build = self.registry['attente_usagers'] * build_rate
-            self.registry['nb_build'] += build
+            self.registry['cout_comptable_immo'] += build * self.registry['cout_construction']
             self.registry['nb_places_pub'] += build
         self.registry['nb_places_tot'] = self.registry['nb_places_pub'] + self.registry['nb_places_nc']
+
         return 
     def compute_occupancy_rate(self):
         # occupancy rate
@@ -156,7 +159,7 @@ class chsld:
         self.registry['cout_avq'] = self.registry['sal_avq'] * self.registry['heures_tot_trav_avq']
         self.registry['cout_var'] = self.registry['cout_inf'] + self.registry['cout_avq']
         self.registry['cout_fixe'] = self.registry['cout_place_fixe'] * self.registry['nb_usagers_tot']
-        self.registry['cout_immo'] = self.registry['nb_build'] * self.registry['cout_place_immo']
+        self.registry['cout_immo'] = self.registry['cout_comptable_immo']*self.cost_rate
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_immo']
         self.registry['cout_place_var'] = self.registry['cout_var']/self.registry['nb_usagers_tot']
         self.registry['cout_place_total'] = self.registry['cout_total']/self.registry['nb_usagers_tot']

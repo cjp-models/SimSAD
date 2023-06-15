@@ -16,7 +16,7 @@ class prive:
     def __init__(self):
         self.load_registry()
         return
-    def load_registry(self, start_yr = 2019):
+    def load_registry(self, start_yr = 2021):
         self.registry = pd.read_csv(os.path.join(data_dir, 'registre_prive.csv'),
                                         delimiter=';', low_memory=False)
         self.registry = self.registry[self.registry.annee == start_yr]

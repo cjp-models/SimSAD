@@ -229,6 +229,10 @@ class clsc:
         users.loc[select,margins] = work[margins].copy()
         users.sort_index(inplace=True)
 
+        if milieu!='ri':
+            counts_any_svc = users.groupby(['region_id']).apply(
+                lambda d: (d['any_svc']*d['wgt']).sum())
+            self.registry['nb_usagers_'+milieu] = counts_any_svc
 
         counts = pd.concat([users.groupby(['region_id','iso_smaf']).apply(
             lambda d: (d['clsc_'+c+'_any']*d['wgt']).sum()) for c in self.care_types],
@@ -363,8 +367,9 @@ class clsc:
         return
 
     def compute_costs(self):
-        # cout fixe par heure de service
-        self.registry['cout_fixe'] = 0.0
+        # cout fixe par usagers
+        self.registry['cout_fixe'] = self.registry['cout_residuel']*(self.registry['nb_usagers_home']+self.registry['nb_usagers_rpa'])
+
         # cout salaire
         self.registry['cout_var'] = 0.0
         for m in ['home','rpa']:

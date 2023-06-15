@@ -8,7 +8,7 @@ class ces:
     def __init__(self):
         self.load_params()
         return
-    def load_params(self, start_yr = 2019):
+    def load_params(self, start_yr = 2021):
         self.prob =  pd.read_csv(os.path.join(data_dir,'prob_ces.csv'),
             delimiter=';',low_memory=False)
         self.prob = self.prob[self.prob.annee==start_yr]

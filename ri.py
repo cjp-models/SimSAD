@@ -59,7 +59,7 @@ class ri:
         return 
     def build(self):
         if self.opt_build:
-            work = self.registry[['nb_installations','places_per_installation','attente_usagers_mois','nb_places']].copy()
+            work = self.registry[['nb_installations','places_per_installation', 'attente_usagers_mois', 'nb_places']].copy()
             work['attente_usagers'] = work['attente_usagers_mois']/12.0
             self.registry['nb_places'] += work['attente_usagers']
         return 
@@ -145,6 +145,7 @@ class ri:
         self.users['tx_serv_avd'] = 0.0
         self.users['wait_time'] = 0.0
         self.users['cost'] = 0.0
+        self.users['any_svc'] = False
         self.users = self.users.reset_index()
         self.users['id'] = np.arange(len(self.users))
         self.users.set_index('id',inplace=True)

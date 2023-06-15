@@ -152,6 +152,7 @@ class rpa:
         self.users['tx_serv_avd'] = 0.0
         self.users['wait_time'] = 0.0
         self.users['cost'] = 0.0
+        self.users['any_svc'] = True
         self.users = self.users.reset_index()
         self.users['id'] = np.arange(len(self.users))
         self.users.set_index('id',inplace=True)
