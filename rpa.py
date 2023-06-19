@@ -31,10 +31,9 @@ class rpa:
         self.registry['nb_places_sad'] = self.registry.loc[:,'nb_usagers']
 
         # needs weights (hours per day of care by smaf, Tousignant)
-        self.needs_inf = [0.01,0.02,0.23,0.15,0.29,0.31,0.33,
-                            0.38,0.43,0.48,0.58,0.47,0.69,0.95]
-        self.needs_avq = [0.26,0.27,0.48,0.57,0.67,0.68,
-                            1.08,1.24,2.29,2.29,2.61,2.54,2.62,3.08]
+        n = needs()
+        self.needs_inf = n.inf
+        self.needs_avq = n.avq
         self.inf_indirect_per_day = 0.4
         self.days_per_week = 7
         self.days_per_year = 365

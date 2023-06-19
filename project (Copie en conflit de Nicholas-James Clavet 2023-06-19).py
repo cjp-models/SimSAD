@@ -90,6 +90,7 @@ class projection:
         self.eesad = eesad()
         self.clsc = clsc()
         self.prive = prive()
+        self.suppliers = ['eesad','clsc','prive']
         return
     def load_prefs(self):
         self.prefs = prefs()
@@ -99,9 +100,9 @@ class projection:
         self.pefsad = pefsad()
         self.ces = ces()
         self.cmd = cmd()
+        self.financing = ['pefsad','ces','cmd','msss']
         return
-    def set_macro(self, gr_lfp_inf = 0.0, gr_lfp_avq = 0.0,
-                  gr_lfp_avd = 0.0, real_int_rate = 0.03, gr_wages = 0.01):
+    def set_macro(self, gr_lfp_inf = 0.0, gr_lfp_avq = 0.0, gr_lfp_avd = 0.0, real_int_rate = 0.03, gr_wages = 0.01):
         self.gr_lfp_inf = gr_lfp_inf
         self.gr_lfp_avq = gr_lfp_avq
         self.gr_lfp_avd = gr_lfp_avd
@@ -118,9 +119,7 @@ class projection:
                                ['smaf'],'sum',show_yr,self.stop_yr)
         self.tracker.add_entry('chsld_users', 'chsld', 'registry',
                             rowvars=['region_id'],
-                            colvars=['nb_usagers_tot',
-                                     'tx_serv_inf', 'tx_serv_avq'],
-                               aggfunc='sum', start_yr=
+                            colvars=['nb_usagers_tot', 'tx_serv_inf', 'tx_serv_avq'], aggfunc='sum', start_yr=
                             show_yr,
                             stop_yr=self.stop_yr)
         self.tracker.add_entry('nsa_users', 'nsa', 'registry',
@@ -245,6 +244,7 @@ class projection:
         return
 
     def dispatch(self):
+
         # initialize counts
         gr_ages = [1,2,3]
         nages = 3
@@ -264,12 +264,13 @@ class projection:
         init_smafs = self.iso.collapse(rowvars=['region_id','smaf'],colvars=['age'])
         init_smafs['18-64'] = init_smafs[[x for x in range(18,65)]].sum(axis=1)
         init_smafs['65-69'] = init_smafs[[x for x in range(65,70)]].sum(axis=1)
-        init_smafs['70-91'] = init_smafs[[x for x in range(70,91)]].sum(axis=1)
+        init_smafs['70-90'] = init_smafs[[x for x in range(70,90)]].sum(axis=1)
         init_smafs = init_smafs.loc[:,['18-64','65-69','70-91']]
         init_smafs.columns = gr_ages
         init_smafs.columns.names = ['gr_age']
         init_smafs = pd.pivot_table(init_smafs.stack().to_frame(),
                                     index=['region_id','gr_age'],columns=['smaf'],aggfunc=sum)[0]
+
         # load parameters for transitions
         if self.yr == self.start_yr:
             self.init_dispatch(init_smafs)
@@ -313,10 +314,8 @@ class projection:
                     wprob_ri[s,a,:] = self.wait_pars_ri.loc[(r,s+1,a+1),:].values
             # wait
             wait_count = self.last_wait[r-1,:,:,:,:]
-            agent.setup_params(init_prob = iprob, trans_prob = tprob,
-                               surv_prob = sprob, wait_count = wait_count,
-                               wait_prob_chsld = wprob_chsld,
-                               wait_prob_ri = wprob_ri)
+            agent.setup_params(init_prob = iprob, trans_prob = tprob, surv_prob = sprob, wait_count = wait_count,
+                               wait_prob_chsld = wprob_chsld, wait_prob_ri = wprob_ri)
             # deal with capacity
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']
@@ -330,15 +329,13 @@ class projection:
             # collect for output
             agent.collect()
             self.last_iprob[r-1,:,:,:] = agent.last_state
-            self.last_wait = np.zeros((self.nregions, self.nsmaf, nages,
-                                       self.nmilieux, self.nmilieux))
+            self.last_wait = np.zeros((self.nregions, self.nsmaf, nages, self.nmilieux, self.nmilieux))
             self.last_wait[r-1,:,:,:,:] = agent.last_wait
             # full-time equivalent in each living arrangement
             for s in range(1,self.last_smaf):
                 for a in gr_ages:
                     self.count.loc[(r,s,a),:] = agent.roster.loc[(s,a),:].values/12
-                    self.count_waiting.loc[(r,s,a),:] = \
-                        agent.waiting_list.loc[(s,a),:].values/12
+                    self.count_waiting.loc[(r,s,a),:] = agent.waiting_list.loc[(s,a),:].values/12
             self.count.clip(lower=0.0,inplace=True)
             self.count_waiting.clip(lower=0.0,inplace=True)
             # save matrices of number of cases
@@ -397,10 +394,9 @@ class projection:
         self.ri.users = self.clsc.assign(self.ri.users,'ri')
         # adjust services to supply
         self.clsc.compute_supply()
-        if self.policy.clsc_cap:
-            self.home.users = self.clsc.cap(self.home.users,'home')
-            self.rpa.users = self.clsc.cap(self.rpa.users,'rpa')
-            self.ri.users = self.clsc.cap(self.ri.users,'ri')
+        #self.home.users = self.clsc.cap(self.home.users,'home')
+        #self.rpa.users = self.clsc.cap(self.rpa.users,'rpa')
+        #self.ri.users = self.clsc.cap(self.ri.users,'ri')
         # determine needs and compute service rate
         self.clsc.compute_needs()
         self.clsc.compute_serv_rate()
@@ -413,9 +409,8 @@ class projection:
         self.home.users, self.rpa.users = self.eesad.assign(self.home.users,
                                                           self.rpa.users)
         self.eesad.compute_supply()
-        if self.policy.eesad_cap:
-            self.home.users = self.eesad.cap(self.home.users)
-            self.rpa.users = self.eesad.cap(self.rpa.users)
+        #self.home.users = self.eesad.cap(self.home.users)
+        #self.rpa.users = self.eesad.cap(self.rpa.users)
         self.eesad.compute_needs()
         self.eesad.compute_serv_rate()
         self.eesad.compute_costs()
@@ -427,8 +422,7 @@ class projection:
                               self.prive.registry)
         self.prive.assign(self.home.users)
         self.prive.compute_supply()
-        if self.policy.prive_cap:
-            self.home.users = self.prive.cap(self.home.users)
+        #self.home.users = self.prive.cap(self.home.users)
         self.prive.compute_needs()
         self.prive.compute_serv_rate()
         self.prive.compute_costs()
@@ -451,6 +445,7 @@ class projection:
         self.msss.assign(self.prive.registry['cout_total'],'ces')
         self.msss.assign(self.eesad.registry['cout_total'],'pefsad')
         self.msss.assign(self.cmd.registry['cout_total'],'cmd')
+
         # add user fees
         cah_chsld = 12.0* self.chsld.users.groupby('region_id').apply(lambda d:
                                                                 (d['cost']*d['wgt']).sum())
@@ -469,6 +464,7 @@ class projection:
         user_pefsad = user_pefsad_home + user_pefsad_rpa
         self.msss.assign(user_pefsad,'pefsad_usager')
         self.msss.collect()
+        print(self.msss.registry.sum(axis=0))
         return
     def compute(self):
         # exogeneous needs composition at aggregate level (region, age, smaf)

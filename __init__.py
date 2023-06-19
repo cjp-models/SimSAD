@@ -16,5 +16,6 @@ from .cmd import cmd
 from .pefsad import pefsad
 from .ces import ces
 from .msss import msss
+from .policy import policy
 
 
