@@ -28,7 +28,7 @@ class prefs:
         u += self.pars.loc['wait_time',row['smaf']]*row['wait_time']
         u += self.pars.loc['cost',row['smaf']]*row['cost']*1e-3
         # express in money metric
-        u = u/self.pars.loc['cost',row['smaf']]
+        #u = u/self.pars.loc['cost',row['smaf']]
         return u
     def compute_utility(self,users):
         users['utility'] = users.apply(self.utility,axis=1)

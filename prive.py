@@ -61,6 +61,7 @@ class prive:
         return
     def cap(self, users):
         hrs_free = self.count.groupby('region_id').sum()['hrs_avq']
+        #print(hrs_free.sum())
         factor = self.registry['supply_avq']/hrs_free
         for r in range(1,19):
             users.loc[users.region_id==r,'ces_hrs_avq'] *= min(factor[r],1.0)
@@ -89,9 +90,11 @@ class prive:
         self.registry['tx_svc_avd'].clip(upper=1.0, inplace=True)
         return
     def compute_costs(self):
+        hrs_avq = self.count.groupby('region_id').sum()['hrs_avq']
+        hrs_avd = self.count.groupby('region_id').sum()['hrs_avd']
         self.registry['cout_fixe'] = 0.0
-        self.registry['cout_var'] = self.registry['sal_avq'] * self.registry['nb_etc_avq'] * self.registry['hrs_per_etc_avq']
-        self.registry['cout_var'] += self.registry['sal_avd'] * self.registry['nb_etc_avd'] * self.registry['hrs_per_etc_avd']
+        self.registry['cout_var'] = self.registry['sal_avq'] * hrs_avq
+        self.registry['cout_var'] += self.registry['sal_avd'] * hrs_avd
         self.registry['cout_total'] = self.registry['cout_var'] + self.registry['cout_fixe']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):

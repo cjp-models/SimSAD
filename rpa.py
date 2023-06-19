@@ -157,6 +157,23 @@ class rpa:
         self.users['id'] = np.arange(len(self.users))
         self.users.set_index('id',inplace=True)
         return
+    def update_users(self):
+        # services
+        self.users[['serv_inf', 'serv_avq', 'serv_avd']] = 0.0
+        # clsc
+        for c in ['inf','avq','avd']:
+            self.users['serv_'+c] += self.users['clsc_'+c+'_hrs']
+        # pefsad
+        self.users['serv_avd'] += self.users['pefsad_avd_hrs']
+        self.users['cost'] = self.users['pefsad_contrib']
+        # cmd
+        for c in ['inf','avq','avd']:
+            self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
+                'needs_'+c])
+            self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
+                                        inplace=True)
+        return
+
     def reset_users(self):
         self.users = []
         return

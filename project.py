@@ -107,7 +107,6 @@ class projection:
         self.gr_lfp_inf = gr_lfp_inf
         self.gr_lfp_inf = gr_lfp_inf
         self.gr_lfp_inf = gr_lfp_inf
-
         return
 
     def init_tracker(self, scn_name):
@@ -146,24 +145,6 @@ class projection:
                             colvars=['nb_usagers_svc'], aggfunc='sum',
                             start_yr=show_yr,
                             stop_yr=self.stop_yr)
-        self.tracker.add_entry('clsc_inf_hrs', 'clsc', 'registry',
-                          rowvars=['region_id'],
-                             colvars=['needs_inf'],
-                                    aggfunc='sum',
-                           start_yr=show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('clsc_avq_hrs', 'clsc', 'registry',
-                           rowvars=['region_id'],
-                           colvars=['needs_avq'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('clsc_avd_hrs', 'clsc', 'registry',
-                           rowvars=['region_id'],
-                           colvars=['needs_avd'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
         self.tracker.add_entry('needs_hrs_inf_home', 'home', 'users',
                            rowvars=['region_id'],
                            colvars=['needs_inf'], aggfunc='sum',
@@ -200,21 +181,6 @@ class projection:
                            start_yr=
                            show_yr,
                            stop_yr=self.stop_yr)
-
-        self.tracker.add_entry('cost_chsld','chsld','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
-                               start_yr=show_yr,stop_yr=self.stop_yr)
-        self.tracker.add_entry('cost_ri','ri','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
-                               start_yr=show_yr,stop_yr=self.stop_yr)
-        self.tracker.add_entry('cost_nsa','nsa','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
-                               start_yr=show_yr,stop_yr=self.stop_yr)
-        self.tracker.add_entry('cost_clsc','clsc','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
-                               start_yr=show_yr,stop_yr=self.stop_yr)
-        self.tracker.add_entry('cost_eesad','eesad','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
-                               start_yr=show_yr,stop_yr=self.stop_yr)
-        self.tracker.add_entry('cost_prive','prive','registry',rowvars=['region_id'],colvars=['cout_total'],aggfunc='sum',
-                               start_yr=show_yr,stop_yr=self.stop_yr)
-
-
         self.tracker.add_entry('eesad_avd', 'eesad', 'registry',
                             rowvars=['region_id'],
                             colvars=['supply_avd', 'needs_avd'], aggfunc='sum',
@@ -232,13 +198,11 @@ class projection:
                             rowvars=['region_id'],
                             colvars=['pefsad_avd_any','pefsad_avd_hrs'], aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
-        self.tracker.add_entry('cmd_cost_home', 'home', 'users',
+        self.tracker.add_entry('total_cost', 'msss', 'registry',
                             rowvars=['region_id'],
-                            colvars=['cmd_mnt'], aggfunc='sum',
-                            start_yr=show_yr, stop_yr=self.stop_yr)
-        self.tracker.add_entry('cmd_cost_rpa', 'rpa', 'users',
-                            rowvars=['region_id'],
-                            colvars=['cmd_mnt'], aggfunc='sum',
+                            colvars=['clsc','chsld','ri','nsa','ces','pefsad','cmd',
+                    'cah_chsld','cah_ri','cah_nsa','pefsad_usager','total',
+                    'gouv','usagers'], aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
         return
     def run(self):
@@ -396,12 +360,23 @@ class projection:
         self.rpa.create_users(self.count['rpa'])
         self.home.create_users(self.count['none'], self.count['home'])
         return
-
+    def update_users(self):
+        self.chsld.update_users()
+        self.nsa.update_users()
+        self.ri.update_users()
+        self.rpa.update_users()
+        self.home.update_users()
+        return
     def welfare(self):
         self.chsld.users = self.prefs.compute_utility(self.chsld.users)
+        #print('chsld = ',self.chsld.users.describe().transpose())
+        self.nsa.users = self.prefs.compute_utility(self.nsa.users)
+        #print('nsa = ',self.nsa.users.describe().transpose())
         self.ri.users = self.prefs.compute_utility(self.ri.users)
         self.rpa.users = self.prefs.compute_utility(self.rpa.users)
         self.home.users = self.prefs.compute_utility(self.home.users)
+        #print('home = ',self.home.users.describe().transpose()[['mean','min',
+        #'max']])
         return 
 
     def chsld_services(self):
@@ -434,19 +409,23 @@ class projection:
     def eesad_services(self):
         self.home.users = self.pefsad.assign(self.home.users,'home')
         self.rpa.users = self.pefsad.assign(self.rpa.users,'rpa')
-        self.eesad.assign(self.home.users, self.rpa.users)
+        self.home.users, self.rpa.users = self.eesad.assign(self.home.users,
+                                                          self.rpa.users)
         self.eesad.compute_supply()
-        self.home.users = self.eesad.cap(self.home.users)
-        self.rpa.users = self.eesad.cap(self.rpa.users)
+        #self.home.users = self.eesad.cap(self.home.users)
+        #self.rpa.users = self.eesad.cap(self.rpa.users)
         self.eesad.compute_needs()
         self.eesad.compute_serv_rate()
         self.eesad.compute_costs()
         return
     def private_services(self):
         self.home.users = self.ces.assign(self.home.users)
+        if self.yr==2021:
+           self.ces.calibrate(self.home.users,
+                              self.prive.registry)
         self.prive.assign(self.home.users)
         self.prive.compute_supply()
-        self.home.users = self.prive.cap(self.home.users)
+        #self.home.users = self.prive.cap(self.home.users)
         self.prive.compute_needs()
         self.prive.compute_serv_rate()
         self.prive.compute_costs()
@@ -454,6 +433,41 @@ class projection:
     def cmd_payout(self):
         self.home.users = self.cmd.assign(self.home.users,'home')
         self.rpa.users = self.cmd.assign(self.rpa.users,'rpa')
+        self.home.users,self.rpa.users = self.cmd.calibrate(self.home.users,self.rpa.users, self.yr)
+        self.cmd.compute_costs(self.home.users, self.rpa.users)
+        return
+    def finance(self):
+        # add total program costs
+        items = ['clsc','chsld','ri','nsa','ces','pefsad','cmd',
+                    'cah_chsld','cah_ri','cah_nsa','pefsad_usager','total',
+                    'gouv','usagers']
+        self.msss.assign(self.clsc.registry['cout_total'],'clsc')
+        self.msss.assign(self.chsld.registry['cout_total'],'chsld')
+        self.msss.assign(self.nsa.registry['cout_total'],'nsa')
+        self.msss.assign(self.ri.registry['cout_total'],'ri')
+        self.msss.assign(self.prive.registry['cout_total'],'ces')
+        self.msss.assign(self.eesad.registry['cout_total'],'pefsad')
+        self.msss.assign(self.cmd.registry['cout_total'],'cmd')
+
+        # add user fees
+        cah_chsld = 12.0* self.chsld.users.groupby('region_id').apply(lambda d:
+                                                                (d['cost']*d['wgt']).sum())
+        self.msss.assign(cah_chsld,'cah_chsld')
+
+        cah_nsa = 12.0* self.nsa.users.groupby('region_id').apply(lambda d:
+                                                                (d['cost']*d['wgt']).sum())
+        self.msss.assign(cah_nsa,'cah_nsa')
+        cah_ri = 12.0* self.ri.users.groupby('region_id').apply(lambda d:
+                                                                (d['cost']*d['wgt']).sum())
+        self.msss.assign(cah_ri,'cah_ri')
+        user_pefsad_home = 12.0 * self.home.users.groupby('region_id').apply(
+            lambda d: (d['cost']*d['wgt']).sum())
+        user_pefsad_rpa = 12.0 * self.rpa.users.groupby('region_id').apply(
+            lambda d: (d['cost']*d['wgt']).sum())
+        user_pefsad = user_pefsad_home + user_pefsad_rpa
+        self.msss.assign(user_pefsad,'pefsad_usager')
+        self.msss.collect()
+        print(self.msss.registry.sum(axis=0))
         return
     def compute(self):
         # exogeneous needs composition at aggregate level (region, age, smaf)
@@ -463,7 +477,6 @@ class projection:
 
         # now assign users to each living arrangement, dynamically within year
         self.dispatch()
-
         # CHSLD
         self.chsld_services()
         # RI
@@ -478,14 +491,12 @@ class projection:
         self.private_services()
         # determine CMD
         self.cmd_payout()
-
-
+        # update users with service rate and net oop cost
+        self.update_users()
         # compute utility
-        #self.welfare()
-        #print(self.chsld.users['utility'].mean(),self.ri.users[
-        # 'utility'].mean(),self.rpa.users['utility'].mean(),self.home.users['utility'].mean())
-
-
+        self.welfare()
+        # compute aggregate costs
+        self.finance()
         return  
     
     def next(self):
@@ -494,10 +505,9 @@ class projection:
         if self.yr>self.base_yr:
             self.chsld.build()
             self.chsld.purchase()
-            #self.ri.build()
+            self.ri.build()
             self.rpa.build()
-        # labor force transitions for Inf, AVQ
-        
+
         return
     def save(self, output_dir):
         self.tracker.save(output_dir)

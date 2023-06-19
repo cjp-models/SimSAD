@@ -7,7 +7,7 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 pd.options.mode.chained_assignment = None
 
 class nsa:
-    def __init__(self, open_capacity = 0.5):
+    def __init__(self, open_capacity = 0.25):
         self.open_capacity = open_capacity
         return
     def load_register(self,start_yr=2019):
@@ -62,6 +62,15 @@ class nsa:
         return
     def compute_costs(self):
         self.registry['cout_total'] = self.registry['cout_place'] * self.registry['nb_usagers']
+        return
+    def update_users(self):
+        self.users['tx_serv_inf'] = 100.0
+        self.users['tx_serv_avq'] = 100.0
+        self.users['tx_serv_avd'] = 100.0
+        for r in range(1,19):
+            self.users.loc[self.users.region_id==r,'cost'] = \
+                self.registry.loc[r,'cah']
+        self.users['cost'] *= 1/12
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
         t = getattr(self, domain)

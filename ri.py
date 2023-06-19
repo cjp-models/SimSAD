@@ -25,13 +25,11 @@ class ri:
         self.registry['tx_serv_avd'] = 100.0
         # needs weights (hours per day of care by smaf, Tousignant)
         n = needs()
-
-        self.needs_inf = n.inf
+        self.needs_avd = n.avd
         self.needs_avq = n.avq
-        self.inf_indirect_per_day = 0.4
         self.days_per_week = 7
         self.days_per_year = 365
-        self.weeks_vacation_inf = 4
+        self.weeks_vacation_avd = 4
         self.weeks_vacation_avq = 4
         self.work_days_per_week = 5
         self.share_indirect_care = 0.2
@@ -39,17 +37,17 @@ class ri:
         self.nsmafs = 14
         self.nmonths = 24
         self.weeks_per_year = (self.days_per_year/self.days_per_week)
-
-        self.registry['nb_etc_inf'] = 0.3 * self.registry['nb_places']
-        self.registry['nb_etc_avq'] = 0.6 * self.registry['nb_places']
-        self.registry['heures_tot_trav_inf'] = self.registry['nb_etc_inf'] * 1500
-        self.registry['heures_tot_trav_avq'] = self.registry['nb_etc_avq']
         self.registry['attente_usagers_mois'] = 0.0
 
-        self.registry['hours_per_etc_inf'] = self.registry['heures_tot_trav_inf']/self.registry['nb_etc_inf']
-        self.registry['hours_per_etc_avq'] = self.registry['heures_tot_trav_avq']/self.registry['nb_etc_avq']
-        self.registry['etc_inf_per_installation'] = self.registry['nb_etc_inf']/self.registry['nb_installations']
-        self.registry['etc_avq_per_installation'] = self.registry['nb_etc_avq']/self.registry['nb_installations']
+        self.registry['hours_per_etc_ri_avq'] = self.registry[
+                                                 'heures_tot_trav_ri_avq']/self.registry['nb_etc_ri_avq']
+        self.registry['hours_per_etc_ri_avd'] = self.registry[
+                                               'heures_tot_trav_ri_avd']/self.registry['nb_etc_ri_avd']
+
+        self.registry['etc_avq_per_installation'] = self.registry[
+                                                        'nb_etc_ri_avq']/self.registry['nb_installations']
+        self.registry['etc_avd_per_installation'] = self.registry[
+                                                        'nb_etc_ri_avd']/self.registry['nb_installations']
         self.registry['places_per_installation'] = self.registry['nb_places']/self.registry['nb_installations']
         return
     def assign(self,applicants,waiting_months,region_id):
@@ -69,38 +67,37 @@ class ri:
         self.registry['tx_occupation'] = self.registry['tx_occupation'].clip(upper=100.0)
         return
     def compute_needs(self):
-       # effective time per patient inf
+       # effective time per patient avd
         time_table = pd.DataFrame(index=self.registry.index,columns = np.arange(1,15),dtype='float64')
         for s in range(1,15):
-            time_table[s] = self.registry['iso_smaf'+str(s)]*self.needs_inf[s-1]
-        time_per_usager_inf = time_table.sum(axis=1)
-        time_per_usager_inf += self.inf_indirect_per_day*self.registry['nb_usagers']
-        time_per_usager_inf *= self.days_per_year
+            time_table[s] = self.registry['iso_smaf'+str(s)]*self.needs_avd[s-1]
+        time_per_usager_avd = time_table.sum(axis=1)
+        time_per_usager_avd *= self.days_per_year
         # effective time per patient avq
         for s in range(1,15):
             time_table[s] = self.registry['iso_smaf'+str(s)]*self.needs_avq[s-1]
         time_per_usager_avq = time_table.sum(axis=1)
         time_per_usager_avq *= self.days_per_year
-        result = pd.concat([time_per_usager_inf,time_per_usager_avq],axis=1)
-        result.columns = ['inf','avq']
+        result = pd.concat([time_per_usager_avq,time_per_usager_avd],axis=1)
+        result.columns = ['avq','avd']
         return result
     def compute_supply(self):
-        # inf
-        time_inf = self.registry['hours_per_etc_inf'].copy()
-        # take out indirect care
-        time_inf *= (1.0 - self.share_indirect_care)
-        # take out pauses
-        time_inf -= self.time_per_pause*(self.weeks_per_year-self.weeks_vacation_inf)*self.work_days_per_week
-        # blow up using number of nurses
-        time_inf  = time_inf * self.registry['nb_etc_inf']
         ## avq
-        time_avq = self.registry['hours_per_etc_avq'].copy()
+        time_avq = self.registry['hours_per_etc_ri_avq'].copy()
         # take out pauses
         time_avq -= self.time_per_pause*(self.weeks_per_year-self.weeks_vacation_avq)*self.work_days_per_week
-        # blow up using number of nurses
-        time_avq  = time_avq * self.registry['nb_etc_avq']
-        result = pd.concat([time_inf,time_avq],axis=1)
-        result.columns = ['inf','avq']
+        # blow up using number of AVQ workers
+        time_avq  = time_avq * self.registry['nb_etc_ri_avq']
+        # avd
+        time_avd = self.registry['hours_per_etc_ri_avd'].copy()
+        # take out pauses
+        time_avd -= self.time_per_pause*(
+                self.weeks_per_year-self.weeks_vacation_avd)*self\
+            .work_days_per_week
+        # blow up using number of AVD workers
+        time_avd  = time_avd * self.registry['nb_etc_ri_avd']
+        result = pd.concat([time_avq,time_avd],axis=1)
+        result.columns = ['avq','avd']
         return result
     def compute_costs(self):
         self.registry['cout_fixe'] = self.registry['nb_usagers'] * self.registry['cout_place_fixe']
@@ -114,13 +111,42 @@ class ri:
         self.compute_occupancy_rate()
         needs = self.compute_needs()
         supply = self.compute_supply()
-        self.registry['heures_tot_trav_inf'] = supply['inf']
+        self.registry['heures_tot_trav_avd'] = supply['avd']
         self.registry['heures_tot_trav_avq'] = supply['avq']
-        self.registry['tx_serv_inf'] = np.where(needs['inf']>0,100.0*(supply['inf']/needs['inf']),np.nan)
-        self.registry.loc[self.registry.tx_serv_inf>100.0,'tx_serv_inf'] = 100.0
+        self.registry['tx_serv_avd'] = np.where(needs['avd']>0,100.0*(supply[
+                                                                        'avd']/needs['avd']),np.nan)
+        self.registry.loc[self.registry.tx_serv_avd>100.0,'tx_serv_avd'] = 100.0
         self.registry['tx_serv_avq'] = np.where(needs['avq']>0,100.0*(supply['avq']/needs['avq']),np.nan)
         self.registry.loc[self.registry.tx_serv_avq>100.0,'tx_serv_avq']= 100.0
         return
+
+    def update_users(self):
+        # get how many hours are supplied for each domain
+        hrs_per_users_avd = self.registry['heures_tot_trav_avd'] / \
+                            self.registry[
+            'nb_usagers']
+        hrs_per_users_avq = self.registry['heures_tot_trav_avq'] / \
+                            self.registry[
+            'nb_usagers']
+        self.users[['serv_inf', 'serv_avq', 'serv_avd']] = 0.0
+        # services for nurses coming from CLSC
+        self.users['serv_inf'] = self.users['clsc_inf_hrs']
+        for r in range(1, 19):
+            self.users.loc[self.users.region_id == r, 'serv_avq'] = \
+                hrs_per_users_avq.loc[r]
+            self.users.loc[self.users.region_id == r, 'serv_avd'] = \
+                hrs_per_users_avd.loc[r]
+            self.users.loc[self.users.region_id == r, 'cost'] = \
+                self.registry.loc[r, 'cah']
+        for c in ['inf', 'avq', 'avd']:
+            self.users['tx_serv_' + c] = 100.0 * (
+                        self.users['serv_' + c] / self.users[
+                    'needs_' + c])
+            self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
+                                            inplace=True)
+        self.users['cost'] *= 1 / 12
+        return
+
     def create_users(self, users):
         self.users = users.to_frame()
         self.users.columns = ['wgt']

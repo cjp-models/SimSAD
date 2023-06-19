@@ -28,7 +28,15 @@ class eesad:
         self.days_per_year = 365
         return
     def assign(self, users_home, users_rpa):
+        users_home['pefsad_contrib'] = 0.0
+        users_rpa['pefsad_contrib'] = 0.0
         for r in range(1,19):
+            users_home.loc[users_home.region_id==r,'pefsad_contrib'] = \
+                self.registry.loc[r,'contribution_usager'] * users_home.loc[
+                    users_home.region_id==r,'pefsad_avd_hrs']
+            users_rpa.loc[users_rpa.region_id==r,'pefsad_contrib'] = \
+                self.registry.loc[r,'contribution_usager'] * users_rpa.loc[
+                    users_rpa.region_id==r,'pefsad_avd_hrs']
             for s in range(1,15):
                 select = (users_home['region_id']==r) & (users_home['smaf']==s) & (users_home['pefsad_avd_any'])
                 self.count.loc[(r,s),'users'] = users_home.loc[select,'wgt'].sum()
@@ -36,7 +44,7 @@ class eesad:
                 select = (users_rpa['region_id']==r) & (users_rpa['smaf']==s) & (users_rpa['pefsad_avd_any'])
                 self.count.loc[(r,s),'users'] += users_rpa.loc[select,'wgt'].sum()
                 self.count.loc[(r,s),'hrs'] += users_rpa.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
-        return
+        return users_home, users_rpa
 
     def compute_needs(self):
         users = pd.pivot_table(data=self.count,index='region_id', columns='smaf', values='users',aggfunc='sum')
@@ -62,8 +70,9 @@ class eesad:
         self.registry['tx_svc_avd'].clip(upper=1.0, inplace=True)
         return
     def compute_costs(self):
+        hrs_free = self.count.groupby('region_id').sum()['hrs']
         self.registry['cout_fixe'] = 0.0
-        self.registry['cout_var'] = self.registry['sal_avd'] * self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
+        self.registry['cout_var'] = self.registry['sal_avd'] * hrs_free
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):

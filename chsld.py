@@ -147,6 +147,8 @@ class chsld:
         self.compute_occupancy_rate()
         needs = self.compute_needs()
         supply = self.compute_supply()
+        self.registry['supply_inf'] = supply['inf']
+        self.registry['supply_avq'] = supply['avq']
         self.registry['heures_tot_trav_inf'] = self.registry['hours_per_etc_inf']*self.registry['nb_etc_inf']
         self.registry['heures_tot_trav_avq'] = self.registry['hours_per_etc_avq']*self.registry['nb_etc_avq']
         self.registry['tx_serv_inf'] = np.where(needs['inf']>0,100.0*(supply['inf']/needs['inf']),np.nan)
@@ -158,6 +160,8 @@ class chsld:
         self.registry['cout_inf'] = self.registry['sal_inf'] * self.registry['heures_tot_trav_inf']
         self.registry['cout_avq'] = self.registry['sal_avq'] * self.registry['heures_tot_trav_avq']
         self.registry['cout_var'] = self.registry['cout_inf'] + self.registry['cout_avq']
+        self.registry['cout_var'] += self.registry['cout_place_var'] * \
+                                     self.registry['nb_usagers_nc']
         self.registry['cout_fixe'] = self.registry['cout_place_fixe'] * self.registry['nb_usagers_tot']
         self.registry['cout_immo'] = self.registry['cout_comptable_immo']*self.cost_rate
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_immo']
@@ -197,7 +201,25 @@ class chsld:
         self.users = []
         return
     def update_users(self):
-        # merge tx service on region
+        # get how many hours are supplied for each domain
+        hrs_per_users_inf = self.registry['supply_inf']/self.registry[
+            'nb_usagers_pub']
+        hrs_per_users_avq = self.registry['supply_avq']/self.registry[
+            'nb_usagers_pub']
+        self.users[['serv_inf','serv_avq','serv_avd']] = 0.0
+        for r in range(1,19):
+            self.users.loc[self.users.region_id==r,'serv_inf'] = \
+                hrs_per_users_inf.loc[r]
+            self.users.loc[self.users.region_id==r,'serv_avq'] = \
+                hrs_per_users_avq.loc[r]
+            self.users.loc[self.users.region_id==r,'cost'] = \
+                self.registry.loc[r,'cah']
+        self.users['serv_avd'] = self.users['needs_avd']
+        for c in ['inf','avq','avd']:
+            self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
+                'needs_'+c])
+            self.users['tx_serv_'+c].clip(lower=0.0,upper=100.0,inplace=True)
+        self.users['cost'] *= 1/12
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
         t = getattr(self, domain)

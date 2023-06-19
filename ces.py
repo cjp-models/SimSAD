@@ -36,13 +36,67 @@ class ces:
                    how = 'left')
         work['ces_hrs_avq'] = 0
         work['ces_hrs_avd'] = 0
-        work.loc[work.ces_any,'ces_hrs_avq'] = work.loc[work.ces_any, 'hrs_avq']
-        work.loc[work.ces_any, 'ces_hrs_avd'] = work.loc[
-            work.ces_any, 'hrs_avd']
+        work.loc[work.ces_any,'ces_hrs_avq'] = work.loc[work.ces_any,'hrs_avq']
+        work.loc[work.ces_any,'ces_hrs_avd'] = work.loc[work.ces_any,'hrs_avd']
         users[['ces_any','ces_hrs_avd','ces_hrs_avq']] = work.loc[:,['ces_any',
                                                                 'ces_hrs_avd','ces_hrs_avq']]
-        #print(users[['ces_any', 'ces_hrs_avd', 'ces_hrs_avq']].sum(axis=0))
         return users
+
+    def calibrate(self, users, targets_by_region):
+        merge_key = ['region_id','iso_smaf','gr_age']
+        work = users.copy()
+        work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
+                   how = 'left')
+        users_by_region = work.groupby('region_id').apply(lambda d: (d['prob'] *
+                                                                      d.wgt).sum())
+        factor = targets_by_region['nb_usagers']/users_by_region
+
+        factor[factor.isna()] = 1.0
+        factor.clip(lower=0.0,upper=5.0,inplace=True)
+        for r in range(1,19):
+            select = self.prob.index.get_level_values(0)==r
+            self.prob.loc[select,'prob'] = \
+                self.prob.loc[select,'prob']*factor[r]
+        work = users.copy()
+        work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
+                   how = 'left')
+        users_by_region = work.groupby('region_id').apply(lambda d: (d['prob'] *
+                                                                      d.wgt).sum())
+        # hours (use updated probs)
+        work = users.copy()
+        work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
+                   how = 'left')
+        work = work.merge(self.hrs,left_on = merge_key,right_on = merge_key,
+                   how = 'left')
+        # get total for hours per region
+        hrs_avq_by_region = work.groupby('region_id').apply(lambda d: (d[
+                                                                           'prob']*d[
+                                                                         'hrs_avq'] *
+                                                                      d.wgt).sum())
+        hrs_avd_by_region = work.groupby('region_id').apply(lambda d: (d[
+                                                                           'prob']*d[
+                                                                         'hrs_avd'] *
+                                                                      d.wgt).sum())
+        # compute factors
+        factor_avq = targets_by_region['heures_tot_trav_avq'] / \
+                     hrs_avq_by_region
+        factor_avq.clip(lower=0.0,upper=5.0,inplace=True)
+        factor_avq[factor_avq.isna()] = 1.0
+        factor_avd = targets_by_region['heures_tot_trav_avd'] / \
+                     hrs_avd_by_region
+        factor_avd.clip(lower=0.0,upper=5.0,inplace=True)
+        factor_avd[factor_avd.isna()] = 1.0
+        for r in range(1,19):
+            #print(factor_avq.loc[r],factor_avd.loc[r])
+            select = self.hrs.index.get_level_values(0)==r
+            self.hrs.loc[select,'hrs_avq'] = self.hrs.loc[select,
+            'hrs_avq']*factor_avq.loc[r]
+            self.hrs.loc[select,'hrs_avd'] = self.hrs.loc[select,
+            'hrs_avd']*factor_avd.loc[r]
+            #print(self.hrs.loc[(r,), 'hrs_avq'])
+        #print(self.hrs.head(25))
+        return
+
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
         t = getattr(self, domain)
         if domain == 'registry':
