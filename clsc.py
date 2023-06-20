@@ -9,18 +9,21 @@ from .needs import needs
 from itertools import product
 
 class clsc:
-    def __init__(self, purchase_prive = True, purchase_eesad = True, rate_prive = 0.01, rate_eesad = 0.01):
+    def __init__(self, policy):
         self.care_types = ['inf','avq','avd']
-        self.purchase_prive = purchase_prive
-        self.purchase_eesad = purchase_eesad
+        self.purchase_prive = policy.purchase_prive
+        self.purchase_eesad = policy.purchase_eesad
         if self.purchase_prive:
-            self.rate_prive = rate_prive
+            self.rate_prive = policy.rate_prive
         else :
             self.rate_prive = 0.0
         if self.purchase_eesad:
-            self.rate_eesad = rate_eesad
+            self.rate_eesad = policy.rate_eesad
         else :
             self.rate_eesad = 0.0
+        self.clsc_inf_rate = policy.clsc_inf_rate
+        self.clsc_avq_rate = policy.clsc_avq_rate
+        self.clsc_avd_rate = policy.clsc_avd_rate
         self.load_params()
         self.load_registry()
         return
@@ -270,8 +273,9 @@ class clsc:
                 for c in self.care_types:
                     tag = c+'_'+m
                     self.registry['needs_' + tag] = 0.0
+                    attr = getattr(n,c)
                     for s in range(1,15):
-                        self.registry['needs_'+tag] += n.inf[s-1] * users.loc[:,
+                        self.registry['needs_'+tag] += attr[s-1] * users.loc[:,
                                                                  (m,c,
                                                                   s)] \
                                                        *self.days_per_year
@@ -294,7 +298,6 @@ class clsc:
 
 
     def compute_supply(self):
-
         # hours supplied by CLSC
         for m in ['home','rpa']:
             for c in self.care_types:
@@ -333,37 +336,67 @@ class clsc:
         self.registry['supply_avd'] = self.registry[['supply_avd_'+c for c in
                                                     ['home','rpa']
                                                     ]].sum(axis=1)
-
+        colvars = []
+        for m in ['home','rpa','ri']:
+            if m != 'ri':
+                for c in self.care_types:
+                    tag = c + '_' + m
+                    colvars.append(tag)
+            else :
+                colvars.append('inf_ri')
+        self.worker_needs = pd.DataFrame(index=np.arange(1,19),
+                                         columns=colvars,dtype='float64')
+        self.worker_needs.loc[:,:] = 0.0
         return
 
     def cap(self, users, milieu):
-        hrs_free = pd.pivot_table(data=self.count, index=['region_id'], columns=['svc'], values='hrs',
+        hrs_free = pd.pivot_table(data=self.count, index=['region_id'],
+                                  columns=['milieux','svc'], values='hrs',
                                aggfunc='sum')
         if milieu!='ri':
             for c in self.care_types:
                 tag = c+'_'+milieu
-                factor = self.registry['supply_'+tag]/hrs_free[c]
+                factor = self.registry['supply_'+tag]/hrs_free.loc[:,(milieu,c)]
+                factor.clip(upper=1.0,inplace=True)
+                excess = hrs_free.loc[:,(milieu,c)] - self.registry['supply_' + tag]
+                excess.clip(lower=0.0,inplace=True)
+                indirect = (1.0 - self.registry[
+                    'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
+                excess = excess / indirect
+                excess = excess / self.registry['hrs_etc_' + tag]
+                self.worker_needs.loc[:,tag] = excess
                 for r in range(1,19):
-                    users.loc[users.region_id==r, 'clsc_'+c+'_hrs'] *= min(factor[r],1.0)
+                    users.loc[users.region_id==r, 'clsc_'+c+'_hrs'] *= factor[r]
         else :
             tag = 'inf_ri'
-            factor = self.registry['supply_' + tag] / hrs_free['inf']
+            c = 'inf'
+            factor = self.registry['supply_' + tag] / hrs_free.loc[:,('ri',
+                                                                      'inf')]
+            factor.clip(upper=1.0, inplace=True)
+            excess = hrs_free.loc[:,('ri','inf')] - self.registry['supply_' + tag]
+            excess.clip(lower=0.0, inplace=True)
+            indirect = (1.0 - self.registry[
+                'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
+            excess = excess / indirect
+            excess = excess / self.registry['hrs_etc_' + tag]
+            self.worker_needs.loc[:, tag] = excess
             for r in range(1, 19):
-                users.loc[users.region_id == r, 'clsc_inf_hrs'] *= min(factor[r],1.0)
+                users.loc[users.region_id == r, 'clsc_inf_hrs'] *= factor[r]
         return users
     def compute_serv_rate(self):
         for m in ['home','rpa']:
             for c in self.care_types:
                 tag = c+'_'+m
-                self.registry['tx_svc_'+tag] = self.registry[
+                self.registry['tx_svc_'+tag] = 100.0 * self.registry[
                                                  'supply_'+tag]/self.registry[
                     'needs_'+tag]
-                self.registry['tx_svc_'+tag].clip(upper=1.0,inplace=True)
+                self.registry['tx_svc_'+tag].clip(upper=100.0,inplace=True)
         tag = 'inf_ri'
-        self.registry['tx_svc_' + tag] = self.registry[
+        self.registry['tx_svc_' + tag] = 100.0 * self.registry[
                                              'supply_' + tag] / self.registry[
                                              'needs_' + tag]
-        self.registry['tx_svc_' + tag].clip(upper=1.0, inplace=True)
+        self.registry['tx_svc_' + tag].clip(upper=100.0, inplace=True)
+
         return
 
     def compute_costs(self):
@@ -392,6 +425,19 @@ class clsc:
                     self.registry['cout_achete'] += self.registry['hrs_sa_'+c+'_'+s+'_rpa'] * self.registry['cout_hr_achete_'+s+'_'+c]
 
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_achete']
+        return
+    def workforce(self):
+        for m in ['home','rpa','ri']:
+            if m!='ri':
+                for c in self.care_types:
+                    tag = c+'_'+m
+                    attr = getattr(self,'clsc_'+c+'_rate')
+                    self.registry['nb_etc_'+tag] += \
+                        attr * self.worker_needs.loc[:,tag]
+            else :
+                tag = 'inf_ri'
+                self.registry['nb_etc_' + tag] += \
+                    self.clsc_inf_rate * self.worker_needs.loc[:, tag]
         return
 
     def collapse_users(self,rowvars=['region_id','svc'],colvars=['iso_smaf']):

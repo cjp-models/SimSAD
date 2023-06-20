@@ -88,7 +88,7 @@ class projection:
         return 
     def load_suppliers(self):
         self.eesad = eesad()
-        self.clsc = clsc()
+        self.clsc = clsc(self.policy)
         self.prive = prive()
         return
     def load_prefs(self):
@@ -207,17 +207,7 @@ class projection:
                     'gouv','usagers'], aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
         return
-    def run(self):
-        togo = self.stop_yr - self.start_yr + 1
-        while togo>0:
-            print(self.yr)
-            self.compute()
-            self.tracker.log(self,self.yr)
-            togo -=1
-            if togo>0:
-                self.next()
-        self.save('output')
-        return
+
 
     def init_dispatch(self, init_smafs):
         gr_ages = [1,2,3]
@@ -406,6 +396,7 @@ class projection:
         self.clsc.compute_serv_rate()
         # determine costs
         self.clsc.compute_costs()
+
         return
     def eesad_services(self):
         self.home.users = self.pefsad.assign(self.home.users,'home')
@@ -470,6 +461,18 @@ class projection:
         self.msss.assign(user_pefsad,'pefsad_usager')
         self.msss.collect()
         return
+
+    def run(self):
+        togo = self.stop_yr - self.start_yr + 1
+        while togo>0:
+            print(self.yr)
+            self.compute()
+            self.tracker.log(self,self.yr)
+            togo -=1
+            if togo>0:
+                self.next()
+        self.save('output')
+        return
     def compute(self):
         # exogeneous needs composition at aggregate level (region, age, smaf)
         self.pop.evaluate(self.yr)
@@ -508,8 +511,10 @@ class projection:
             self.chsld.purchase()
             self.ri.build()
             self.rpa.build()
+        # workforce adjustments
+        self.clsc.workforce()
 
         return
     def save(self, output_dir):
-        self.tracker.save(output_dir)
+        self.tracker.save(output_dir, self.policy)
         return

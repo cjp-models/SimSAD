@@ -44,7 +44,7 @@ class tracker:
                 k.table[yr] = table
         return
 
-    def save(self, dir):
+    def save(self, dir, scn_policy):
         cwd = os.getcwd()
         target_dir = os.path.join(cwd,dir)
         check = os.path.isdir(target_dir)
@@ -53,6 +53,8 @@ class tracker:
         writer = pd.ExcelWriter(
             os.path.join(target_dir,'results_scenario_'+self.scn_name+'.xlsx'),
                                 engine="xlsxwriter")
+        scn = pd.Series(vars(scn_policy))
+        scn.to_excel(writer,sheet_name='scenario parameters')
         for k in self.registry:
             k.table.sort_index(inplace=True)
             k.table.to_excel(writer, sheet_name=k.entry_name)
