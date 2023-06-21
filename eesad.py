@@ -11,8 +11,9 @@ from itertools import product
 
 
 class eesad:
-    def __init__(self):
+    def __init__(self, policy):
         self.load_registry()
+        self.policy = policy
         return
     def load_registry(self, start_yr = 2019):
         self.registry = pd.read_csv(os.path.join(data_dir, 'registre_eesad.csv'),
@@ -45,35 +46,40 @@ class eesad:
                 self.count.loc[(r,s),'users'] += users_rpa.loc[select,'wgt'].sum()
                 self.count.loc[(r,s),'hrs'] += users_rpa.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
         return users_home, users_rpa
-
-    def compute_needs(self):
-        users = pd.pivot_table(data=self.count,index='region_id', columns='smaf', values='users',aggfunc='sum')
-        n = needs()
-        self.registry['needs_avd'] = 0.0
-        for s in range(1,15):
-            self.registry['needs_avd'] += n.avd[s-1] * users.loc[:,s]
-        self.registry['needs_avd'] *= self.days_per_year
-        return
-    def cap(self, users):
-        hrs_free = self.count.groupby('region_id').sum()['hrs']
-        factor = self.registry['supply_avd']/hrs_free
+    def cap(self, users_home, users_rpa):
+        hrs_home = users_home.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
+        hrs_rpa = users_rpa.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
+        hrs_tot = hrs_home + hrs_rpa
+        hrs_tot[hrs_tot.isna()] = 0.0
+        factor = self.registry['supply_avd']/hrs_tot
+        factor.clip(upper=1.0, inplace=True)
+        factor[factor.isna()] = 1.0
+        excess = hrs_tot - self.registry['supply_avd']
+        excess.clip(lower=0.0, inplace=True)
+        excess[excess.isna()] = 0.0
+        indirect = (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
+        excess = excess / indirect
+        excess = excess / self.registry['hrs_per_etc']
+        self.registry['worker_needs'] = excess
+        self.registry.loc[self.registry.worker_needs.isna(),'worker_needs'] =\
+            0.0
         for r in range(1,19):
-            users.loc[users.region_id==r,'pefsad_avd_hrs'] *= min(factor[r],1.0)
-
-
-        return users
+            users_home.loc[users_home.region_id==r,'pefsad_avd_hrs'] *= factor[r]
+            users_rpa.loc[users_rpa.region_id==r,'pefsad_avd_hrs'] *= factor[r]
+        return users_home, users_rpa
     def compute_supply(self):
         self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
-        return
-    def compute_serv_rate(self):
-        self.registry['tx_svc_avd'] = self.registry['supply_avd'] / self.registry['needs_avd']
-        self.registry['tx_svc_avd'].clip(upper=1.0, inplace=True)
+        self.registry['supply_avd'] *= (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
         return
     def compute_costs(self):
-        hrs_free = self.count.groupby('region_id').sum()['hrs']
         self.registry['cout_fixe'] = 0.0
-        self.registry['cout_var'] = self.registry['sal_avd'] * hrs_free
+        self.registry['cout_var'] = self.registry['sal_avd'] * self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
+        return
+    def workforce(self):
+
+        self.registry['nb_etc_avd'] += self.policy.eesad_avd_rate * \
+                                           self.registry['worker_needs']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
         t = getattr(self, domain)

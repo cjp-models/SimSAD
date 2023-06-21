@@ -87,9 +87,9 @@ class projection:
         self.home.load_register()
         return 
     def load_suppliers(self):
-        self.eesad = eesad()
+        self.eesad = eesad(self.policy)
         self.clsc = clsc(self.policy)
-        self.prive = prive()
+        self.prive = prive(self.policy)
         return
     def load_prefs(self):
         self.prefs = prefs()
@@ -147,50 +147,6 @@ class projection:
                             colvars=['nb_usagers_svc'], aggfunc='sum',
                             start_yr=show_yr,
                             stop_yr=self.stop_yr)
-        self.tracker.add_entry('needs_hrs_inf_home', 'home', 'users',
-                           rowvars=['region_id'],
-                           colvars=['needs_inf'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('needs_hrs_avq_home', 'home', 'users',
-                           rowvars=['region_id'],
-                           colvars=['needs_avq'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('needs_hrs_avd_home', 'home', 'users',
-                           rowvars=['region_id'],
-                           colvars=['needs_avd'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('needs_hrs_inf_rpa', 'rpa', 'users',
-                           rowvars=['region_id'],
-                           colvars=['needs_inf'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('needs_hrs_avq_rpa', 'rpa', 'users',
-                           rowvars=['region_id'],
-                           colvars=['needs_avq'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('needs_hrs_avd_rpa', 'rpa', 'users',
-                           rowvars=['region_id'],
-                           colvars=['needs_avd'], aggfunc='sum',
-                           start_yr=
-                           show_yr,
-                           stop_yr=self.stop_yr)
-        self.tracker.add_entry('eesad_avd', 'eesad', 'registry',
-                            rowvars=['region_id'],
-                            colvars=['supply_avd', 'needs_avd'], aggfunc='sum',
-                            start_yr=show_yr, stop_yr=self.stop_yr)
-        self.tracker.add_entry('prive_avq', 'prive', 'registry',
-                            rowvars=['region_id'],
-                            colvars=['supply_avq', 'needs_avq'], aggfunc='sum',
-                            start_yr=show_yr, stop_yr=self.stop_yr)
         self.tracker.add_entry('ces_users', 'home', 'users',
                             rowvars=['region_id'],
                             colvars=['ces_any','ces_hrs_avd','ces_hrs_avq'],
@@ -391,9 +347,6 @@ class projection:
             self.home.users = self.clsc.cap(self.home.users,'home')
             self.rpa.users = self.clsc.cap(self.rpa.users,'rpa')
             self.ri.users = self.clsc.cap(self.ri.users,'ri')
-        # determine needs and compute service rate
-        self.clsc.compute_needs()
-        self.clsc.compute_serv_rate()
         # determine costs
         self.clsc.compute_costs()
 
@@ -405,10 +358,7 @@ class projection:
                                                           self.rpa.users)
         self.eesad.compute_supply()
         if self.policy.eesad_cap:
-            self.home.users = self.eesad.cap(self.home.users)
-            self.rpa.users = self.eesad.cap(self.rpa.users)
-        self.eesad.compute_needs()
-        self.eesad.compute_serv_rate()
+            self.home.users, self.rpa.users = self.eesad.cap(self.home.users, self.rpa.users)
         self.eesad.compute_costs()
         return
     def private_services(self):
@@ -420,8 +370,6 @@ class projection:
         self.prive.compute_supply()
         if self.policy.prive_cap:
             self.home.users = self.prive.cap(self.home.users)
-        self.prive.compute_needs()
-        self.prive.compute_serv_rate()
         self.prive.compute_costs()
         return
     def cmd_payout(self):
@@ -513,6 +461,8 @@ class projection:
             self.rpa.build()
         # workforce adjustments
         self.clsc.workforce()
+        self.eesad.workforce()
+        self.prive.workforce()
 
         return
     def save(self, output_dir):

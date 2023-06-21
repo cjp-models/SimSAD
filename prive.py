@@ -13,8 +13,9 @@ from itertools import product
 
 # autres services achetés, AVQ + soins infirmiers     
 class prive:
-    def __init__(self):
+    def __init__(self, policy):
         self.load_registry()
+        self.policy = policy
         return
     def load_registry(self, start_yr = 2021):
         self.registry = pd.read_csv(os.path.join(data_dir, 'registre_prive.csv'),
@@ -45,31 +46,38 @@ class prive:
                 self.count.loc[(r,s),'hrs_avd'] = users.loc[select,['wgt',
                                                                  'ces_hrs_avd']].prod(axis=1).sum()
         return
-
-    def compute_needs(self):
-        users = pd.pivot_table(data=self.count,index='region_id', columns='smaf', values='users',aggfunc='sum')
-        n = needs()
-        self.registry['needs_avq'] = 0.0
-        self.registry['needs_avd'] = 0.0
-        for s in range(1,15):
-            self.registry['needs_avq'] += n.avq[s-1] * users.loc[:,s]
-            self.registry['needs_avd'] += n.avd[s-1] * users.loc[:,s]
-
-        self.registry['needs_avq'] *= self.days_per_year
-        self.registry['needs_avd'] *= self.days_per_year
-
-        return
     def cap(self, users):
         hrs_free = self.count.groupby('region_id').sum()['hrs_avq']
-        #print(hrs_free.sum())
         factor = self.registry['supply_avq']/hrs_free
+        factor.clip(upper=1.0,inplace=True)
+        factor[factor.isna()] = 1.0
+        excess = hrs_free - self.registry['supply_avq']
+        excess.clip(lower=0.0, inplace=True)
+        excess[excess.isna()] = 0.0
+        indirect = (1.0 - self.registry['tx_hrs_dep_avq'])
+        excess = excess / indirect
+        excess = excess / self.registry['hrs_per_etc_avq']
+        self.registry['worker_needs_avq'] = excess
+        self.registry.loc[self.registry.worker_needs_avq.isna(),
+                'worker_needs_avq'] = 0.0
         for r in range(1,19):
-            users.loc[users.region_id==r,'ces_hrs_avq'] *= min(factor[r],1.0)
+            users.loc[users.region_id==r,'ces_hrs_avq'] *= factor[r]
 
         hrs_free = self.count.groupby('region_id').sum()['hrs_avd']
         factor = self.registry['supply_avd']/hrs_free
+        factor.clip(upper=1.0,inplace=True)
+        factor[factor.isna()] = 1.0
+        excess = hrs_free - self.registry['supply_avd']
+        excess.clip(lower=0.0, inplace=True)
+        excess[excess.isna()] = 0.0
+        indirect = (1.0 - self.registry['tx_hrs_dep_avd'])
+        excess = excess / indirect
+        excess = excess / self.registry['hrs_per_etc_avd']
+        self.registry['worker_needs_avd'] = excess
+        self.registry.loc[self.registry.worker_needs_avd.isna(),
+                'worker_needs_avd'] = 0.0
         for r in range(1,19):
-            users.loc[users.region_id==r,'ces_hrs_avd'] *= min(factor[r],1.0)
+            users.loc[users.region_id==r,'ces_hrs_avq'] *= factor[r]
         return users
     def compute_supply(self):
         self.registry['supply_avq'] = self.registry['nb_etc_avq'] * \
@@ -82,20 +90,19 @@ class prive:
                                                                           self.registry['tx_hrs_dep_avd'])
 
         return
-    def compute_serv_rate(self):
-        self.registry['tx_svc_avq'] = self.registry['supply_avq'] / self.registry['needs_avq']
-        self.registry['tx_svc_avq'].clip(upper=1.0, inplace=True)
-        self.registry['tx_svc_avd'] = self.registry['supply_avd'] / \
-                                      self.registry['needs_avd']
-        self.registry['tx_svc_avd'].clip(upper=1.0, inplace=True)
-        return
     def compute_costs(self):
-        hrs_avq = self.count.groupby('region_id').sum()['hrs_avq']
-        hrs_avd = self.count.groupby('region_id').sum()['hrs_avd']
         self.registry['cout_fixe'] = 0.0
-        self.registry['cout_var'] = self.registry['sal_avq'] * hrs_avq
-        self.registry['cout_var'] += self.registry['sal_avd'] * hrs_avd
+        self.registry['cout_var'] = self.registry['sal_avq'] * self.registry[
+            'nb_etc_avq'] * self.registry['hrs_per_etc_avq']
+        self.registry['cout_var'] += self.registry['sal_avd'] * self.registry[
+            'nb_etc_avd'] * self.registry['hrs_per_etc_avd']
         self.registry['cout_total'] = self.registry['cout_var'] + self.registry['cout_fixe']
+        return
+    def workforce(self):
+        for c in ['avd','avq']:
+            attr = getattr(self.policy,'prive_'+c+'_rate')
+            self.registry['nb_etc_'+c] += \
+                        attr * self.registry['worker_needs_'+c]
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
         t = getattr(self, domain)

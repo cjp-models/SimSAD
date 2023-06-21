@@ -262,41 +262,6 @@ class clsc:
         self.count.update(counts,join='left',overwrite=True)
         self.count.update(hrs, join='left', overwrite=True)
         return users
-    def compute_needs(self):
-        # use count to get distribution of needs for each care type
-        users = pd.pivot_table(data=self.count,index=['region_id'],columns=[
-            'milieux',
-            'svc','iso_smaf'],values='users',aggfunc='sum')
-        n = needs()
-        for m in ['home','rpa','ri']:
-            if m!='ri':
-                for c in self.care_types:
-                    tag = c+'_'+m
-                    self.registry['needs_' + tag] = 0.0
-                    attr = getattr(n,c)
-                    for s in range(1,15):
-                        self.registry['needs_'+tag] += attr[s-1] * users.loc[:,
-                                                                 (m,c,
-                                                                  s)] \
-                                                       *self.days_per_year
-            else :
-                tag = 'inf_' + m
-                self.registry['needs_' + tag] = 0.0
-                for s in range(1, 15):
-                    self.registry['needs_' + tag] += n.inf[s - 1] * users.loc[:,
-                                                                (m, c, s)]*self.days_per_year
-        self.registry['needs_inf'] = self.registry[['needs_inf_'+c for c in
-                                                    ['home','rpa','ri']
-                                                    ]].sum(axis=1)
-        self.registry['needs_avq'] = self.registry[['needs_avq_'+c for c in
-                                                    ['home','rpa']
-                                                    ]].sum(axis=1)
-        self.registry['needs_avd'] = self.registry[['needs_avd_'+c for c in
-                                                    ['home','rpa']
-                                                    ]].sum(axis=1)
-        return
-
-
     def compute_supply(self):
         # hours supplied by CLSC
         for m in ['home','rpa']:
@@ -383,22 +348,6 @@ class clsc:
             for r in range(1, 19):
                 users.loc[users.region_id == r, 'clsc_inf_hrs'] *= factor[r]
         return users
-    def compute_serv_rate(self):
-        for m in ['home','rpa']:
-            for c in self.care_types:
-                tag = c+'_'+m
-                self.registry['tx_svc_'+tag] = 100.0 * self.registry[
-                                                 'supply_'+tag]/self.registry[
-                    'needs_'+tag]
-                self.registry['tx_svc_'+tag].clip(upper=100.0,inplace=True)
-        tag = 'inf_ri'
-        self.registry['tx_svc_' + tag] = 100.0 * self.registry[
-                                             'supply_' + tag] / self.registry[
-                                             'needs_' + tag]
-        self.registry['tx_svc_' + tag].clip(upper=100.0, inplace=True)
-
-        return
-
     def compute_costs(self):
         # cout fixe par usagers
         self.registry['cout_fixe'] = self.registry['cout_residuel']*(self.registry['nb_usagers_home']+self.registry['nb_usagers_rpa'])
