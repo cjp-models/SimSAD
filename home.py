@@ -8,7 +8,8 @@ pd.options.mode.chained_assignment = None
 
 
 class home:
-    def __init__(self):
+    def __init__(self, policy):
+        self.policy = policy
         return
     def load_register(self,start_yr=2019):
         reg = pd.read_csv(os.path.join(data_dir,'registre_clsc.csv'),
@@ -92,8 +93,6 @@ class home:
             self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
                                         inplace=True)
         return
-
-
     def reset_users(self):
         self.users = []
         return

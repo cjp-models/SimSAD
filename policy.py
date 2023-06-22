@@ -4,7 +4,10 @@ class policy:
         self.chsld_build = True
         self.chsld_build_rate = 0.2
         self.ri_build = False
+        self.ri_build_rate = 0.2
         self.rpa_penetrate = False
+        self.rpa_penetrate_rate = 0.25
+        self.rpa_adapt_rate = 0.5
         self.chsld_purchase = True
         self.chsld_purchase_rate = 0.25
         self.nsa_open_capacity = 0.1
@@ -23,4 +26,6 @@ class policy:
         self.prive_avd_rate = 0.25
         self.chsld_inf_rate = 1.0
         self.chsld_avq_rate = 1.0
+        self.ri_avq_rate = 1.0
+        self.ri_avd_rate = 1.0
         return

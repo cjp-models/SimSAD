@@ -7,8 +7,9 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 pd.options.mode.chained_assignment = None
 
 class nsa:
-    def __init__(self, open_capacity = 0.25):
-        self.open_capacity = open_capacity
+    def __init__(self, policy):
+        self.policy = policy
+        self.open_capacity = self.policy.nsa_open_capacity
         return
     def load_register(self,start_yr=2019):
         reg = pd.read_csv(os.path.join(data_dir,'registre_nsa.csv'),

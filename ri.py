@@ -8,8 +8,12 @@ pd.options.mode.chained_assignment = None
 
 
 class ri:
-    def __init__(self, opt_build = False):
-        self.opt_build = opt_build
+    def __init__(self, policy):
+        self.policy = policy
+        self.opt_build = self.policy.ri_build
+        self.build_rate = self.policy.ri_build_rate
+        self.avq_rate = self.policy.ri_avq_rate
+        self.avd_rate = self.policy.ri_avd_rate
         return
     def load_register(self,start_yr=2019):
         reg = pd.read_csv(os.path.join(data_dir,'registre_ri.csv'),
@@ -20,9 +24,6 @@ class ri:
         reg.drop(labels='annee',axis=1,inplace=True)
         # reset smaf allocation of patients
         self.registry = reg
-        self.registry['tx_serv_inf'] = 0.0
-        self.registry['tx_serv_avq'] = 0.0
-        self.registry['tx_serv_avd'] = 100.0
         # needs weights (hours per day of care by smaf, Tousignant)
         n = needs()
         self.needs_avd = n.avd
@@ -44,10 +45,10 @@ class ri:
         self.registry['hours_per_etc_ri_avd'] = self.registry[
                                                'heures_tot_trav_ri_avd']/self.registry['nb_etc_ri_avd']
 
-        self.registry['etc_avq_per_installation'] = self.registry[
-                                                        'nb_etc_ri_avq']/self.registry['nb_installations']
-        self.registry['etc_avd_per_installation'] = self.registry[
-                                                        'nb_etc_ri_avd']/self.registry['nb_installations']
+        self.registry['etc_avq_per_user'] = self.registry[
+                                                        'nb_etc_ri_avq']/self.registry['nb_usagers']
+        self.registry['etc_avd_per_user'] = self.registry[
+                                                        'nb_etc_ri_avd']/self.registry['nb_usagers']
         self.registry['places_per_installation'] = self.registry['nb_places']/self.registry['nb_installations']
         return
     def assign(self,applicants,waiting_months,region_id):
@@ -59,29 +60,18 @@ class ri:
         if self.opt_build:
             work = self.registry[['nb_installations','places_per_installation', 'attente_usagers_mois', 'nb_places']].copy()
             work['attente_usagers'] = work['attente_usagers_mois']/12.0
-            self.registry['nb_places'] += work['attente_usagers']
-        return 
-    def compute_occupancy_rate(self):
-        # occupancy rate
-        self.registry['tx_occupation'] = 100.0*(self.registry['nb_usagers']/self.registry['nb_places'])
-        self.registry['tx_occupation'] = self.registry['tx_occupation'].clip(upper=100.0)
+            build = self.build_rate * work['attente_usagers']
+            self.registry['nb_places'] += build
+            self.registry['nb_etc_ri_avq'] += self.registry[
+                'etc_avq_per_user'] * build * self.avq_rate
+            self.registry['nb_etc_ri_avd'] += self.registry[
+                'etc_avd_per_user'] * build * self.avd_rate
         return
-    def compute_needs(self):
-       # effective time per patient avd
-        time_table = pd.DataFrame(index=self.registry.index,columns = np.arange(1,15),dtype='float64')
-        for s in range(1,15):
-            time_table[s] = self.registry['iso_smaf'+str(s)]*self.needs_avd[s-1]
-        time_per_usager_avd = time_table.sum(axis=1)
-        time_per_usager_avd *= self.days_per_year
-        # effective time per patient avq
-        for s in range(1,15):
-            time_table[s] = self.registry['iso_smaf'+str(s)]*self.needs_avq[s-1]
-        time_per_usager_avq = time_table.sum(axis=1)
-        time_per_usager_avq *= self.days_per_year
-        result = pd.concat([time_per_usager_avq,time_per_usager_avd],axis=1)
-        result.columns = ['avq','avd']
-        return result
     def compute_supply(self):
+        self.registry['heures_tot_trav_ri_avq'] = self.registry[
+            'hours_per_etc_ri_avq'] * self.registry['nb_etc_ri_avq']
+        self.registry['heures_tot_trav_ri_avd'] = self.registry[
+            'hours_per_etc_ri_avd'] * self.registry['nb_etc_ri_avd']
         ## avq
         time_avq = self.registry['hours_per_etc_ri_avq'].copy()
         # take out pauses
@@ -98,6 +88,8 @@ class ri:
         time_avd  = time_avd * self.registry['nb_etc_ri_avd']
         result = pd.concat([time_avq,time_avd],axis=1)
         result.columns = ['avq','avd']
+        self.registry['supply_avq'] = result['avq']
+        self.registry['supply_avd'] = result['avd']
         return result
     def compute_costs(self):
         self.registry['cout_fixe'] = self.registry['nb_usagers'] * self.registry['cout_place_fixe']
@@ -107,25 +99,12 @@ class ri:
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
         self.registry['cout_place_total'] = self.registry['cout_total']/self.registry['nb_usagers']
         return
-    def compute_serv_rate(self):
-        self.compute_occupancy_rate()
-        needs = self.compute_needs()
-        supply = self.compute_supply()
-        self.registry['heures_tot_trav_avd'] = supply['avd']
-        self.registry['heures_tot_trav_avq'] = supply['avq']
-        self.registry['tx_serv_avd'] = np.where(needs['avd']>0,100.0*(supply[
-                                                                        'avd']/needs['avd']),np.nan)
-        self.registry.loc[self.registry.tx_serv_avd>100.0,'tx_serv_avd'] = 100.0
-        self.registry['tx_serv_avq'] = np.where(needs['avq']>0,100.0*(supply['avq']/needs['avq']),np.nan)
-        self.registry.loc[self.registry.tx_serv_avq>100.0,'tx_serv_avq']= 100.0
-        return
-
     def update_users(self):
         # get how many hours are supplied for each domain
-        hrs_per_users_avd = self.registry['heures_tot_trav_avd'] / \
+        hrs_per_users_avd = self.registry['heures_tot_trav_ri_avd'] / \
                             self.registry[
             'nb_usagers']
-        hrs_per_users_avq = self.registry['heures_tot_trav_avq'] / \
+        hrs_per_users_avq = self.registry['heures_tot_trav_ri_avq'] / \
                             self.registry[
             'nb_usagers']
         self.users[['serv_inf', 'serv_avq', 'serv_avd']] = 0.0

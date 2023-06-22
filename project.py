@@ -24,7 +24,8 @@ pd.options.mode.chained_assignment = None
 
 class projection:
     def __init__(self,start_yr = 2020,stop_yr = 2040, base_yr = 2023,
-                 scn_policy = None, scn_name = 'reference'):
+                 scn_policy = None, scn_name = 'reference', opt_welfare =
+                 False):
         self.start_yr = start_yr 
         self.stop_yr = stop_yr 
         self.yr = self.start_yr
@@ -37,6 +38,7 @@ class projection:
         self.init_tracker(scn_name)
         self.milieux = ['none','home','rpa','ri','nsa','chsld']
         self.nmilieux = 6
+        self.opt_welfare = opt_welfare
         return 
     def load_params(self):
         self.load_pop()
@@ -71,18 +73,18 @@ class projection:
         self.chsld.load_register()
         return
     def load_nsa(self):
-        self.nsa = nsa(open_capacity = self.policy.nsa_open_capacity)
+        self.nsa = nsa(self.policy)
         self.nsa.load_register()
     def load_ri(self):
-        self.ri = ri(opt_build = self.policy.ri_build)
+        self.ri = ri(self.policy)
         self.ri.load_register()
         return 
     def load_rpa(self):
-        self.rpa = rpa(opt_penetrate = self.policy.rpa_penetrate)
+        self.rpa = rpa(self.policy)
         self.rpa.load_register()
         return 
     def load_home(self):
-        self.home = home()
+        self.home = home(self.policy)
         self.home.load_register()
         return 
     def load_suppliers(self):
@@ -99,15 +101,6 @@ class projection:
         self.ces = ces()
         self.cmd = cmd()
         return
-    def set_macro(self, gr_lfp_inf = 0.0, gr_lfp_avq = 0.0,
-                  gr_lfp_avd = 0.0, real_int_rate = 0.03, gr_wages = 0.01):
-        self.gr_lfp_inf = gr_lfp_inf
-        self.gr_lfp_avq = gr_lfp_avq
-        self.gr_lfp_avd = gr_lfp_avd
-        self.real_int_rate = real_int_rate
-        self.gr_wages = gr_wages
-        return
-
     def init_tracker(self, scn_name):
         self.tracker = tracker(scn_name = scn_name)
         show_yr = 2023
@@ -337,7 +330,7 @@ class projection:
         self.nsa.compute_costs()
         return
     def ri_services(self):
-        self.ri.compute_serv_rate()
+        self.ri.compute_supply()
         self.ri.compute_costs()
         return
     def clsc_services(self):
@@ -430,7 +423,6 @@ class projection:
         self.pop.evaluate(self.yr)
         self.grouper.evaluate(self.pop,yr=self.yr)
         self.iso.evaluate(self.grouper)
-
         # now assign users to each living arrangement, dynamically within year
         self.dispatch()
         # CHSLD
@@ -450,7 +442,8 @@ class projection:
         # update users with service rate and net oop cost
         self.update_users()
         # compute utility
-        #self.welfare()
+        if self.opt_welfare:
+            self.welfare()
         # compute aggregate costs
         self.finance()
         return  
@@ -458,16 +451,15 @@ class projection:
     def next(self):
         self.yr +=1 
         # build new places for institutional settings
-        if self.yr>=self.base_yr:
+        if self.yr>self.base_yr:
             self.chsld.build()
             self.chsld.purchase()
             self.ri.build()
             self.rpa.build()
-            # workforce adjustments
+            # workforce adjustments (chsld, ri done with build)
             self.clsc.workforce()
             self.eesad.workforce()
             self.prive.workforce()
-
         return
     def save(self, output_dir):
         self.tracker.save(output_dir, self.policy)
