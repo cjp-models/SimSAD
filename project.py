@@ -67,8 +67,7 @@ class projection:
         self.last_smaf = self.nsmaf + 1
         return 
     def load_chsld(self):
-        self.chsld = chsld(opt_build = self.policy.chsld_build, opt_purchase =
-        self.policy.chsld_purchase)
+        self.chsld = chsld(self.policy)
         self.chsld.load_register()
         return
     def load_nsa(self):
@@ -155,6 +154,11 @@ class projection:
         self.tracker.add_entry('pefsad_users', 'home', 'users',
                             rowvars=['region_id'],
                             colvars=['pefsad_avd_any','pefsad_avd_hrs'], aggfunc='sum',
+                            start_yr=show_yr, stop_yr=self.stop_yr)
+        self.tracker.add_entry('clsc_workforce', 'clsc', 'registry',
+                            rowvars=['region_id'],
+                            colvars=['nb_etc_inf','nb_etc_avq','nb_etc_avd'],
+                               aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
         self.tracker.add_entry('total_cost', 'msss', 'registry',
                             rowvars=['region_id'],
@@ -326,7 +330,7 @@ class projection:
         return
 
     def chsld_services(self):
-        self.chsld.compute_serv_rate()
+        self.chsld.compute_supply()
         self.chsld.compute_costs()
         return
     def nsa_services(self):
@@ -446,7 +450,7 @@ class projection:
         # update users with service rate and net oop cost
         self.update_users()
         # compute utility
-        self.welfare()
+        #self.welfare()
         # compute aggregate costs
         self.finance()
         return  
@@ -454,15 +458,15 @@ class projection:
     def next(self):
         self.yr +=1 
         # build new places for institutional settings
-        if self.yr>self.base_yr:
+        if self.yr>=self.base_yr:
             self.chsld.build()
             self.chsld.purchase()
             self.ri.build()
             self.rpa.build()
-        # workforce adjustments
-        self.clsc.workforce()
-        self.eesad.workforce()
-        self.prive.workforce()
+            # workforce adjustments
+            self.clsc.workforce()
+            self.eesad.workforce()
+            self.prive.workforce()
 
         return
     def save(self, output_dir):

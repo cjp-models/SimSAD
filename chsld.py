@@ -7,11 +7,16 @@ pd.options.mode.chained_assignment = None
 
 
 class chsld:
-    def __init__(self, opt_build = False, opt_purchase = False, opt_mda = True, infl_construction = 0.013):
-        self.opt_build = opt_build
-        self.opt_purchase = opt_purchase
-        self.opt_mda = opt_mda
-        self.infl_construction = infl_construction
+    def __init__(self, policy):
+        self.policy = policy
+        self.opt_build = self.policy.chsld_build
+        self.build_rate = self.policy.chsld_build_rate
+        self.opt_purchase = self.policy.chsld_purchase
+        self.purchase_rate = self.policy.chsld_purchase_rate
+        self.opt_mda = self.policy.chsld_mda
+        self.infl_construction = self.policy.infl_construction
+        self.chsld_inf_rate = self.policy.chsld_inf_rate
+        self.chsld_avq_rate = self.policy.chsld_avq_rate
         return
     def load_register(self,start_yr=2019):
         reg = pd.read_csv(os.path.join(data_dir,'registre_chsld.csv'),
@@ -26,7 +31,6 @@ class chsld:
         self.registry['tx_serv_avq'] = 0.0
         self.registry['tx_serv_avd'] = 100.0
         self.registry['attente_usagers'] = 0.0
-
         # nb places
         self.registry['nb_capacity_nc'] = self.registry.loc[:,'nb_places_nc']
         self.registry['nb_places_nc'] = self.registry.loc[:,'nb_usagers_nc']
@@ -58,8 +62,12 @@ class chsld:
         self.weeks_per_year = (self.days_per_year/self.days_per_week)
         self.registry['hours_per_etc_inf'] = self.registry['heures_tot_trav_inf']/self.registry['nb_etc_inf']
         self.registry['hours_per_etc_avq'] = self.registry['heures_tot_trav_avq']/self.registry['nb_etc_avq']
-        self.registry['etc_inf_per_installation'] = self.registry['nb_etc_inf']/self.registry['nb_installations']
-        self.registry['etc_avq_per_installation'] = self.registry['nb_etc_avq']/self.registry['nb_installations']
+        self.registry['etc_inf_per_usager'] = self.registry[
+                                             'nb_etc_inf']/self.registry[
+            'nb_usagers_pub']
+        self.registry['etc_avq_per_usager'] = self.registry[
+                                             'nb_etc_avq']/self.registry[
+            'nb_usagers_pub']
         self.registry['places_per_installation'] = self.registry['nb_places_pub']/self.registry['nb_installations']
         self.registry['nb_build'] = 0
         if self.opt_mda:
@@ -83,48 +91,28 @@ class chsld:
         self.registry.loc[region_id,'nb_usagers_nc'] = np.sum(applicants) * share
         self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return 
-    def purchase(self, purchase_rate = 0.25):
+    def purchase(self):
         if self.opt_purchase:
             for r in self.registry.index:
                 if self.registry.loc[r,'nb_places_nc']<self.registry.loc[r,'nb_capacity_nc']:
                     spots = self.registry.loc[r, 'nb_capacity_nc'] - self.registry.loc[r,'nb_places_nc']
-                    self.registry.loc[r,'nb_places_nc'] += purchase_rate*min(self.registry.loc[r,'attente_usagers'],spots)
+                    self.registry.loc[r,'nb_places_nc'] += \
+                        self.purchase_rate*min(self.registry.loc[r,
+                        'attente_usagers'],spots)
         self.registry['nb_places_tot'] = self.registry['nb_places_pub'] + self.registry['nb_places_nc']
         return
-    def build(self, build_rate = 0.2):
+    def build(self):
         if self.opt_build:
             self.registry['cout_construction'] *= (1.0 + self.infl_construction)
-            build = self.registry['attente_usagers'] * build_rate
+            build = self.registry['attente_usagers'] * self.build_rate
             self.registry['cout_comptable_immo'] += build * self.registry['cout_construction']
             self.registry['nb_places_pub'] += build
+            self.registry['nb_etc_inf'] += self.chsld_inf_rate * self.registry[
+                'etc_inf_per_usager'] * build
+            self.registry['nb_etc_avq'] += self.chsld_avq_rate * self.registry[
+                'etc_avq_per_usager'] * build
         self.registry['nb_places_tot'] = self.registry['nb_places_pub'] + self.registry['nb_places_nc']
-
-        return 
-    def compute_occupancy_rate(self):
-        # occupancy rate
-        self.registry['tx_occupation_pub'] = 100.0*(self.registry['nb_usagers_pub']/self.registry['nb_places_pub'])
-        self.registry['tx_occupation_pub'] = self.registry['tx_occupation_pub'].clip(upper=100.0)
-        self.registry['tx_occupation_nc'] = 100.0*(self.registry['nb_usagers_nc']/self.registry['nb_places_nc'])
-        self.registry['tx_occupation_nc'] = self.registry['tx_occupation_nc'].clip(upper=100.0)
         return
-    def compute_needs(self):
-       # effective time per patient inf
-        time_table = pd.DataFrame(index=self.registry.index,columns = np.arange(1,15),dtype='float64')
-        for s in range(1,15):
-            time_table[s] = self.registry['iso_smaf_pub'+str(s)]*self.needs_inf[s-1]
-        time_per_usager_inf = time_table.sum(axis=1)
-        time_per_usager_inf += self.inf_indirect_per_day*self.registry['nb_usagers_pub']
-        time_per_usager_inf *= self.days_per_year
-        # effective time per patient avq
-        for s in range(1,15):
-            time_table[s] = self.registry['iso_smaf_pub'+str(s)]*self.needs_avq[s-1]
-        time_per_usager_avq = time_table.sum(axis=1)
-        time_per_usager_avq *= self.days_per_year
-        result = pd.concat([time_per_usager_inf,time_per_usager_avq],axis=1)
-        result.columns = ['inf','avq']
-        self.registry['needs_inf'] = result['inf']
-        self.registry['needs_avq'] = result['avq']
-        return result
     def compute_supply(self):
         # inf
         time_inf = self.registry['hours_per_etc_inf'].copy()
@@ -142,21 +130,14 @@ class chsld:
         time_avq  = time_avq * self.registry['nb_etc_avq']
         result = pd.concat([time_inf,time_avq],axis=1)
         result.columns = ['inf','avq']
+        self.registry['supply_inf'] = result['inf']
+        self.registry['supply_avq'] = result['avq']
         return result
-    def compute_serv_rate(self):
-        self.compute_occupancy_rate()
-        needs = self.compute_needs()
-        supply = self.compute_supply()
-        self.registry['supply_inf'] = supply['inf']
-        self.registry['supply_avq'] = supply['avq']
-        self.registry['heures_tot_trav_inf'] = self.registry['hours_per_etc_inf']*self.registry['nb_etc_inf']
-        self.registry['heures_tot_trav_avq'] = self.registry['hours_per_etc_avq']*self.registry['nb_etc_avq']
-        self.registry['tx_serv_inf'] = np.where(needs['inf']>0,100.0*(supply['inf']/needs['inf']),np.nan)
-        self.registry.loc[self.registry.tx_serv_inf>100.0,'tx_serv_inf'] = 100.0
-        self.registry['tx_serv_avq'] = np.where(needs['avq']>0,100.0*(supply['avq']/needs['avq']),np.nan)
-        self.registry.loc[self.registry.tx_serv_avq>100.0,'tx_serv_avq']= 100.0
-        return
     def compute_costs(self):
+        self.registry['heures_tot_trav_inf'] = self.registry['nb_etc_inf'] * \
+                                               self.registry['hours_per_etc_inf']
+        self.registry['heures_tot_trav_avq'] = self.registry['nb_etc_avq'] * \
+                                               self.registry['hours_per_etc_avq']
         self.registry['cout_inf'] = self.registry['sal_inf'] * self.registry['heures_tot_trav_inf']
         self.registry['cout_avq'] = self.registry['sal_avq'] * self.registry['heures_tot_trav_avq']
         self.registry['cout_var'] = self.registry['cout_inf'] + self.registry['cout_avq']

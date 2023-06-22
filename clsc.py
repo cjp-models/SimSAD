@@ -13,14 +13,6 @@ class clsc:
         self.care_types = ['inf','avq','avd']
         self.purchase_prive = policy.purchase_prive
         self.purchase_eesad = policy.purchase_eesad
-        if self.purchase_prive:
-            self.rate_prive = policy.rate_prive
-        else :
-            self.rate_prive = 0.0
-        if self.purchase_eesad:
-            self.rate_eesad = policy.rate_eesad
-        else :
-            self.rate_eesad = 0.0
         self.clsc_inf_rate = policy.clsc_inf_rate
         self.clsc_avq_rate = policy.clsc_avq_rate
         self.clsc_avd_rate = policy.clsc_avd_rate
@@ -33,6 +25,9 @@ class clsc:
         self.registry = self.registry[self.registry.annee==start_yr]
         self.registry.set_index('region_id',inplace=True)
         self.days_per_year = 365
+        self.registry['nb_etc_inf'] = 0
+        self.registry['nb_etc_avq'] = 0
+        self.registry['nb_etc_avd'] = 0
         for m in ['home','rpa','ri']:
             if m!='ri':
                 for c in self.care_types:
@@ -40,12 +35,14 @@ class clsc:
                     self.registry['hrs_etc_' + tag] = self.registry[
                         'heures_tot_trav_'+tag]/self.registry[
                         'nb_etc_'+tag]
+                    self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
             else :
                 tag = 'inf_' + m
                 self.registry['hrs_etc_' + tag] = self.registry[
                                                        'heures_tot_trav_' + tag] / \
                                                    self.registry[
                                                        'nb_etc_' + tag]
+                self.registry['nb_etc_inf'] += self.registry['nb_etc_' + tag]
 
         self.registry['cout_hr_achete_eesad_avq'] = self.registry.loc[:,'cout_hr_achete_prive_avq']
         self.purchase_home = pd.DataFrame(index=['inf','avq','avd'],columns=['prive','eesad'])
@@ -376,6 +373,9 @@ class clsc:
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_achete']
         return
     def workforce(self):
+        self.registry['nb_etc_inf'] = 0
+        self.registry['nb_etc_avq'] = 0
+        self.registry['nb_etc_avd'] = 0
         for m in ['home','rpa','ri']:
             if m!='ri':
                 for c in self.care_types:
@@ -383,10 +383,12 @@ class clsc:
                     attr = getattr(self,'clsc_'+c+'_rate')
                     self.registry['nb_etc_'+tag] += \
                         attr * self.worker_needs.loc[:,tag]
+                    self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
             else :
                 tag = 'inf_ri'
                 self.registry['nb_etc_' + tag] += \
                     self.clsc_inf_rate * self.worker_needs.loc[:, tag]
+                self.registry['nb_etc_inf'] += self.registry['nb_etc_' + tag]
         return
 
     def collapse_users(self,rowvars=['region_id','svc'],colvars=['iso_smaf']):
