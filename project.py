@@ -26,7 +26,7 @@ import pickle
 class projection:
     def __init__(self,start_yr = 2020,stop_yr = 2040, base_yr = 2023,
                  scn_policy = None, scn_name = 'reference', opt_welfare =
-                 False):
+                 False, seed = 1234):
         self.start_yr = start_yr 
         self.stop_yr = stop_yr 
         self.yr = self.start_yr
@@ -41,6 +41,7 @@ class projection:
         self.milieux = ['none','home','rpa','ri','nsa','chsld']
         self.nmilieux = 6
         self.opt_welfare = opt_welfare
+        np.random.seed(seed=seed)
         return 
     def load_params(self):
         self.load_pop()
