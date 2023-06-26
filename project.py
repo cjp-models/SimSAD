@@ -21,6 +21,7 @@ from .policy import policy
 from .tracker import tracker
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
 pd.options.mode.chained_assignment = None
+import pickle
 
 class projection:
     def __init__(self,start_yr = 2020,stop_yr = 2040, base_yr = 2023,
@@ -35,6 +36,7 @@ class projection:
         else :
             self.policy = scn_policy
         self.load_params()
+        self.scn_name = scn_name
         self.init_tracker(scn_name)
         self.milieux = ['none','home','rpa','ri','nsa','chsld']
         self.nmilieux = 6
@@ -463,4 +465,10 @@ class projection:
         return
     def save(self, output_dir):
         self.tracker.save(output_dir, self.policy)
+        with open(os.path.join(output_dir,self.scn_name+'.pkl'), 'wb') as f:
+            pickle.dump(self, f)
         return
+    def load(self):
+        with open(os.path.join('output',self.scn_name+'.pkl'), 'rb') as f:
+            this = pickle.load(f)
+        return this
