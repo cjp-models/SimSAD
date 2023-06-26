@@ -228,6 +228,8 @@ class clsc:
         margins = ['clsc_'+c+'_hrs' for c in self.care_types]
         users.loc[select,margins] = work[margins].copy()
         users.sort_index(inplace=True)
+        # for those without services, set choice to 0 (no services)
+        users.loc[users.choice.isna(),'choice'] = 0
 
         if milieu!='ri':
             counts_any_svc = users.groupby(['region_id']).apply(

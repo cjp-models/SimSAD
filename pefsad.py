@@ -8,7 +8,7 @@ class pefsad:
     def __init__(self):
         self.load_params()
         return
-    def load_params(self, start_yr = 2019):
+    def load_params(self):
         self.pars_home = pd.read_csv(os.path.join(data_dir,'pefsad_home.csv'),
             delimiter=';',low_memory=False)
         self.pars_home['clsc_avd_any'] = (self.pars_home['AVD']==1)
