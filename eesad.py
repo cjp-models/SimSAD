@@ -27,6 +27,7 @@ class eesad:
         self.count = pd.DataFrame(index=itups,columns =['users','hrs'],dtype='float64')
         self.count.loc[:,:] = 0.0
         self.days_per_year = 365
+        #print(self.registry[['sal_avd','contribution_usager']])
         return
     def assign(self, users_home, users_rpa):
         users_home['pefsad_contrib'] = 0.0
@@ -66,6 +67,12 @@ class eesad:
         for r in range(1,19):
             users_home.loc[users_home.region_id==r,'pefsad_avd_hrs'] *= factor[r]
             users_rpa.loc[users_rpa.region_id==r,'pefsad_avd_hrs'] *= factor[r]
+            users_home.loc[users_home.region_id==r,'pefsad_contrib'] = \
+                self.registry.loc[r,'contribution_usager'] * users_home.loc[
+                    users_home.region_id==r,'pefsad_avd_hrs']
+            users_rpa.loc[users_rpa.region_id==r,'pefsad_contrib'] = \
+                self.registry.loc[r,'contribution_usager'] * users_rpa.loc[
+                    users_rpa.region_id==r,'pefsad_avd_hrs']
         return users_home, users_rpa
     def compute_supply(self):
         self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']

@@ -92,6 +92,7 @@ class home:
                 'needs_'+c])
             self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
                                         inplace=True)
+        self.users['cost'] *= 1/12
         return
     def reset_users(self):
         self.users = []
