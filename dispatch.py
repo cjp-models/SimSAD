@@ -162,19 +162,19 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
         # figure out how many stay (some die)j = n
         for s in range(ns-1,-1,-1):
             for a in range(na-1,-1,-1):
-                next_state[s,a,n] = pi[s,a,n,n] * ss[s,a,n] * state[s,a,n]
+                next_state[s,a,n] = max(pi[s,a,n,n] * ss[s,a,n] * state[s,a,n],0)
         # figure out how many want to enter and from where (upon surviving)
         appl = np.zeros((ns,na,nn))
         for s in range(ns-1,-1,-1):
             for a in range(na-1,-1,-1):
                 for j in range(nn-1,-1,-1):
                     if j!=n:
-                        appl[s,a,j] = pi[s,a,j,n] * ss[s,a,j] * state[s,a,j]
+                        appl[s,a,j] = max(pi[s,a,j,n] * ss[s,a,j] * state[s,a,j],0)
         # next year's waiting list with those already on it, but account for survival
         for s in range(ns-1,-1,-1):
             for a in range(na-1,-1,-1):
                 for j in range(nn-1,-1,-1):
-                      next_wait[s,a,j,n] = wait[s,a,j,n] * ss[s,a,j]
+                      next_wait[s,a,j,n] = max(wait[s,a,j,n] * ss[s,a,j],0)
         # currently those who have a spot are those who stay and those on waiting list in that state
         nstay = np.sum(next_state[:, :, n])
         nstay += np.sum(next_wait[:,:,n,:])
@@ -189,32 +189,31 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
                     if n == nn - 1:
                         pw = np.sum(next_wait[s, a, :, n])
                         if pw>0:
-                            pj = next_wait[s, a, :, n]/np.sum(next_wait[s, a, :, n])
-                            pe = avail_spots/np.sum(next_wait[s, a, :, n])
+                            pj = next_wait[s, a, :, n]/pw
+                            pe = min(avail_spots/pw,1)
                         else :
                             pj = np.zeros(nn)
                             pe = 1.0
                         for j in range(nn):
                             if pj[j]>0:
-                                pej[j] = wprob_chsld[s, a, j]*pe/pj[j]
+                                pej[j] = min(wprob_chsld[s, a, j]*pe/pj[j],1)
                             else :
                                 pej[j] = 1.0
                     elif n == nn - 3:
                         pw = np.sum(next_wait[s, a, :, n])
                         if pw>0:
-                            pj = next_wait[s, a, :, n]/np.sum(next_wait[s, a, :, n])
-                            pe = avail_spots/np.sum(next_wait[s, a, :, n])
+                            pj = next_wait[s, a, :, n]/pw
+                            pe = min(avail_spots/pw,1)
                         else :
                             pj = np.zeros(nn)
                             pe = 1.0
                         for j in range(nn):
                             if pj[j]>0:
-                                pej[j] = wprob_ri[s, a, j]*pe/pj[j]
+                                pej[j] = min(wprob_ri[s, a, j]*pe/pj[j],1)
                             else :
                                 pej[j] = 1.0
                     else :
                         pej[:] = 1.0
-
                     for j in range(nn-1,-1,-1):
                         # not currently in n
                         if j!=n:
