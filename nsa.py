@@ -15,7 +15,6 @@ class nsa:
         reg = pd.read_csv(os.path.join(data_dir,'registre_nsa.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
-        reg = reg[reg.region_id!=99]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
         reg['nb_usagers'] = 0
@@ -34,8 +33,10 @@ class nsa:
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.wgt.clip(lower=0.0, inplace=True)
         self.users.wgt = self.users.wgt.astype('int64')
+        sample_ratio = 1
+        self.users.wgt *= sample_ratio
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 1
+        self.users.wgt = 1/sample_ratio
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'ri'
         self.users['supplier'] = 'public'
@@ -74,7 +75,6 @@ class nsa:
         self.users['cost'] *= 1/12
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]

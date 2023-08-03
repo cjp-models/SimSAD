@@ -13,6 +13,7 @@ class policy:
         self.nsa_open_capacity = 0.1
         self.chsld_mda = True
         self.infl_construction = 0.01
+        self.interest_rate = 0.03
         self.clsc_cap = True
         self.prive_cap = True
         self.eesad_cap = True

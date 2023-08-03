@@ -20,6 +20,7 @@ class eesad:
                                         delimiter=';', low_memory=False)
         self.registry = self.registry[self.registry.annee == start_yr]
         self.registry.set_index('region_id', inplace=True)
+        self.registry.drop(labels='annee',axis=1,inplace=True)
         self.registry['hrs_per_etc'] = self.registry['heures_tot_trav_avd']/self.registry['nb_etc_avd']
         tups = list(product(*[np.arange(1,19),np.arange(1,15)]))
         itups = pd.MultiIndex.from_tuples(tups)
@@ -27,7 +28,6 @@ class eesad:
         self.count = pd.DataFrame(index=itups,columns =['users','hrs'],dtype='float64')
         self.count.loc[:,:] = 0.0
         self.days_per_year = 365
-        #print(self.registry[['sal_avd','contribution_usager']])
         return
     def assign(self, users_home, users_rpa):
         users_home['pefsad_contrib'] = 0.0
@@ -47,6 +47,10 @@ class eesad:
                 self.count.loc[(r,s),'users'] += users_rpa.loc[select,'wgt'].sum()
                 self.count.loc[(r,s),'hrs'] += users_rpa.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
         return users_home, users_rpa
+    def compute_supply(self):
+        self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
+        self.registry['supply_avd'] *= (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
+        return
     def cap(self, users_home, users_rpa):
         hrs_home = users_home.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
         hrs_rpa = users_rpa.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
@@ -74,22 +78,16 @@ class eesad:
                 self.registry.loc[r,'contribution_usager'] * users_rpa.loc[
                     users_rpa.region_id==r,'pefsad_avd_hrs']
         return users_home, users_rpa
-    def compute_supply(self):
-        self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
-        self.registry['supply_avd'] *= (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
-        return
     def compute_costs(self):
         self.registry['cout_fixe'] = 0.0
         self.registry['cout_var'] = self.registry['sal_avd'] * self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
         return
     def workforce(self):
-
         self.registry['nb_etc_avd'] += self.policy.eesad_avd_rate * \
                                            self.registry['worker_needs']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf_svc'+str(s) for s in range(1,15)]]

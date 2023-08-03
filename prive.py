@@ -105,7 +105,6 @@ class prive:
                         attr * self.registry['worker_needs_'+c]
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]

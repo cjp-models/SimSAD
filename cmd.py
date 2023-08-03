@@ -13,7 +13,7 @@ class cmd:
     def load_registry(self):
         nregions = 18
         last_region = nregions + 1
-        self.registry = pd.DataFrame(index=np.arange(1,last_region),columns=['cost_rpa','cost_home','total_cost'])
+        self.registry = pd.DataFrame(index=np.arange(1,last_region),columns=['cost_rpa','cost_home','cout_total'])
 
         self.targets = pd.read_csv(os.path.join(data_dir,'calib_cmd.csv'),
             delimiter=';',low_memory=False)
@@ -59,7 +59,6 @@ class cmd:
         return
 
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf_tot'+str(s) for s in range(1,15)]]

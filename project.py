@@ -114,7 +114,7 @@ class projection:
         self.tracker.add_entry('chsld_users', 'chsld', 'registry',
                             rowvars=['region_id'],
                             colvars=['nb_usagers_tot',
-                                     'tx_serv_inf', 'tx_serv_avq'],
+                                     'tx_serv_inf', 'tx_serv_avq','attente_usagers'],
                                aggfunc='sum', start_yr=
                             show_yr,
                             stop_yr=self.stop_yr)
@@ -210,8 +210,8 @@ class projection:
         init_smafs = self.iso.collapse(rowvars=['region_id','smaf'],colvars=['age'])
         init_smafs['18-64'] = init_smafs[[x for x in range(18,65)]].sum(axis=1)
         init_smafs['65-69'] = init_smafs[[x for x in range(65,70)]].sum(axis=1)
-        init_smafs['70-91'] = init_smafs[[x for x in range(70,91)]].sum(axis=1)
-        init_smafs = init_smafs.loc[:,['18-64','65-69','70-91']]
+        init_smafs['70-90'] = init_smafs[[x for x in range(70,91)]].sum(axis=1)
+        init_smafs = init_smafs.loc[:,['18-64','65-69','70-90']]
         init_smafs.columns = gr_ages
         init_smafs.columns.names = ['gr_age']
         init_smafs = pd.pivot_table(init_smafs.stack().to_frame(),
@@ -272,7 +272,7 @@ class projection:
 
             # now assign
             agent.assign()
-
+                
             # collect for output
             agent.collect()
             self.last_iprob[r-1,:,:,:] = agent.last_state
@@ -298,7 +298,6 @@ class projection:
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
-
         # create user sets
         self.create_users()
         return

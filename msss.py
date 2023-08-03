@@ -34,7 +34,6 @@ class msss:
             'usagers']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=[]):
-        t = getattr(self, domain)
         colvars = self.items
         if domain == 'registry':
                 table = self.registry.loc[:,colvars]

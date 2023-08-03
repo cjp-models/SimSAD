@@ -38,7 +38,6 @@ class pefsad:
         users[['pefsad_avd_any','pefsad_avd_hrs']] = work[['pefsad_avd_any','pefsad_avd_hrs']]
         return users
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf_tot'+str(s) for s in range(1,15)]]

@@ -15,6 +15,7 @@ class chsld:
         self.purchase_rate = self.policy.chsld_purchase_rate
         self.opt_mda = self.policy.chsld_mda
         self.infl_construction = self.policy.infl_construction
+        self.interest_rate = self.policy.interest_rate
         self.chsld_inf_rate = self.policy.chsld_inf_rate
         self.chsld_avq_rate = self.policy.chsld_avq_rate
         return
@@ -49,14 +50,10 @@ class chsld:
         self.inf_indirect_per_day = 0.4
         self.days_per_week = 7
         self.days_per_year = 365
-        self.weeks_vacation_inf = 4
-        self.weeks_vacation_avq = 4
-        self.work_days_per_week = 5
+        self.hours_per_day = 7.5
         self.share_indirect_care = 0.2
         self.time_per_pause = 0.5
         self.nsmafs = 14
-        self.nmonths = 12
-        self.interest_rate = 0.03
         self.amort_rate = 1/25
         self.cost_rate = self.interest_rate + self.amort_rate
         self.weeks_per_year = (self.days_per_year/self.days_per_week)
@@ -105,6 +102,7 @@ class chsld:
         if self.opt_build:
             self.registry['cout_construction'] *= (1.0 + self.infl_construction)
             build = self.registry['attente_usagers'] * self.build_rate
+            self.registry['attente_usagers'] -= build
             self.registry['cout_comptable_immo'] += build * self.registry['cout_construction']
             self.registry['nb_places_pub'] += build
             self.registry['nb_etc_inf'] += self.chsld_inf_rate * self.registry[
@@ -116,8 +114,8 @@ class chsld:
     def compute_supply(self):
         # inf
         time_inf = self.registry['hours_per_etc_inf'].copy()
-        # take out pauses
-        time_inf -= self.time_per_pause*(self.weeks_per_year-self.weeks_vacation_inf)*self.work_days_per_week
+        # take out pauses self.hours_per_day
+        time_inf -= self.time_per_pause*(time_inf/self.hours_per_day)
         # take out indirect care
         time_inf *= (1.0 - self.share_indirect_care)
         # blow up using number of nurses
@@ -125,7 +123,7 @@ class chsld:
         ## avq
         time_avq = self.registry['hours_per_etc_avq'].copy()
         # take out pauses
-        time_avq -= self.time_per_pause*(self.weeks_per_year-self.weeks_vacation_avq)*self.work_days_per_week
+        time_avq -= self.time_per_pause*(time_avq/self.hours_per_day)
         # blow up using number of avq workers
         time_avq  = time_avq * self.registry['nb_etc_avq']
         result = pd.concat([time_inf,time_avq],axis=1)
@@ -155,9 +153,10 @@ class chsld:
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.wgt.clip(lower=0.0, inplace=True)
         self.users.wgt = self.users.wgt.astype('int64')
-        self.users.wgt *= 0.25
+        sample_ratio = 0.25
+        self.users.wgt *= sample_ratio
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 4
+        self.users.wgt = 1/sample_ratio
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'chsld'
         self.users['supplier'] = 'public'

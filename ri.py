@@ -19,7 +19,6 @@ class ri:
         reg = pd.read_csv(os.path.join(data_dir,'registre_ri.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
-        reg = reg[reg.region_id!=99]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
         # reset smaf allocation of patients
@@ -30,13 +29,9 @@ class ri:
         self.needs_avq = n.avq
         self.days_per_week = 7
         self.days_per_year = 365
-        self.weeks_vacation_avd = 4
-        self.weeks_vacation_avq = 4
-        self.work_days_per_week = 5
-        self.share_indirect_care = 0.2
+        self.hours_per_day = 7.5
         self.time_per_pause = 0.5
         self.nsmafs = 14
-        self.nmonths = 24
         self.weeks_per_year = (self.days_per_year/self.days_per_week)
         self.registry['attente_usagers_mois'] = 0.0
 
@@ -51,15 +46,14 @@ class ri:
                                                         'nb_etc_ri_avd']/self.registry['nb_usagers']
         self.registry['places_per_installation'] = self.registry['nb_places']/self.registry['nb_installations']
         return
-    def assign(self,applicants,waiting_months,region_id):
+    def assign(self,applicants,waiting_users,region_id):
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
         self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
-        self.registry.loc[region_id,'attente_usagers_mois'] = waiting_months
+        self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return 
     def build(self):
         if self.opt_build:
-            work = self.registry[['nb_installations','places_per_installation', 'attente_usagers_mois', 'nb_places']].copy()
-            work['attente_usagers'] = work['attente_usagers_mois']/12.0
+            work = self.registry[['attente_usagers', 'nb_places']].copy()
             build = self.build_rate * work['attente_usagers']
             self.registry['nb_places'] += build
             self.registry['nb_etc_ri_avq'] += self.registry[
@@ -75,15 +69,13 @@ class ri:
         ## avq
         time_avq = self.registry['hours_per_etc_ri_avq'].copy()
         # take out pauses
-        time_avq -= self.time_per_pause*(self.weeks_per_year-self.weeks_vacation_avq)*self.work_days_per_week
+        time_avq -= self.time_per_pause*(time_avq/self.hours_per_day)
         # blow up using number of AVQ workers
         time_avq  = time_avq * self.registry['nb_etc_ri_avq']
         # avd
         time_avd = self.registry['hours_per_etc_ri_avd'].copy()
         # take out pauses
-        time_avd -= self.time_per_pause*(
-                self.weeks_per_year-self.weeks_vacation_avd)*self\
-            .work_days_per_week
+        time_avd -= self.time_per_pause*(time_avd/self.hours_per_day)
         # blow up using number of AVD workers
         time_avd  = time_avd * self.registry['nb_etc_ri_avd']
         result = pd.concat([time_avq,time_avd],axis=1)
@@ -132,9 +124,10 @@ class ri:
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.wgt.clip(lower=0.0, inplace=True)
         self.users.wgt = self.users.wgt.astype('int64')
-        self.users.wgt *= 0.25
+        sample_ratio = 0.25
+        self.users.wgt *= sample_ratio
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 4
+        self.users.wgt = 1/sample_ratio
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'ri'
         self.users['supplier'] = 'public'
@@ -159,7 +152,6 @@ class ri:
         self.users = []
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]

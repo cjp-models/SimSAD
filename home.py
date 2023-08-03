@@ -11,23 +11,21 @@ class home:
     def __init__(self, policy):
         self.policy = policy
         return
-    def load_register(self,start_yr=2019):
-        reg = pd.read_csv(os.path.join(data_dir,'registre_clsc.csv'),
-            delimiter=';',low_memory=False)
-        reg = reg[reg.annee==start_yr]
-        reg = reg[reg.region_id!=99]
-        reg.set_index(['region_id'],inplace=True)
-        reg.drop(labels='annee',axis=1,inplace=True)
-        # reset smaf allocation of patients
-        self.registry = reg
+    def load_register(self):
+        self.registry = pd.DataFrame(index=range(1,19))
+        self.registry[['iso_smaf_svc'+str(s) for s in range(1,15)]] = 0.0
+        self.registry['nb_usagers_svc'] = 0.0
+        self.registry[['iso_smaf_none'+str(s) for s in range(1,15)]] = 0.0
+        self.registry['nb_usagers_none'] = 0.0
+        self.registry['attente_usagers'] = 0.0
         self.days_per_year = 365
         return
-    def assign(self,applicants_none, applicants_svc, waiting_months, region_id):
+    def assign(self,applicants_none, applicants_svc, waiting_users, region_id):
         self.registry.loc[region_id,['iso_smaf_svc'+str(s) for s in range(1,15)]] = applicants_svc
         self.registry.loc[region_id,'nb_usagers_svc'] = np.sum(applicants_svc)
         self.registry.loc[region_id,['iso_smaf_none'+str(s) for s in range(1,15)]] = applicants_none
         self.registry.loc[region_id,'nb_usagers_none'] = np.sum(applicants_none)
-        self.registry.loc[region_id,'attente_usagers_mois'] = waiting_months
+        self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return
     def create_users(self, users_none, users_svc):
         # users with services
@@ -47,10 +45,11 @@ class home:
         users_none = users_none.reset_index()
         users_none.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
         self.users = pd.concat([users_svc,users_none],axis=0)
-        self.users.wgt *= 0.1
+        sample_ratio = 0.1
+        self.users.wgt *= sample_ratio
         self.users.wgt = self.users.wgt.astype('int64')
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
-        self.users.wgt = 10
+        self.users.wgt = 1/sample_ratio
         self.users['smaf'] = self.users.index.get_level_values(1)
         self.users['milieu'] = 'home'
         self.users['supplier'] = 'public'
@@ -98,7 +97,6 @@ class home:
         self.users = []
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf_svc'+str(s) for s in range(1,15)]]

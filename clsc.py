@@ -24,6 +24,7 @@ class clsc:
                                         delimiter=';', low_memory=False)
         self.registry = self.registry[self.registry.annee==start_yr]
         self.registry.set_index('region_id',inplace=True)
+        self.registry.drop(labels='annee',axis=1,inplace=True)
         self.days_per_year = 365
         self.registry['nb_etc_inf'] = 0
         self.registry['nb_etc_avq'] = 0
@@ -301,16 +302,17 @@ class clsc:
                                                     ['home','rpa']
                                                     ]].sum(axis=1)
         colvars = []
-        for m in ['home','rpa','ri']:
-            if m != 'ri':
-                for c in self.care_types:
-                    tag = c + '_' + m
-                    colvars.append(tag)
-            else :
-                colvars.append('inf_ri')
+        for m in ['home','rpa']:
+            for c in self.care_types:
+                tag = c + '_' + m
+                colvars.append(tag)
+        colvars.append('inf_ri')
+ 
         self.worker_needs = pd.DataFrame(index=np.arange(1,19),
                                          columns=colvars,dtype='float64')
         self.worker_needs.loc[:,:] = 0.0
+
+        self.registry[['worker_needs_inf','worker_needs_avq','worker_needs_avd']] = 0.0
         return
 
     def cap(self, users, milieu):
@@ -329,6 +331,8 @@ class clsc:
                 excess = excess / indirect
                 excess = excess / self.registry['hrs_etc_' + tag]
                 self.worker_needs.loc[:,tag] = excess
+                tag2 = 'worker_needs_'+c
+                self.registry.loc[:,tag2] += excess
                 for r in range(1,19):
                     users.loc[users.region_id==r, 'clsc_'+c+'_hrs'] *= factor[r]
         else :
@@ -344,6 +348,8 @@ class clsc:
             excess = excess / indirect
             excess = excess / self.registry['hrs_etc_' + tag]
             self.worker_needs.loc[:, tag] = excess
+            tag2 = 'worker_needs_'+c
+            self.registry.loc[:,tag2] += excess
             for r in range(1, 19):
                 users.loc[users.region_id == r, 'clsc_inf_hrs'] *= factor[r]
         return users
@@ -378,19 +384,18 @@ class clsc:
         self.registry['nb_etc_inf'] = 0
         self.registry['nb_etc_avq'] = 0
         self.registry['nb_etc_avd'] = 0
-        for m in ['home','rpa','ri']:
-            if m!='ri':
-                for c in self.care_types:
-                    tag = c+'_'+m
-                    attr = getattr(self,'clsc_'+c+'_rate')
-                    self.registry['nb_etc_'+tag] += \
-                        attr * self.worker_needs.loc[:,tag]
-                    self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
-            else :
-                tag = 'inf_ri'
-                self.registry['nb_etc_' + tag] += \
-                    self.clsc_inf_rate * self.worker_needs.loc[:, tag]
-                self.registry['nb_etc_inf'] += self.registry['nb_etc_' + tag]
+        for m in ['home','rpa']:
+            for c in self.care_types:
+                tag = c+'_'+m
+                attr = getattr(self,'clsc_'+c+'_rate')
+                self.registry['nb_etc_'+tag] += \
+                    attr * self.worker_needs.loc[:,tag]
+                self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
+        
+        tag = 'inf_ri'
+        self.registry['nb_etc_' + tag] += \
+            self.clsc_inf_rate * self.worker_needs.loc[:, tag]
+        self.registry['nb_etc_inf'] += self.registry['nb_etc_' + tag]
         return
 
     def collapse_users(self,rowvars=['region_id','svc'],colvars=['iso_smaf']):
@@ -398,8 +403,7 @@ class clsc:
         if colvars!=[]:
             table.columns = [x[1] for x in table.columns]
         return table
-    def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
-        t = getattr(self, domain)
+    def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['supply_inf']):
         if domain == 'registry':
             if 'iso_smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf'+str(s) for s in range(1,15)]]
