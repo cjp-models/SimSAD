@@ -78,11 +78,11 @@ class ces:
                                                                          'hrs_avd'] *
                                                                       d.wgt).sum())
         # compute factors
-        factor_avq = targets_by_region['heures_tot_trav_avq'] / \
+        factor_avq = targets_by_region['heures_tot_trav_avq']*(1.0-targets_by_region['tx_hrs_dep_avq']) / \
                      hrs_avq_by_region
         factor_avq.clip(lower=0.0,upper=5.0,inplace=True)
         factor_avq[factor_avq.isna()] = 1.0
-        factor_avd = targets_by_region['heures_tot_trav_avd'] / \
+        factor_avd = targets_by_region['heures_tot_trav_avd']*(1.0-targets_by_region['tx_hrs_dep_avd']) / \
                      hrs_avd_by_region
         factor_avd.clip(lower=0.0,upper=5.0,inplace=True)
         factor_avd[factor_avd.isna()] = 1.0
@@ -98,7 +98,6 @@ class ces:
         return
 
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
-        t = getattr(self, domain)
         if domain == 'registry':
             if 'smaf' in colvars:
                 table = self.registry.loc[:,['iso_smaf_tot'+str(s) for s in range(1,15)]]
