@@ -60,27 +60,26 @@ class dispatcher:
         for s in range(self.ns):
             for a in range(self.na):
                     self.count_states[s,a,:,0] = self.smafs[s,a] * self.pi0[s,a,:]
-        for n in range(self.n-1,-1,-1):
-            nusers = np.sum(self.count_states[:, :, n, 0])
-            avail_spots = max(self.n_cap[n] - nusers,0)
-            if avail_spots>0:
-                for s in range(self.ns-1,-1,-1):
-                    for a in range(self.na-1,-1,-1):
-                        for j in range(self.n-1,-1,-1):
-                            waiters = self.count_wait[s,a,j,n,0]
-                            if avail_spots > waiters:
-                                self.count_states[s,a,n,0] += waiters
-                                self.count_wait[s,a,j,n,0] = 0
-                                avail_spots -= waiters
-                            else :
-                                self.count_states[s,a,n,0] += avail_spots
-                                self.count_wait[s,a,j,n,0] -= avail_spots
-                                avail_spots = 0
+        #for n in range(self.n-1,-1,-1):
+        #    nusers = np.sum(self.count_states[:, :, n, 0])
+        #    avail_spots = max(self.n_cap[n] - nusers,0)
+        #    if avail_spots>0:
+        #        for s in range(self.ns-1,-1,-1):
+        #            for a in range(self.na-1,-1,-1):
+        #                for j in range(self.n-1,-1,-1):
+        #                    waiters = self.count_wait[s,a,j,n,0]
+        #                    if avail_spots > waiters:
+        #                        self.count_states[s,a,n,0] += waiters
+        #                        self.count_wait[s,a,j,n,0] = 0
+        #                        avail_spots -= waiters
+        #                    else :
+        #                        self.count_states[s,a,n,0] += avail_spots
+        #                        self.count_wait[s,a,j,n,0] -= avail_spots
+        #                        avail_spots = 0
 
         # once checked waiting list, deal with excess users
         for n in range(self.n-1,0,-1):
             nusers = np.sum(self.count_states[:,:,n,0]) + np.sum(self.count_wait[:,:,n,:,0])
-#            print(n, nusers, self.n_cap[n], nusers - self.n_cap[n])
             if nusers > self.n_cap[n]:
                 excess = max(nusers - self.n_cap[n],0)
                 for s in range(self.ns):
@@ -88,20 +87,24 @@ class dispatcher:
                         users = self.count_states[s, a, n, 0]
                         if excess <= users:
                             self.count_states[s,a,n,0] -= excess
-                            #self.count_states[s,a,n-1,0] += excess
                             self.count_wait[s,a,n-1,n,0] += excess
                             excess = 0
                         else :
                             self.count_states[s,a,n,0] -= users
-                            #self.count_states[s,a,n-1,0] += users
                             self.count_wait[s,a,n-1,n,0] += users
                             excess -= users
-#        print('after constraints')
-        for n in range(self.n-1,-1,-1):
-            nusers = np.sum(self.count_states[:, :, n, 0]) + np.sum(self.count_wait[:,:,n,:,0])
-            avail_spots = max(self.n_cap[n] - nusers,0)
-#            print(n, nusers, self.n_cap[n], avail_spots)
-
+                for j in range(self.n-1,0,-1):
+                    for s in range(self.ns):
+                        for a in range(self.na):
+                            waiters = self.count_wait[s,a,n,j,0]
+                            if excess <= waiters:
+                                self.count_wait[s,a,n,j,0] -= excess
+                                self.count_wait[s,a,n-1,j,0] += excess
+                                excess = 0
+                            else :
+                                self.count_states[s,a,n,0] -= waiters
+                                self.count_wait[s,a,n-1,n,0] += waiters
+                                excess -= waiters
         return
     def next_state(self,m):
         self.count_states[:,:,:,m+1], self.count_wait[:,:,:,:,m+1] = transition(self.count_states[:,:,:,m],self.count_wait[:,:,:,:,m], self.pi,
@@ -251,6 +254,25 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
             for a in range(na-1,-1,-1):
                 for j in range(nn-1,-1,-1):
                   next_wait[s,a,j,n] += appl[s,a,j]
+    # deal with excess users
+    for n in range(nn-1,-1,-1):
+        nstay = np.sum(next_state[:, :, n])
+        nstay += np.sum(next_wait[:,:,n,:])
+
+        if nstay>ncaps[n]:
+            excess = max(nstay - ncaps[n],0)
+            for j in range(nn-1,0,-1):
+                for s in range(0,ns):
+                    for a in range(0,na):
+                        waiters = next_wait[s,a,n,j]
+                        if (excess <= waiters) & (waiters>0) & (n-1!=j):
+                            next_wait[s,a,n,j] -= excess
+                            next_wait[s,a,n-1,j] += excess
+                            excess = 0
+                        elif (excess > waiters) & (waiters>0) & (n-1!=j):
+                            next_wait[s,a,n,j] -= waiters
+                            next_wait[s,a,n-1,j] += waiters
+                            excess -= waiters
     # go to next n, coming down
     return next_state, next_wait
 
