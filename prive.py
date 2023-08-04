@@ -98,9 +98,12 @@ class prive:
             'nb_etc_avd'] * self.registry['hrs_per_etc_avd']
         self.registry['cout_total'] = self.registry['cout_var'] + self.registry['cout_fixe']
         return
-    def workforce(self):
+    def workforce(self,before_base_yr=False):
         for c in ['avd','avq']:
-            attr = getattr(self.policy,'prive_'+c+'_rate')
+            if before_base_yr:
+                attr = 1.0
+            else:
+                attr = getattr(self.policy,'prive_'+c+'_rate')
             self.registry['nb_etc_'+c] += \
                         attr * self.registry['worker_needs_'+c]
         return

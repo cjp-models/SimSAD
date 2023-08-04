@@ -380,14 +380,17 @@ class clsc:
 
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_achete']
         return
-    def workforce(self):
+    def workforce(self,before_base_yr=False):
         self.registry['nb_etc_inf'] = 0
         self.registry['nb_etc_avq'] = 0
         self.registry['nb_etc_avd'] = 0
         for m in ['home','rpa']:
             for c in self.care_types:
                 tag = c+'_'+m
-                attr = getattr(self,'clsc_'+c+'_rate')
+                if before_base_yr:
+                    attr = 1.0
+                else:
+                    attr = getattr(self,'clsc_'+c+'_rate')
                 self.registry['nb_etc_'+tag] += \
                     attr * self.worker_needs.loc[:,tag]
                 self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
@@ -420,7 +423,6 @@ class clsc:
 @njit((int64[:])(float64[:,:]), cache=True, parallel=True)
 def draw_multinomial(prob):
         n, m = prob.shape
-        set = np.arange(m)
         result = np.zeros(n,dtype='int64')
         u = np.random.uniform(a=0.0,b=1.0,size=n)
         for i in prange(n):

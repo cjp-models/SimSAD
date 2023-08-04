@@ -162,6 +162,11 @@ class projection:
                     'cah_chsld','cah_ri','cah_nsa','pefsad_usager','total',
                     'gouv','usagers'], aggfunc='sum',
                             start_yr=show_yr, stop_yr=self.stop_yr)
+        self.tracker.add_entry('clsc_worker_needs', 'clsc', 'registry',
+                            rowvars=['region_id'],
+                            colvars=['worker_needs_inf','worker_needs_avq','worker_needs_avd'],
+                               aggfunc='sum',
+                            start_yr=show_yr, stop_yr=self.stop_yr)
         return
 
 
@@ -298,6 +303,11 @@ class projection:
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
+        
+        #if self.yr==self.start_yr:
+        #    print('cap_chsld, cap_ri,cap_nsa,cap_rpa')
+        #    print(self.chsld.registry.loc[:,'nb_places_tot'].sum(),self.ri.registry.loc[:, 'nb_places'].sum(),self.nsa.registry.loc[:,'nb_places'].sum(),self.rpa.registry.loc[:, 'nb_places_sad'].sum())
+       
         # create user sets
         self.create_users()
         return
@@ -452,16 +462,23 @@ class projection:
     
     def next(self):
         self.yr +=1 
+        
+        # workforce adjustments (chsld, ri done with build)
+        if self.yr<=self.base_yr:
+            self.clsc.workforce(before_base_yr=True)
+            self.eesad.workforce(before_base_yr=True)
+            self.prive.workforce(before_base_yr=True)
+        else:
+            self.clsc.workforce()
+            self.eesad.workforce()
+            self.prive.workforce()
+
         # build new places for institutional settings
         if self.yr>self.base_yr:
             self.chsld.build()
             self.chsld.purchase()
             self.ri.build()
             self.rpa.build()
-            # workforce adjustments (chsld, ri done with build)
-            self.clsc.workforce()
-            self.eesad.workforce()
-            self.prive.workforce()
         return
     def save(self, output_dir):
         self.tracker.save(output_dir, self.policy)

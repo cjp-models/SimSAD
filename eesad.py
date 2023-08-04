@@ -83,7 +83,9 @@ class eesad:
         self.registry['cout_var'] = self.registry['sal_avd'] * self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
         return
-    def workforce(self):
+    def workforce(self,before_base_yr=False):
+        if before_base_yr:
+            self.policy.eesad_avd_rate = 1.0
         self.registry['nb_etc_avd'] += self.policy.eesad_avd_rate * \
                                            self.registry['worker_needs']
         return
