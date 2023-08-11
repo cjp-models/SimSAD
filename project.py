@@ -267,7 +267,8 @@ class projection:
             agent.setup_params(init_prob = iprob, trans_prob = tprob,
                                surv_prob = sprob, wait_count = wait_count,
                                wait_prob_chsld = wprob_chsld,
-                               wait_prob_ri = wprob_ri)
+                               wait_prob_ri = wprob_ri, policy = self.policy,
+                               pref_pars = self.prefs.pars)
             # deal with capacity
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']

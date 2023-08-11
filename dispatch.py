@@ -29,7 +29,8 @@ class dispatcher:
         self.n_cap[4] = n_nsa
         self.n_cap[5] = n_chsld
         return
-    def setup_params(self, init_prob, trans_prob, surv_prob, wait_count, wait_prob_chsld, wait_prob_ri):
+    def setup_params(self, init_prob, trans_prob, surv_prob, wait_count,
+                     wait_prob_chsld, wait_prob_ri, policy, pref_pars):
         # number of months (includes an initial state)
         self.m = 13
         # number of smafs
@@ -43,6 +44,60 @@ class dispatcher:
         for s in range(self.ns):
             for a in range(self.na):
                 self.pi[s,a,:,:] = trans_prob[s,a,:].reshape((self.n,self.n))
+        self.pi_temp = np.copy(self.pi)
+        # apply policy to transition rates
+        # change if changing service rate at home
+        # change origins from states 0 and 1 (at home)
+        if policy.delta_inf_rate > 0.0:
+            k = 1
+            dx = policy.delta_inf_rate
+            for s in range(self.ns):
+                beta = pref_pars.loc['tx_serv_inf',1+s]
+                for a in range(self.na):
+                    for j in range(self.n):
+                        if j==k:
+                            self.pi[s,a,0,j] = self.pi_temp[s,a,0,
+                            j] + self.pi_temp[s,a,0,
+                            j]*(1.0-self.pi_temp[
+                                s,a,0,j])*beta*dx
+                            self.pi[s,a,1,j] = self.pi_temp[s,a,1,
+                            j] + self.pi_temp[s,a,1,
+                            j]*(1.0-self.pi_temp[
+                                s,a,1,j])*beta*dx
+                        else :
+                            self.pi[s,a,0,j] = self.pi_temp[s,a,0,
+                            j] - self.pi_temp[s,a,0,
+                            j]*self.pi_temp[
+                                s,a,0,k]*beta*dx
+                            self.pi[s,a,1,j] = self.pi_temp[s,a,1,
+                            j] - self.pi_temp[s,a,1,
+                            j]*self.pi_temp[s,a,1,k]*beta*dx
+        self.pi_temp = np.copy(self.pi)
+        if policy.delta_avq_rate > 0.0:
+            k = 1
+            dx = policy.delta_avq_rate
+            for s in range(self.ns):
+                beta = pref_pars.loc['tx_serv_avq',1+s]
+                for a in range(self.na):
+                    for j in range(self.n):
+                        if j==k:
+                            self.pi[s,a,0,j] = self.pi_temp[s,a,0,
+                            j] +  self.pi_temp[s,a,0,
+                            j]*(1.0-self.pi_temp[
+                                s,a,0,j])*beta*dx
+                            self.pi[s,a,1,j] = self.pi_temp[s,a,1,
+                            j] + self.pi_temp[s,a,1,
+                            j]*(1.0-self.pi_temp[
+                                s,a,1,j])*beta*dx
+                        else :
+                            self.pi[s,a,0,j] = self.pi_temp[s,a,0,
+                            j] - self.pi_temp[s,a,0,
+                            j]*self.pi_temp[
+                                s,a,0,k]*beta*dx
+                            self.pi[s,a,1,j] = self.pi_temp[s,a,1,
+                            j] - self.pi_temp[s,a,1,
+                            j]*self.pi_temp[
+                                s,a,1,k]*beta*dx
         # survival probability (month-to-month)
         self.ss = surv_prob
         self.wait_init = wait_count
