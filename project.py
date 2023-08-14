@@ -350,9 +350,10 @@ class projection:
         return
     def clsc_services(self):
         # determine services
-        self.home.users = self.clsc.assign(self.home.users,'home')
-        self.rpa.users = self.clsc.assign(self.rpa.users,'rpa')
-        self.ri.users = self.clsc.assign(self.ri.users,'ri')
+        self.home.users = self.clsc.assign(self.home.users,'home',
+                                           self.policy, self.yr)
+        self.rpa.users = self.clsc.assign(self.rpa.users,'rpa',self.policy,self.yr)
+        self.ri.users = self.clsc.assign(self.ri.users,'ri',self.policy,self.yr)
         self.clsc.compute_supply()
         if self.policy.clsc_cap:
             self.home.users = self.clsc.cap(self.home.users,'home')
@@ -453,9 +454,10 @@ class projection:
         # determine CES (private services)
         self.private_services()
         # adjusting CSLC services to reach targeted services rate
-        if ((self.policy.delta_inf_rate > 0.0) | (self.policy.delta_avq_rate > 0.0)) \
-              & (self.yr==self.base_yr):
-            self.clsc_delta_rate()
+        #if ((self.policy.delta_inf_rate > 0.0) | (self.policy.delta_avq_rate
+        # > 0.0)) \
+        #      & (self.yr==self.base_yr):
+        #    self.clsc_delta_rate()
         # determine CMD
         self.cmd_payout()
         # update users with service rate and net oop cost

@@ -59,7 +59,7 @@ class dispatcher:
             k = 1
             dx_inf = policy.delta_inf_rate
             dx_avq = policy.delta_avq_rate
-            dx_avd = policy.delta_avq_rate
+            dx_avd = policy.delta_avd_rate
             for s in range(self.ns):
                 beta_inf = pref_pars.loc['tx_serv_inf',1+s]
                 beta_avq = pref_pars.loc['tx_serv_avq',1+s]

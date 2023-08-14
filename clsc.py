@@ -171,7 +171,7 @@ class clsc:
             self.count.sort_index(inplace=True)
             self.count.index.names = ['milieux','region_id','iso_smaf','svc']
         return
-    def assign(self, users, milieu):
+    def assign(self, users, milieu, policy, yr):
         # find parameters
         pars_inf_avq = self.pars_inf_avq.loc[
                        self.pars_inf_avq.index.get_level_values(
@@ -231,12 +231,16 @@ class clsc:
         users.sort_index(inplace=True)
         # for those without services, set choice to 0 (no services)
         users.loc[users.choice.isna(),'choice'] = 0
-
+        # adjust services to reach target service rate
+        if milieu=='home':
+            if yr>=2023:
+                for c in self.care_types:
+                    delta = getattr(policy,'delta_'+c+'_rate')/100.0
+                    users['clsc_'+c+'_hrs'] += delta * users['needs_'+c]
         if milieu!='ri':
             counts_any_svc = users.groupby(['region_id']).apply(
                 lambda d: (d['any_svc']*d['wgt']).sum())
             self.registry['nb_usagers_'+milieu] = counts_any_svc
-
         counts = pd.concat([users.groupby(['region_id','iso_smaf']).apply(
             lambda d: (d['clsc_'+c+'_any']*d['wgt']).sum()) for c in self.care_types],
                                axis=1)
