@@ -389,8 +389,9 @@ class projection:
         self.home.users,self.rpa.users = self.cmd.calibrate(self.home.users,self.rpa.users, self.yr)
         self.cmd.compute_costs(self.home.users, self.rpa.users)
         return
-    def clsc_delta_rate(self):
-        self.home.users = self.clsc.delta_rate(self.home.users,'home',self.policy)
+    #def clsc_delta_rate(self):
+    #    self.home.users = self.clsc.delta_rate(self.home.users,'home',
+    #    self.policy)
     def finance(self):
         # add total program costs
         items = ['clsc','chsld','ri','nsa','ces','pefsad','cmd',

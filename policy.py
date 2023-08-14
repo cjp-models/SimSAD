@@ -3,7 +3,7 @@ class policy:
     def __init__(self):
         self.chsld_build = True
         self.chsld_build_rate = 0.2
-        self.ri_build = False
+        self.ri_build = True
         self.ri_build_rate = 0.2
         self.rpa_penetrate = False
         self.rpa_penetrate_rate = 0.25

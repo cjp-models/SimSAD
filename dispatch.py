@@ -61,20 +61,35 @@ class dispatcher:
             dx_avq = policy.delta_avq_rate
             dx_avd = policy.delta_avd_rate
             for s in range(self.ns):
-                beta_inf = pref_pars.loc['tx_serv_inf',1+s]
-                beta_avq = pref_pars.loc['tx_serv_avq',1+s]
-                beta_avd = pref_pars.loc['tx_serv_avd',1+s]
+                # only for smaf 4 to 10
+                if s >= 3 and s<=9:
+                    beta_inf = pref_pars.loc['tx_serv_inf',1+s]
+                    beta_avq = pref_pars.loc['tx_serv_avq',1+s]
+                    beta_avd = pref_pars.loc['tx_serv_avd',1+s]
+                else :
+                    beta_inf = 0.0
+                    beta_avq = 0.0
+                    beta_avd = 0.0
                 for a in range(self.na):
                     for j in range(self.n):
                         if j==k:
                             #self.pi[s,a,0,j] = self.pi_temp[s,a,0,j] \
                             #    + self.pi_temp[s,a,0,j]*(1.0-self.pi_temp[s,a,0,j])*beta_inf*dx
+                            #self.pi[s,a,0,j] = pi_temp[s,a,0,j]   \
+                            #    + pi_temp[s,a,0,j]*(1.0-pi_temp[s,a,0,j]) \
+                            #     *(beta_inf*dx_inf + beta_avq*dx_avq +
+                            #     beta_avd*dx_avd)
+
                             self.pi[s,a,1,j] = pi_temp[s,a,1,j]   \
                                 + pi_temp[s,a,1,j]*(1.0-pi_temp[s,a,1,j]) \
-                                 *(beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd) 
+                                 *(beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd)
                         else :
                             #self.pi[s,a,0,j] = self.pi_temp[s,a,0,j]  \
                             #    - self.pi_temp[s,a,0,j]*self.pi_temp[s,a,0,k]*beta_inf*dx
+                            #self.pi[s,a,0,j] = pi_temp[s,a,0,j] \
+                            #    - pi_temp[s,a,0,j]*pi_temp[s,a,0,k] \
+                            #     *(beta_inf*dx_inf + beta_avq*dx_avq +
+                            #     beta_avd*dx_avd)
                             self.pi[s,a,1,j] = pi_temp[s,a,1,j] \
                                 - pi_temp[s,a,1,j]*pi_temp[s,a,1,k] \
                                  *(beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd) 

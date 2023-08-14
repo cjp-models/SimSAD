@@ -236,7 +236,11 @@ class clsc:
             if yr>=2023:
                 for c in self.care_types:
                     delta = getattr(policy,'delta_'+c+'_rate')/100.0
-                    users['clsc_'+c+'_hrs'] += delta * users['needs_'+c]
+                    smafs = [s for s in range(4,11)]
+                    cond = users['iso_smaf'].isin(smafs)
+                    users.loc[cond, 'clsc_'+c+'_hrs'] += delta * users.loc[
+                        cond, 'needs_'+c]
+
         if milieu!='ri':
             counts_any_svc = users.groupby(['region_id']).apply(
                 lambda d: (d['any_svc']*d['wgt']).sum())
