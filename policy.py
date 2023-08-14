@@ -32,4 +32,6 @@ class policy:
         self.delta_inf_rate = 0.0
         self.delta_avq_rate = 0.0
         self.delta_avd_rate = 0.0
+        self.delta_cah_chsld  = 0.0
+        self.delta_cah_ri  = 0.0
         return

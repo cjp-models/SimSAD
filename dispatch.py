@@ -50,49 +50,58 @@ class dispatcher:
         self.wprob_chsld = wait_prob_chsld
         self.wprob_ri = wait_prob_ri
         return
-    def marginal_effect(self, policy, pref_pars):
-        # apply policy to transition rates
-        # change if changing service rate at home
-        # change origins from states 0 and 1 (at home)
-        if (policy.delta_inf_rate > 0.0) | (policy.delta_avq_rate > 0.0) | (policy.delta_avd_rate > 0.0):
+    def marginal_effect(self, policy, pref_pars, cah_ri, cah_chsld):
+        # change for service rates (domicile)
+        pi_temp = np.copy(self.pi)
+        k = 1
+        dx_inf = policy.delta_inf_rate
+        dx_avq = policy.delta_avq_rate
+        dx_avd = policy.delta_avd_rate
+        for s in range(self.ns):
+            # only for smaf 4 to 10
+            if s >= 3 and s<=9:
+                beta_inf = pref_pars.loc['tx_serv_inf',1+s]
+                beta_avq = pref_pars.loc['tx_serv_avq',1+s]
+                beta_avd = pref_pars.loc['tx_serv_avd',1+s]
+            else :
+                beta_inf = 0.0
+                beta_avq = 0.0
+                beta_avd = 0.0
+            dz = beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd
+            for a in range(self.na):
+                for j in range(self.n):
+                    if j==k:
+                        for w in range(self.n):
+                            self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
+                                + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,w,j]) * dz
+                    else :
+                        for w in range(self.n):
+                            self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
+                                - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
+        # change for cost
+        for k in [3, 4, 5]:
             pi_temp = np.copy(self.pi)
-            k = 1
-            dx_inf = policy.delta_inf_rate
-            dx_avq = policy.delta_avq_rate
-            dx_avd = policy.delta_avd_rate
             for s in range(self.ns):
                 # only for smaf 4 to 10
-                if s >= 3 and s<=9:
-                    beta_inf = pref_pars.loc['tx_serv_inf',1+s]
-                    beta_avq = pref_pars.loc['tx_serv_avq',1+s]
-                    beta_avd = pref_pars.loc['tx_serv_avd',1+s]
+                beta = pref_pars.loc['cost',1+s]
+                if k==3:
+                    dz = beta * cah_ri * (policy.delta_cah_ri / 100.0) / 12.0\
+                         * \
+                                                                      1e-3
                 else :
-                    beta_inf = 0.0
-                    beta_avq = 0.0
-                    beta_avd = 0.0
+                    dz = beta * cah_chsld * (policy.delta_cah_chsld / 100.0) / \
+                         12.0 * 1e-3
                 for a in range(self.na):
                     for j in range(self.n):
                         if j==k:
-                            #self.pi[s,a,0,j] = self.pi_temp[s,a,0,j] \
-                            #    + self.pi_temp[s,a,0,j]*(1.0-self.pi_temp[s,a,0,j])*beta_inf*dx
-                            #self.pi[s,a,0,j] = pi_temp[s,a,0,j]   \
-                            #    + pi_temp[s,a,0,j]*(1.0-pi_temp[s,a,0,j]) \
-                            #     *(beta_inf*dx_inf + beta_avq*dx_avq +
-                            #     beta_avd*dx_avd)
-
-                            self.pi[s,a,1,j] = pi_temp[s,a,1,j]   \
-                                + pi_temp[s,a,1,j]*(1.0-pi_temp[s,a,1,j]) \
-                                 *(beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd)
+                            for w in range(self.n):
+                                self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
+                                        + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,
+                                w,j]) * dz
                         else :
-                            #self.pi[s,a,0,j] = self.pi_temp[s,a,0,j]  \
-                            #    - self.pi_temp[s,a,0,j]*self.pi_temp[s,a,0,k]*beta_inf*dx
-                            #self.pi[s,a,0,j] = pi_temp[s,a,0,j] \
-                            #    - pi_temp[s,a,0,j]*pi_temp[s,a,0,k] \
-                            #     *(beta_inf*dx_inf + beta_avq*dx_avq +
-                            #     beta_avd*dx_avd)
-                            self.pi[s,a,1,j] = pi_temp[s,a,1,j] \
-                                - pi_temp[s,a,1,j]*pi_temp[s,a,1,k] \
-                                 *(beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd) 
+                            for w in range(self.n):
+                                self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
+                                    - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
         return
     def init_smaf(self,smafs):
         self.smafs = smafs

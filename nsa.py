@@ -74,7 +74,8 @@ class nsa:
         self.users['tx_serv_avd'] = 100.0
         for r in range(1,19):
             self.users.loc[self.users.region_id==r,'cost'] = \
-                self.registry.loc[r,'cah']
+                self.registry.loc[r,'cah'] * (1.0 +
+                                              self.policy.delta_cah_chsld/100.0)
         self.users['cost'] *= 1/12
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):

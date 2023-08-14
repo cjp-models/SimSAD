@@ -193,7 +193,8 @@ class chsld:
             self.users.loc[self.users.region_id==r,'serv_avq'] = \
                 hrs_per_users_avq.loc[r]
             self.users.loc[self.users.region_id==r,'cost'] = \
-                self.registry.loc[r,'cah']
+                self.registry.loc[r,'cah'] * (1.0 +
+                                              self.policy.delta_cah_chsld/100.0)
         self.users['serv_avd'] = self.users['needs_avd']
         for c in ['inf','avq','avd']:
             self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[

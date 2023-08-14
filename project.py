@@ -270,17 +270,19 @@ class projection:
                                wait_prob_ri = wprob_ri)
             # marginal effect on transition matrix
             if self.yr>=self.base_yr:
-                agent.marginal_effect(policy = self.policy, pref_pars = self.prefs.pars)
+                cah_chsld = self.chsld.registry.loc[r,'cah']
+                cah_ri = self.ri.registry.loc[r,'cah']
+                agent.marginal_effect(self.policy,
+                self.prefs.pars, cah_chsld, cah_ri)
+
             # deal with capacity
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']
             cap_nsa = self.nsa.registry.loc[r,'nb_places']
             cap_rpa = self.rpa.registry.loc[r, 'nb_places_sad']
             agent.setup_capacity(cap_rpa, cap_ri, cap_nsa, cap_chsld)
-
             # now assign
             agent.assign()
-                
             # collect for output
             agent.collect()
             self.last_iprob[r-1,:,:,:] = agent.last_state
