@@ -31,5 +31,4 @@ class policy:
         self.ri_avd_rate = 1.0
         self.delta_inf_rate = 0.0
         self.delta_avq_rate = 0.0
-        self.delta_avd_rate = 0.0
         return

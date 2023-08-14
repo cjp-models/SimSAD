@@ -43,13 +43,16 @@ class nsa:
         n = needs()
         for c in ['inf','avq','avd']:
             self.users['needs_'+c] = 0.0
+            self.users['serv_'+c] = 0.0
         for s in range(1,15):
-            self.users.loc[self.users.smaf==s,'needs_inf'] = n.inf[
-                                                                 s-1]*self.days_per_year
-            self.users.loc[self.users.smaf==s,'needs_avq'] = n.avq[
-                                                                 s-1]*self.days_per_year
-            self.users.loc[self.users.smaf==s,'needs_avd'] = n.avd[
-                                                                 s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_inf'] = n.inf[s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_avq'] = n.avq[s-1]*self.days_per_year
+            self.users.loc[self.users.smaf==s,'needs_avd'] = n.avd[s-1]*self.days_per_year
+            
+            self.users.loc[self.users.smaf==s,'serv_inf'] = self.users.loc[self.users.smaf==s,'needs_inf']
+            self.users.loc[self.users.smaf==s,'serv_avq'] = self.users.loc[self.users.smaf==s,'needs_avq']
+            self.users.loc[self.users.smaf==s,'serv_avd'] = self.users.loc[self.users.smaf==s,'needs_avd']
+
         self.users['tx_serv_inf'] = 0.0
         self.users['tx_serv_avq'] = 0.0
         self.users['tx_serv_avd'] = 0.0

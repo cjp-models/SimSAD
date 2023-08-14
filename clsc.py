@@ -314,7 +314,49 @@ class clsc:
 
         self.registry[['worker_needs_inf','worker_needs_avq','worker_needs_avd']] = 0.0
         return
+    def delta_rate(self, users, milieu, policy):
+        care_types = ['inf','avq']
 
+        users['dx_inf'] = policy.delta_inf_rate
+        users['dx_avq'] = policy.delta_avq_rate
+
+        cond = (users['any_svc'] == True)
+        for c in care_types:
+            tag = c+'_'+milieu
+            users['delta_serv_'+c] = 0.0
+            users.loc[cond,'delta_serv_'+c] = users.loc[cond,'dx_'+c] * 0.01 * users.loc[cond,'needs_'+c] 
+
+            #ajusting services parameters
+
+            #À COMPLÉTER
+            #factor = ones()
+            #self.pars_hrs.sort_index(inplace=True)
+            #self.pars_hrs.loc[(milieu),'hrs_'+c] *= factor
+
+            #ajusting hours of services
+            users['clsc_'+c+'_hrs'] += users['delta_serv_'+c]
+
+            #ajusting supply
+            excess = users.groupby(['region_id']).apply(
+                lambda d: (d['delta_serv_'+c]*d['wgt']).sum())
+            indirect = (1.0 - self.registry[
+                    'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
+            excess = excess / indirect
+            excess.fillna(0,inplace=True)
+            self.registry['heures_tot_trav_'+tag] += excess
+            self.registry['supply_'+tag] += excess
+            self.registry['supply_'+c] += excess
+
+            #ajusting costs
+            self.registry['cout_var'] += excess * self.registry['sal_'+c]
+            self.registry['cout_total'] += excess * self.registry['sal_'+c]
+
+            #ajusting ETC number
+            excess = excess / self.registry['hrs_etc_' + tag]
+            excess.fillna(0,inplace=True)
+            self.registry['nb_etc_'+tag] += excess
+            self.registry['nb_etc_'+c] += excess
+        return users
     def cap(self, users, milieu):
         hrs_free = pd.pivot_table(data=self.count, index=['region_id'],
                                   columns=['milieux','svc'], values='hrs',

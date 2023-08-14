@@ -267,8 +267,10 @@ class projection:
             agent.setup_params(init_prob = iprob, trans_prob = tprob,
                                surv_prob = sprob, wait_count = wait_count,
                                wait_prob_chsld = wprob_chsld,
-                               wait_prob_ri = wprob_ri, policy = self.policy,
-                               pref_pars = self.prefs.pars)
+                               wait_prob_ri = wprob_ri)
+            # marginal effect on transition matrix
+            if self.yr>=self.base_yr:
+                agent.marginal_effect(policy = self.policy, pref_pars = self.prefs.pars)
             # deal with capacity
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']
@@ -351,7 +353,6 @@ class projection:
         self.home.users = self.clsc.assign(self.home.users,'home')
         self.rpa.users = self.clsc.assign(self.rpa.users,'rpa')
         self.ri.users = self.clsc.assign(self.ri.users,'ri')
-        # adjust services to supply
         self.clsc.compute_supply()
         if self.policy.clsc_cap:
             self.home.users = self.clsc.cap(self.home.users,'home')
@@ -359,7 +360,6 @@ class projection:
             self.ri.users = self.clsc.cap(self.ri.users,'ri')
         # determine costs
         self.clsc.compute_costs()
-
         return
     def eesad_services(self):
         self.home.users = self.pefsad.assign(self.home.users,'home')
@@ -388,6 +388,8 @@ class projection:
         self.home.users,self.rpa.users = self.cmd.calibrate(self.home.users,self.rpa.users, self.yr)
         self.cmd.compute_costs(self.home.users, self.rpa.users)
         return
+    def clsc_delta_rate(self):
+        self.home.users = self.clsc.delta_rate(self.home.users,'home',self.policy)
     def finance(self):
         # add total program costs
         items = ['clsc','chsld','ri','nsa','ces','pefsad','cmd',
@@ -450,6 +452,10 @@ class projection:
         self.eesad_services()
         # determine CES (private services)
         self.private_services()
+        # adjusting CSLC services to reach targeted services rate
+        if ((self.policy.delta_inf_rate > 0.0) | (self.policy.delta_avq_rate > 0.0)) \
+              & (self.yr==self.base_yr):
+            self.clsc_delta_rate()
         # determine CMD
         self.cmd_payout()
         # update users with service rate and net oop cost
