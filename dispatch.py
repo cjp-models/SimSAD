@@ -69,20 +69,24 @@ class dispatcher:
                 beta_avd = 0.0
             dz = beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd
             for a in range(self.na):
-                for j in range(self.n):
+                for j in range(1,self.n):
                     if j==k:
-                        for w in range(self.n):
+                        for w in range(1,self.n):
                             self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
                                 + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,w,j]) * dz
                     else :
-                        for w in range(self.n):
+                        for w in range(1,self.n):
                             self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
                                 - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
+                for w in range(1,self.n):
+                    sum = np.sum(self.pi[s,a,w,1:])
+                    if sum>0:
+                        for j in range(1,self.n):
+                            self.pi[s,a,w,j]=self.pi[s,a,w,j]*(1-self.pi[s,a,w,0])/sum
         # change for cost
         for k in [3, 4, 5]:
             pi_temp = np.copy(self.pi)
             for s in range(self.ns):
-                # only for smaf 4 to 10
                 beta = pref_pars.loc['cost',1+s]
                 if k==3:
                     dz = beta * cah_ri * (policy.delta_cah_ri / 100.0) / 12.0\
@@ -92,16 +96,21 @@ class dispatcher:
                     dz = beta * cah_chsld * (policy.delta_cah_chsld / 100.0) / \
                          12.0 * 1e-3
                 for a in range(self.na):
-                    for j in range(self.n):
+                    for j in range(1,self.n):
                         if j==k:
-                            for w in range(self.n):
+                            for w in range(1,self.n):
                                 self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
                                         + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,
                                 w,j]) * dz
                         else :
-                            for w in range(self.n):
+                            for w in range(1,self.n):
                                 self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
                                     - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
+                for w in range(1,self.n):
+                    sum = np.sum(self.pi[s,a,w,1:])
+                    if sum>0:
+                        for j in range(1,self.n):
+                            self.pi[s,a,w,j]=self.pi[s,a,w,j]*(1-self.pi[s,a,w,0])/sum
         return
     def init_smaf(self,smafs):
         self.smafs = smafs
