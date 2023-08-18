@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd 
 import os 
 from itertools import product
+from .needs import needs
 data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
 from numba import njit, float64, int64, boolean
 from numba.types import Tuple
@@ -54,12 +55,13 @@ class dispatcher:
         # change for service rates (domicile)
         pi_temp = np.copy(self.pi)
         k = 1
+        n = needs()
         dx_inf = policy.delta_inf_rate
         dx_avq = policy.delta_avq_rate
         dx_avd = policy.delta_avd_rate
         for s in range(self.ns):
             # only for smaf 4 to 10
-            if s >= 3 and s<=9:
+            if s >= 3:
                 beta_inf = pref_pars.loc['tx_serv_inf',1+s]
                 beta_avq = pref_pars.loc['tx_serv_avq',1+s]
                 beta_avd = pref_pars.loc['tx_serv_avd',1+s]
@@ -67,7 +69,9 @@ class dispatcher:
                 beta_inf = 0.0
                 beta_avq = 0.0
                 beta_avd = 0.0
-            dz = beta_inf*dx_inf + beta_avq*dx_avq + beta_avd*dx_avd
+            dz = beta_inf*min(dx_inf,dx_inf*n.inf[9]/n.inf[s]) \
+                 + beta_avq*min(dx_avq,dx_avq*n.avq[9]/n.avq[s]) \
+                 + beta_avd*min(dx_avd,dx_avd*n.avd[9]/n.avd[s])
             for a in range(self.na):
                 for j in range(1,self.n):
                     if j==k:
