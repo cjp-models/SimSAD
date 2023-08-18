@@ -98,12 +98,12 @@ class dispatcher:
                 for a in range(self.na):
                     for j in range(1,self.n):
                         if j==k:
-                            for w in range(1,self.n):
+                            for w in range(self.n):
                                 self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
                                         + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,
                                 w,j]) * dz
                         else :
-                            for w in range(1,self.n):
+                            for w in range(self.n):
                                 self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
                                     - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
                 for w in range(1,self.n):

@@ -10,7 +10,7 @@ class policy:
         self.rpa_adapt_rate = 0.5
         self.chsld_purchase = True
         self.chsld_purchase_rate = 0.25
-        self.nsa_open_capacity = 0.1
+        self.nsa_open_capacity = 0.06
         self.chsld_mda = True
         self.infl_construction = 0.01
         self.interest_rate = 0.03
