@@ -350,13 +350,15 @@ class projection:
         self.ri.compute_supply()
         self.ri.compute_costs()
         return
-    def clsc_services(self):
+    def clsc_services_assign(self):
         # determine services
         self.home.users = self.clsc.assign(self.home.users,'home',
                                            self.policy, self.yr)
         self.rpa.users = self.clsc.assign(self.rpa.users,'rpa',self.policy,self.yr)
         self.ri.users = self.clsc.assign(self.ri.users,'ri',self.policy,self.yr)
-        self.clsc.compute_supply()
+        return
+    def clsc_services_cap(self):
+        self.clsc.compute_supply(self.yr)
         if self.policy.clsc_cap:
             self.home.users = self.clsc.cap(self.home.users,'home')
             self.rpa.users = self.clsc.cap(self.rpa.users,'rpa')
@@ -364,22 +366,27 @@ class projection:
         # determine costs
         self.clsc.compute_costs()
         return
-    def eesad_services(self):
+    def eesad_services_assign(self):
         self.home.users = self.pefsad.assign(self.home.users,'home')
         self.rpa.users = self.pefsad.assign(self.rpa.users,'rpa')
         self.home.users, self.rpa.users = self.eesad.assign(self.home.users,
                                                           self.rpa.users)
+        return
+    def eesad_services_cap(self):
         self.eesad.compute_supply()
         if self.policy.eesad_cap:
             self.home.users, self.rpa.users = self.eesad.cap(self.home.users, self.rpa.users)
         self.eesad.compute_costs()
         return
-    def private_services(self):
+
+    def private_services_assign(self):
         self.home.users = self.ces.assign(self.home.users)
         if self.yr==2021:
            self.ces.calibrate(self.home.users,
                               self.prive.registry)
         self.prive.assign(self.home.users)
+        return
+    def private_services_cap(self):
         self.prive.compute_supply()
         if self.policy.prive_cap:
             self.home.users = self.prive.cap(self.home.users)
@@ -391,9 +398,7 @@ class projection:
         self.home.users,self.rpa.users = self.cmd.calibrate(self.home.users,self.rpa.users, self.yr)
         self.cmd.compute_costs(self.home.users, self.rpa.users)
         return
-    #def clsc_delta_rate(self):
-    #    self.home.users = self.clsc.delta_rate(self.home.users,'home',
-    #    self.policy)
+
     def finance(self):
         # add total program costs
         items = ['clsc','chsld','ri','nsa','ces','pefsad','cmd',
@@ -451,16 +456,19 @@ class projection:
         # NSA
         self.nsa_services()
         # determine services SAD offered by CLSC
-        self.clsc_services()
+        self.clsc_services_assign()
         # determine PEFSAD (and ESSAD care)
-        self.eesad_services()
+        self.eesad_services_assign()
         # determine CES (private services)
-        self.private_services()
-        # adjusting CSLC services to reach targeted services rate
-        #if ((self.policy.delta_inf_rate > 0.0) | (self.policy.delta_avq_rate
-        # > 0.0)) \
-        #      & (self.yr==self.base_yr):
-        #    self.clsc_delta_rate()
+        self.private_services_assign()
+
+        # determine services SAD offered by CLSC
+        self.clsc_services_cap()
+        # determine PEFSAD (and ESSAD care)
+        self.eesad_services_cap()
+        # determine CES (private services)
+        self.private_services_cap()
+
         # determine CMD
         self.cmd_payout()
         # update users with service rate and net oop cost

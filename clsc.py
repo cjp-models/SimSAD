@@ -13,6 +13,7 @@ class clsc:
         self.care_types = ['inf','avq','avd']
         self.purchase_prive = policy.purchase_prive
         self.purchase_eesad = policy.purchase_eesad
+        self.policy = policy
         self.clsc_inf_rate = policy.clsc_inf_rate
         self.clsc_avq_rate = policy.clsc_avq_rate
         self.clsc_avd_rate = policy.clsc_avd_rate
@@ -271,7 +272,8 @@ class clsc:
         self.count.update(counts,join='left',overwrite=True)
         self.count.update(hrs, join='left', overwrite=True)
         return users
-    def compute_supply(self):
+    def compute_supply(self, yr):
+        reg = 1
         # hours supplied by CLSC
         for m in ['home','rpa']:
             for c in self.care_types:
@@ -281,7 +283,25 @@ class clsc:
                 self.registry['supply_'+tag] *= (1.0-self.registry[
                     'tx_hrs_dep_'+c] - self.registry[
                     'tx_hrs_admin_'+c])
-
+        # if policy yr, outsource avq and avq
+        if yr==2023:
+            for m in ['home', 'rpa']:
+                for c in ['avq','avd']:
+                    tag = c + '_' + m
+                    supply_hrs = self.registry['supply_'+tag].copy()
+                    indirect = (1.0 - self.registry[
+                        'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' +
+                                                           c]) * self.registry['hrs_etc_' + tag]
+                    for s in ['eesad', 'prive']:
+                        rate = getattr(self.policy,'clsc_shift_' + c + '_' + s)
+                        self.registry['hrs_sa_' + c + '_' + s + '_'+m] += \
+                            rate*supply_hrs
+                        self.registry['supply_' + tag] = self.registry[
+                            'supply_' + tag] - rate*supply_hrs
+                        self.registry['nb_etc_' + tag] = self.registry[
+                            'nb_etc_' + tag] - rate*supply_hrs/indirect
+                    self.registry['supply_' + tag].clip(lower=0.0,inplace=True)
+                    self.registry['nb_etc_' + tag].clip(lower=0.0,inplace=True)
         tag = 'inf_ri'
         self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * \
                                               self.registry['hrs_etc_'+tag]
@@ -294,11 +314,25 @@ class clsc:
             for s in ['prive','eesad']:
                 if self.purchase_home.loc[c,s]:
                     self.registry['supply_'+c+'_home'] += self.registry['hrs_sa_'+c+'_'+s+'_home']
+
         # add hours purchased add hours purchased from EESAD and PRIVE for RPA
         for c in self.care_types:
             for s in ['prive','eesad']:
                 if self.purchase_rpa.loc[c,s]:
                     self.registry['supply_'+c+'_rpa'] += self.registry['hrs_sa_'+c+'_'+s+'_rpa']
+
+        # recompile number of workers
+        for c in self.care_types:
+            self.registry['nb_etc_'+c] = 0.0
+            for m in ['home','rpa','ri']:
+                tag = c + '_' + m
+                if m=='ri':
+                    if c=='inf':
+                        self.registry['nb_etc_'+c] += self.registry[
+                            'nb_etc_'+tag]
+                else :
+                    self.registry['nb_etc_' + c] += self.registry[
+                        'nb_etc_' + tag]
 
         # add up to get overall supply
         self.registry['supply_inf'] = self.registry[['supply_inf_'+c for c in
@@ -323,49 +357,7 @@ class clsc:
 
         self.registry[['worker_needs_inf','worker_needs_avq','worker_needs_avd']] = 0.0
         return
-    # def delta_rate(self, users, milieu, policy):
-    #     care_types = ['inf','avq']
-    #
-    #     users['dx_inf'] = policy.delta_inf_rate
-    #     users['dx_avq'] = policy.delta_avq_rate
-    #
-    #     cond = (users['any_svc'] == True)
-    #     for c in care_types:
-    #         tag = c+'_'+milieu
-    #         users['delta_serv_'+c] = 0.0
-    #         users.loc[cond,'delta_serv_'+c] = users.loc[cond,'dx_'+c] * 0.01 * users.loc[cond,'needs_'+c]
-    #
-    #         #ajusting services parameters
-    #
-    #         #À COMPLÉTER
-    #         #factor = ones()
-    #         #self.pars_hrs.sort_index(inplace=True)
-    #         #self.pars_hrs.loc[(milieu),'hrs_'+c] *= factor
-    #
-    #         #ajusting hours of services
-    #         users['clsc_'+c+'_hrs'] += users['delta_serv_'+c]
-    #
-    #         #ajusting supply
-    #         excess = users.groupby(['region_id']).apply(
-    #             lambda d: (d['delta_serv_'+c]*d['wgt']).sum())
-    #         indirect = (1.0 - self.registry[
-    #                 'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
-    #         excess = excess / indirect
-    #         excess.fillna(0,inplace=True)
-    #         self.registry['heures_tot_trav_'+tag] += excess
-    #         self.registry['supply_'+tag] += excess
-    #         self.registry['supply_'+c] += excess
-    #
-    #         #ajusting costs
-    #         self.registry['cout_var'] += excess * self.registry['sal_'+c]
-    #         self.registry['cout_total'] += excess * self.registry['sal_'+c]
-    #
-    #         #ajusting ETC number
-    #         excess = excess / self.registry['hrs_etc_' + tag]
-    #         excess.fillna(0,inplace=True)
-    #         self.registry['nb_etc_'+tag] += excess
-    #         self.registry['nb_etc_'+c] += excess
-    #     return users
+
     def cap(self, users, milieu):
         hrs_free = pd.pivot_table(data=self.count, index=['region_id'],
                                   columns=['milieux','svc'], values='hrs',
@@ -377,8 +369,16 @@ class clsc:
                 factor.clip(upper=1.0,inplace=True)
                 excess = hrs_free.loc[:,(milieu,c)] - self.registry['supply_' + tag]
                 excess.clip(lower=0.0,inplace=True)
+                if c in ['avq','avd']:
+                    excess_base = excess.copy()
+                    for s in ['eesad','prive']:
+                        rate = getattr(self.policy,'clsc_shift_'+c+'_'+s)
+                        self.registry['add_hrs_sa_' + c + '_' + s + '_' +
+                                      milieu] = \
+                            rate * excess_base
+                        excess -= rate*excess_base
                 indirect = (1.0 - self.registry[
-                    'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
+                        'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
                 excess = excess / indirect
                 excess = excess / self.registry['hrs_etc_' + tag]
                 self.worker_needs.loc[:,tag] = excess
@@ -407,7 +407,6 @@ class clsc:
     def compute_costs(self):
         # cout fixe par usagers
         self.registry['cout_fixe'] = self.registry['cout_residuel']*(self.registry['nb_usagers_home']+self.registry['nb_usagers_rpa'])
-
         # cout salaire
         self.registry['cout_var'] = 0.0
         for m in ['home','rpa']:
@@ -445,7 +444,11 @@ class clsc:
                 self.registry['nb_etc_'+tag] += \
                     attr * self.worker_needs.loc[:,tag]
                 self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
-        
+                if before_base_yr==False:
+                    if c in ['avq','avd']:
+                        for s in ['eesad','prive']:
+                            tag_sa = 'hrs_sa_' + c + '_' + s + '_' + m
+                            self.registry[tag_sa] += self.registry['add_'+tag_sa]
         tag = 'inf_ri'
         self.registry['nb_etc_' + tag] += \
             self.clsc_inf_rate * self.worker_needs.loc[:, tag]

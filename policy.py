@@ -34,4 +34,9 @@ class policy:
         self.delta_avd_rate = 0.0
         self.delta_cah_chsld  = 0.0
         self.delta_cah_ri  = 0.0
+        self.clsc_shift_avq_eesad = 0.0
+        self.clsc_shift_avq_prive = 0.0
+        self.clsc_shift_avd_eesad = 0.0
+        self.clsc_shift_avd_prive = 0.0
+
         return
