@@ -32,6 +32,12 @@ class prefs:
         return u
     def compute_utility(self,users):
         users['utility'] = users.apply(self.utility,axis=1)
+        
+        users['utility_in_dollars'] = 0.0
+        for s in range(1,15):
+            cond = (users['iso_smaf']==s)
+            users.loc[cond,'utility_in_dollars'] = users.loc[cond,'utility']/ -1*self.pars.loc['cost',s]
+
         return users
 
 
