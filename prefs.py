@@ -36,7 +36,7 @@ class prefs:
         users['utility_in_dollars'] = 0.0
         for s in range(1,15):
             cond = (users['iso_smaf']==s)
-            users.loc[cond,'utility_in_dollars'] = users.loc[cond,'utility']/ -1*self.pars.loc['cost',s]
+            users.loc[cond,'utility_in_dollars'] = 1000*users.loc[cond,'utility']/ -self.pars.loc['cost',s]
 
         return users
 
