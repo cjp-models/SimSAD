@@ -231,7 +231,7 @@ class projection:
                 for s in range(1,self.last_smaf):
                     for a in gr_ages:
                         self.last_iprob[r-1,s-1,a-1,:] = self.init_pars.loc[(r,s,a),:]
-
+ 
         # main algorithm
         for r in range(1,self.last_region):
             agent = dispatcher()
@@ -268,13 +268,15 @@ class projection:
                                surv_prob = sprob, wait_count = wait_count,
                                wait_prob_chsld = wprob_chsld,
                                wait_prob_ri = wprob_ri)
+            # restricting transition to CHSLD for smaf under 10
+            if self.yr>(self.base_yr):
+                agent.chsld_restriction(self.policy)
             # marginal effect on transition matrix
             if self.yr>=self.base_yr:
                 cah_chsld = self.chsld.registry.loc[r,'cah']
                 cah_ri = self.ri.registry.loc[r,'cah']
                 agent.marginal_effect(self.policy,
                 self.prefs.pars, cah_chsld, cah_ri)
-
             # deal with capacity
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']
@@ -308,11 +310,7 @@ class projection:
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
-        
-        #if self.yr==self.start_yr:
-        #    print('cap_chsld, cap_ri,cap_nsa,cap_rpa')
-        #    print(self.chsld.registry.loc[:,'nb_places_tot'].sum(),self.ri.registry.loc[:, 'nb_places'].sum(),self.nsa.registry.loc[:,'nb_places'].sum(),self.rpa.registry.loc[:, 'nb_places_sad'].sum())
-       
+ 
         # create user sets
         self.create_users()
         return

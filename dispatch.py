@@ -51,6 +51,27 @@ class dispatcher:
         self.wprob_chsld = wait_prob_chsld
         self.wprob_ri = wait_prob_ri
         return
+    def chsld_restriction(self, policy):
+        # change for service rates (domicile)
+        pi_temp = np.copy(self.pi)
+        dx_prob = policy.chsld_restriction_rate
+        
+        if policy.chsld_restricted_eligibility:
+            nc = 5
+            nsub = [1,2,3]
+            for s in range(9):
+                for a in range(self.na):
+                    for w in range(self.n):
+                        # reduce probability transition to CHSLD
+                        self.pi[s, a, w, nc] *= (1.0 - dx_prob)
+                        # mass to distribute to other states
+                        mass = pi_temp[s,a,w,nc] * dx_prob
+                        tot_prob = np.sum([pi_temp[s, a, w, n] for n in nsub])
+                        # distribute
+                        if tot_prob>0.0:
+                            for n in nsub:
+                                self.pi[s, a, w, n] += mass * pi_temp[s,a,w,n]/tot_prob
+        return
     def marginal_effect(self, policy, pref_pars, cah_ri, cah_chsld):
         # change for service rates (domicile)
         pi_temp = np.copy(self.pi)
