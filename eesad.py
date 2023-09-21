@@ -11,11 +11,30 @@ from itertools import product
 
 
 class eesad:
+    """
+    Entreprises d'économie sociale en aide à domicile (EÉSAD)
+
+    Cette classe permet de modéliser les services offerts en soutien à l'autonomie par les entreprises d'économie sociale en aide à domicile.
+    
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.load_registry()
         self.policy = policy
         return
     def load_registry(self, start_yr = 2019):
+        """
+        Fonction qui permet de créer le registre des EÉSAD. Ce registre contient des informations concernant 
+        la main d'oeuvre et les coûts.
+
+        Parameters
+        ----------
+        start_yr: integer
+            année de référence (défaut=2019)
+        """
         self.registry = pd.read_csv(os.path.join(data_dir, 'registre_eesad.csv'),
                                         delimiter=';', low_memory=False)
         self.registry = self.registry[self.registry.annee == start_yr]
@@ -30,6 +49,24 @@ class eesad:
         self.days_per_year = 365
         return
     def assign(self, users_home, users_rpa):
+        """
+        Fonction qui calcule la contribution des usagers des EÉSAD dans les bassins de d'individus à domicile ou en RPA,
+         et qui comptabilise le nombre d'usagers et le nombre total d'heures de services fournis (en AVD) par région et profil Iso-SMAF.
+
+        Parameters
+        ----------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_rpa: dataframe
+            Bassin d'individus en RPA
+        
+        Returns
+        -------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_home: dataframe
+            Bassin d'individus en RPA  
+        """
         users_home['pefsad_contrib'] = 0.0
         users_rpa['pefsad_contrib'] = 0.0
         for r in range(1,19):
@@ -48,10 +85,32 @@ class eesad:
                 self.count.loc[(r,s),'hrs'] += users_rpa.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
         return users_home, users_rpa
     def compute_supply(self):
+        """
+        Fonction qui calcule le nombre total d'heures de services pouvant être fournies en EÉSAD (AVD)
+        selon la main d'oeuvre disponible.
+        """
         self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['supply_avd'] *= (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
         return
     def cap(self, users_home, users_rpa):
+        """
+        Fonction qui ajuste les heures de services fournis au niveau individuel (AVD) selon la main d'oeuvre disponible 
+        et qui comptabilise les besoins supplémentaires en main d'oeuvre pour les EÉSAD.
+
+        Parameters
+        ----------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_home: dataframe
+            Bassin d'individus en RPA  
+
+        Returns
+        -------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_home: dataframe
+            Bassin d'individus en RPA    
+        """
         hrs_home = users_home.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
         hrs_rpa = users_rpa.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
         hrs_tot = hrs_home + hrs_rpa
@@ -79,11 +138,24 @@ class eesad:
                     users_rpa.region_id==r,'pefsad_avd_hrs']
         return users_home, users_rpa
     def compute_costs(self):
+        """
+        Fonction qui calcule les coûts des EÉSAD.
+        """
         self.registry['cout_fixe'] = 0.0
         self.registry['cout_var'] = self.registry['sal_avd'] * self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var']
         return
     def workforce(self,before_base_yr=False):
+        """
+        Fonction qui ajuste le nombre d'ETC en EÉSAD selon les besoins supplémentaires en main d'oeuvre et
+        le taux d'ajustement de celle-ci.
+
+        Parameters
+        ----------
+        before_base_yr: boolean
+            True si l'année en cours de la simulation est inférieure 
+            à l'année de départ de la comtabilisation des résultats 
+        """
         if before_base_yr:
             self.policy.eesad_avd_rate = 1.0
         self.registry['nb_etc_avd'] += self.policy.eesad_avd_rate * \

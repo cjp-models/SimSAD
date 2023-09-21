@@ -7,6 +7,16 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 pd.options.mode.chained_assignment = None
 
 class rpa:
+    """
+    Résidence privée pour aînés (RPA)
+
+    Cette classe permet de modéliser les différents aspects des résidences privées pour aînés.
+
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.policy = policy
         self.opt_penetrate = self.policy.rpa_penetrate
@@ -14,6 +24,16 @@ class rpa:
         self.adapt_rate = self.policy.rpa_adapt_rate
         return
     def load_register(self,start_yr=2019):
+        """
+        Fonction qui permet de charger les paramètres liés aux RPA et qui crée le registre de ceux-ci.
+        Ce registre contient de l'information sur le nombre de personnes, 
+        leur profil Iso-SMAF et le nombre de personnes en attente d'une place en RPA subventionnée.
+
+        Parameters
+        ----------
+        start_yr: integer
+            année de référence (défaut=2019)
+        """
         reg = pd.read_csv(os.path.join(data_dir,'registre_rpa.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
@@ -32,11 +52,27 @@ class rpa:
         self.registry['attente_usagers_mois'] = 0.0
         return
     def assign(self,applicants,waiting_users,region_id):
+        """
+        Fonction qui comptabilise dans le registre des RPA les profils Iso-SMAF des usagers, 
+        le nombre de ceux-ci, et le nombre de personnes en attente d'une place.
+
+        Parameters
+        ----------
+        applicants: dataframe
+            Nombre d'usagers par profil Iso-SMAF
+        waiting_users: dataframe
+            Nombre de personnes en attente d'une place
+        region_id: int
+            Numéro de la région    
+        """
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
         self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
         self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return 
     def build(self):
+        """
+        Fonction qui permet le développement de places en RPA subventionnée par le public.
+        """
         if self.opt_penetrate:
             work = self.registry.copy()
             work['cap'] = work['nb_places'] * self.penetrate_rate
@@ -49,6 +85,14 @@ class rpa:
                 self.registry.loc[r,'nb_places_sad'] = row['nb_places_sad']
         return
     def create_users(self, users):
+        """
+        Fonction qui crée le dataframe du bassin d'individus en RPA subventionnée.
+
+        Parameters
+        ----------
+        users: dataframe
+            Nombre d'usagers en RPA subventionnée par région, profil Iso-SMAF et groupe d'âge
+        """
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
@@ -82,6 +126,9 @@ class rpa:
         self.users.set_index('id',inplace=True)
         return
     def update_users(self):
+        """
+        Fonction qui met à jours les caractéristiques des personnes dans le bassin d'individus en RPA subventionnée.
+        """
         # services
         self.users[['serv_inf', 'serv_avq', 'serv_avd']] = 0.0
         # clsc

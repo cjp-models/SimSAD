@@ -7,6 +7,16 @@ pd.options.mode.chained_assignment = None
 
 
 class chsld:
+    """
+    Centres d'hébergement de soins de longue durée (CHSLD)
+
+    Cette classe permet de modéliser les différents aspects des Centres d'hébergement de soins de longue durée.
+
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.policy = policy
         self.opt_build = self.policy.chsld_build
@@ -20,6 +30,16 @@ class chsld:
         self.chsld_avq_rate = self.policy.chsld_avq_rate
         return
     def load_register(self,start_yr=2019):
+        """
+        Fonction qui permet de charger les paramètres liés aux CHSLD et qui crée le registre de ceux-ci.
+        Ce registre contient des informations sur le nombre de places, le nombre d'usagers, leur profil Iso-SMAF,
+        les heures de services fournis, la main d'oeuvre et les coûts.
+
+        Parameters
+        ----------
+        start_yr: int
+            année de référence (défaut=2019)
+        """
         reg = pd.read_csv(os.path.join(data_dir,'registre_chsld.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
@@ -74,6 +94,19 @@ class chsld:
         self.registry['cout_comptable_immo'] = 0.0
         return
     def assign(self, applicants, waiting_users, region_id):
+        """
+        Fonction qui comptabilise dans le registre des CHSLD les profils Iso-SMAF des usagers, 
+        le nombre de ceux-ci, et le nombre de personnes en attente d'une place.
+
+        Parameters
+        ----------
+        applicants: array
+            Nombre d'usagers par profil Iso-SMAF
+        waiting_users: array
+            Nombre de personnes en attente d'une place
+        region_id: int
+            Numéro de la région    
+        """
         tot = (self.registry.loc[region_id, 'nb_places_pub'] +
                self.registry.loc[region_id, 'nb_places_nc'])
         if tot>0:
@@ -89,6 +122,9 @@ class chsld:
         self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return 
     def purchase(self):
+        """
+        Fonction qui permet l'achat de places en CHSLD non-conventionné.
+        """
         if self.opt_purchase:
             for r in self.registry.index:
                 if self.registry.loc[r,'nb_places_nc']<self.registry.loc[r,'nb_capacity_nc']:
@@ -99,6 +135,9 @@ class chsld:
         self.registry['nb_places_tot'] = self.registry['nb_places_pub'] + self.registry['nb_places_nc']
         return
     def build(self):
+        """
+        Fonction qui permet la construction de places en CHSLD public.
+        """
         if self.opt_build:
             self.registry['cout_construction'] *= (1.0 + self.infl_construction)
             build = self.registry['attente_usagers'] * self.build_rate
@@ -112,6 +151,12 @@ class chsld:
         self.registry['nb_places_tot'] = self.registry['nb_places_pub'] + self.registry['nb_places_nc']
         return
     def compute_supply(self):
+        """
+        Fonction qui calcule le nombre total d'heures de services pouvant être fournies en CHSLD 
+        (soins infirmiers et AVQ)
+        selon la main d'oeuvre disponible. On suppose qu'il n'y a pas de contrainte de main d'oeuvre 
+        pour le soutient au AVD en CHSLD.
+        """
         # inf
         time_inf = self.registry['hours_per_etc_inf'].copy()
         # take out pauses self.hours_per_day
@@ -132,6 +177,9 @@ class chsld:
         self.registry['supply_avq'] = result['avq']
         return result
     def compute_costs(self):
+        """
+        Fonction qui calcule les coûts des CHSLD.
+        """
         self.registry['heures_tot_trav_inf'] = self.registry['nb_etc_inf'] * \
                                                self.registry['hours_per_etc_inf']
         self.registry['heures_tot_trav_avq'] = self.registry['nb_etc_avq'] * \
@@ -148,6 +196,14 @@ class chsld:
         self.registry['cout_place_total'] = self.registry['cout_total']/self.registry['nb_usagers_tot']
         return
     def create_users(self, users):
+        """
+        Fonction qui crée le dataframe du bassin d'individus en CHSLD.
+
+        Parameters
+        ----------
+        users: dataframe
+            Nombre d'individus en CHSLD par région, profil Iso-SMAF et groupe d'âge
+        """
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
@@ -181,6 +237,9 @@ class chsld:
         self.users = []
         return
     def update_users(self):
+        """
+        Fonction qui met à jours les caractéristiques des personnes dans le bassin d'individus en CHSLD.
+        """
         # get how many hours are supplied for each domain
         hrs_per_users_inf = self.registry['supply_inf']/self.registry[
             'nb_usagers_pub']

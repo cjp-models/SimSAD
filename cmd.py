@@ -6,11 +6,20 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 
 # SAD credit (maison et RPA)   
 class cmd:
+    """
+    Crédit d'impôt pour maintien à domicile (CMD) des aînés
+
+    Cette classe permet de modéliser les coûts liés au Crédit d'impôt pour maintien à domicile des aînés.
+    """
     def __init__(self):
         self.load_params()
         self.load_registry()
         return
     def load_registry(self):
+        """
+        Fonction qui permet de créer le registre du CMD. Ce registre contient des informations 
+        sur les montants agrégés.
+        """
         nregions = 18
         last_region = nregions + 1
         self.registry = pd.DataFrame(index=np.arange(1,last_region),columns=['cost_rpa','cost_home','cout_total'])
@@ -21,6 +30,14 @@ class cmd:
         self.targets.mnt.astype('float64')
         return
     def load_params(self, start_yr = 2019):
+        """
+        Fonction qui permet de charger les paramètres liés aux montants de CMD par individu.
+
+        Parameters
+        ----------
+        start_yr: int
+            année de référence (défaut=2019)
+        """
         self.params =  pd.read_csv(os.path.join(data_dir,'mnt_cmd.csv'),
             delimiter=';',low_memory=False)
         self.params = self.params[self.params['annee']==start_yr]
@@ -36,12 +53,46 @@ class cmd:
         self.params.loc[self.params.index.get_level_values(2)==2,:] = 0.0
         return
     def assign(self, users, milieu):
+        """
+        Fonction qui détermine les prestataires du CMD et qui attribue les montants reçu.
+
+        Parameters
+        ----------
+        users: dataframe
+            Bassin d'individus d'un milieu de vie donné
+        milieu: str
+            Nom du milieu de vie
+
+        Returns
+        -------
+        users: dataframe
+           Bassin d'individus d'un milieu de vie donné   
+        """
         work = users.copy()
         merge_keys = ['region_id','iso_smaf','gr_age']
         work = work.merge(self.params,left_on=merge_keys,right_on=merge_keys,how='left')
         users['cmd_mnt'] = work['mnt_'+milieu]
         return users
     def calibrate(self, users_home, users_rpa, yr):
+        """
+        Fonction qui calibre les montants simulés de CMD sur les montants agrégés budgétés jusqu'en 2026.
+
+        Parameters
+        ----------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_home: dataframe
+            Bassin d'individus en RPA
+        yr: int
+            Année en cours de la simulation  
+
+        Returns
+        -------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_home: dataframe
+            Bassin d'individus en RPA   
+        """
         tot_home = users_home[['cmd_mnt','wgt']].prod(axis=1).sum(axis=0)
         tot_rpa  = users_rpa[['cmd_mnt','wgt']].prod(axis=1).sum(axis=0)
         tot = tot_home + tot_rpa
@@ -52,6 +103,16 @@ class cmd:
         users_rpa['cmd_mnt'] *= self.factor
         return users_home, users_rpa
     def compute_costs(self, users_home, users_rpa):
+        """
+        Fonction qui calcule les coûts du CMD.
+
+        Parameters
+        ----------
+        users_home: dataframe
+            Bassin d'individus à domicile
+        users_home: dataframe
+            Bassin d'individus en RPA
+        """
         self.registry['cost_home'] = users_home.groupby('region_id').apply(lambda d: (d['cmd_mnt'] * d.wgt).sum())
         self.registry['cost_rpa'] = users_rpa.groupby('region_id').apply(lambda d: (d['cmd_mnt'] * d.wgt).sum())
         self.registry['cout_total'] = self.registry['cost_home'] + \

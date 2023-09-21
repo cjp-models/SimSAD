@@ -8,20 +8,34 @@ from numba import njit, float64, int64, boolean
 from numba.types import Tuple
 
 class dispatcher:
+    """
+    Milieux de vie
+
+    Cette classe permet d'attribuer les milieux de vie aux personnes avec un profil Iso-SMAF.
+    """
     def __init__(self):
         self.setup_milieux()
         self.setup_ages()
         return
     def setup_milieux(self):
+        """
+        Cette fonction spécifie les milieux de vie.
+        """
         self.milieux = ['none','home','rpa','ri','nsa','chsld']
         # number of milieux
         self.n = len(self.milieux)
         return
     def setup_ages(self):
+        """
+        Cette fonction spécifie les groupes d'âge.
+        """
         self.gr_ages = [1,2,3]
         self.na = 3
         return
     def setup_capacity(self,n_rpa, n_ri, n_nsa, n_chsld):
+        """
+        Cette fonction spécifie les capacités maximale par milieu de vie.
+        """
         self.n_cap = np.zeros(self.n)
         self.n_cap[0] = 100e3
         self.n_cap[1] = 100e3
@@ -32,6 +46,24 @@ class dispatcher:
         return
     def setup_params(self, init_prob, trans_prob, surv_prob, wait_count,
                      wait_prob_chsld, wait_prob_ri):
+        """
+        Cette fonction spécifie les différentes probabilité utilisées pour l'attribution des milieux de vie.
+
+        Parameters
+        ----------
+        init_prob: array
+            répartition au début de l'année des individus par milieu de vie
+        trans_prob: array
+            probabilité de transition
+        surv_prob: array 
+            probabilités de survie
+        wait_count: array
+            nombre de personnes en attente pour chacun des milieux de vie
+        wait_prob_chsld: array
+            probabilité de provenir d'un milieu de vie donné lorsqu'admis en CHSLD
+        wait_prob_ri: array
+            probabilité de provenir d'un milieu de vie donné lorsqu'admis en RI-RTF        
+        """
         # number of months (includes an initial state)
         self.m = 13
         # number of smafs
@@ -52,6 +84,16 @@ class dispatcher:
         self.wprob_ri = wait_prob_ri
         return
     def chsld_restriction(self, policy):
+        """
+        Cette fonction empêche les transitions vers les CHSLD à partir d'un autre milieu de vie 
+        pour les personnes avec un profil Iso-SMAF de moins de 10, 
+        lorsque le paramètre "chsld_restriction_rate" est True.
+
+        Parameters
+        ----------
+        policy: object
+            Paramètres du scénario
+        """
         # change for service rates (domicile)
         pi_temp = np.copy(self.pi)
         dx_prob = policy.chsld_restriction_rate
@@ -73,6 +115,22 @@ class dispatcher:
                                 self.pi[s, a, w, n] += mass * pi_temp[s,a,w,n]/tot_prob
         return
     def marginal_effect(self, policy, pref_pars, cah_ri, cah_chsld):
+        """
+        Cette fonction permet l'ajustement des transitions par milieux de vie, 
+        lorsqu'on fait varier le taux de services fournis dans le SAD hors-RPA 
+        ou lorsqu'on fait varier la contribution d'adulte hébergé en RI-RTF et CHSLD.
+
+        Parameters
+        ----------
+        policy: object
+            paramètres du scénario
+        pref_pars: dataframe
+            paramètres de préférences estimés
+        cah_ri: float
+            valeur initiale de la CAH en RI-RTF
+        cah_chsld: float
+            valeur initiale de la CAH en CHSLD
+        """
         # change for service rates (domicile)
         pi_temp = np.copy(self.pi)
         k = 1
@@ -142,6 +200,9 @@ class dispatcher:
         self.nsmafs = np.sum(self.smafs)
         return
     def init_state(self):
+        """
+        Fonction qui répartie les personnes par milieu de vie au début de l'année.
+        """
         self.count_states = np.zeros((self.ns,self.na,self.n,self.m))
         self.count_wait = np.zeros((self.ns,self.na,self.n,self.n,self.m))
         self.count_wait[:,:,:,:,0] = self.wait_init
@@ -195,15 +256,29 @@ class dispatcher:
                                 excess -= waiters
         return
     def next_state(self,m):
+        """
+        Fonction qui effectue la transition d'un mois à un autre.
+
+        Parameters
+        ----------
+        m: int
+            mois pour lequel on calcul le nombre de personnes par milieu de vie 
+        """
         self.count_states[:,:,:,m+1], self.count_wait[:,:,:,:,m+1] = transition(self.count_states[:,:,:,m],self.count_wait[:,:,:,:,m], self.pi,
                      self.ss, self.n_cap, self.wprob_chsld, self.wprob_ri)
         return
     def assign(self):
+        """
+        Fonction qui enclenche le calcul du nombre de personnes par milieu de vie pour tous les mois.
+        """
         self.init_state()
         for m in range(self.m-1):
             self.next_state(m)
         return
     def collect(self):
+        """
+        Fonction qui comptabilise les personnes par milieu de vie, ainsi que les personnes en attente pour ceux-ci.
+        """
         # number of person-month in each milieux by smaf
         roster = np.zeros((self.ns, self.na, self.n))
         waiting_list = np.zeros((self.ns, self.na, self.n))

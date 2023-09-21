@@ -9,6 +9,17 @@ from .needs import needs
 from itertools import product
 
 class clsc:
+    """
+    Centres locaux de services communautaires (CLSC)
+
+    Cette classe permet de modéliser les services offerts en soutien à l'autonomie par les Centres locaux 
+    de services communautaires.
+    
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.care_types = ['inf','avq','avd']
         self.purchase_prive = policy.purchase_prive
@@ -21,6 +32,15 @@ class clsc:
         self.load_registry()
         return
     def load_registry(self, start_yr = 2019):
+        """
+        Fonction qui permet de créer le registre des CSLC. Ce registre contient des informations concernant 
+        la main d'oeuvre, les heures de services fournis et les coûts.
+
+        Parameters
+        ----------
+        start_yr: int
+            année de référence (défaut=2019)
+        """
         self.registry = pd.read_csv(os.path.join(data_dir, 'registre_clsc.csv'),
                                         delimiter=';', low_memory=False)
         self.registry = self.registry[self.registry.annee==start_yr]
@@ -84,7 +104,9 @@ class clsc:
 
         return
     def load_params(self):
-
+        """
+        Fonction qui permet de charger les paramètres liés aux heures de services fournis par les CSLC.
+        """
         # home
         self.pars_inf_avq =  pd.read_csv(os.path.join(data_dir,'prob_csss_inf_avq_home.csv'),
             delimiter=';',low_memory=False)
@@ -173,6 +195,26 @@ class clsc:
             self.count.index.names = ['milieux','region_id','iso_smaf','svc']
         return
     def assign(self, users, milieu, policy, yr):
+        """
+        Fonction qui détermine les usagers des CLSC et qui leur attribue des heures de services fournis 
+        (soins infirmier, AVQ, AVD).
+
+        Parameters
+        ----------
+        users: dataframe
+            Bassin d'individus d'un milieu de vie donné
+        milieu: str
+            Nom du milieu de vie
+        policy: object
+            Paramètres du scénario
+        yr: int
+            Année en cours de la simulation  
+
+        Returns
+        -------
+        users: dataframe
+           Bassin d'individus d'un milieu de vie donné   
+        """
         # find parameters
         pars_inf_avq = self.pars_inf_avq.loc[
                        self.pars_inf_avq.index.get_level_values(
@@ -273,7 +315,15 @@ class clsc:
         self.count.update(hrs, join='left', overwrite=True)
         return users
     def compute_supply(self, yr):
-        reg = 1
+        """
+        Fonction qui comptabilise les heures de services pouvant être fournies en CLSC (soins infirmiers et AVQ) 
+        selon la main d'oeuvre disponible.
+
+        Parameters
+        ----------
+        yr: int
+            Année en cours de la simulation 
+        """
         # hours supplied by CLSC
         for m in ['home','rpa']:
             for c in self.care_types:
@@ -359,6 +409,22 @@ class clsc:
         return
 
     def cap(self, users, milieu):
+        """
+        Fonction qui ajuste les heures de services fournis au niveau individuel (soins infirmier, AVQ, AVD) 
+        selon la main d'oeuvre disponible et qui comptabilise les besoins supplémentaires en main d'oeuvre.
+
+        Parameters
+        ----------
+        users: dataframe
+            Bassin d'individus d'un milieu de vie donné
+        milieu: str
+            Nom du milieu de vie
+
+        Returns
+        -------
+        users: dataframe
+           Bassin d'individus d'un milieu de vie donné   
+        """
         hrs_free = pd.pivot_table(data=self.count, index=['region_id'],
                                   columns=['milieux','svc'], values='hrs',
                                aggfunc='sum')
@@ -405,6 +471,9 @@ class clsc:
                 users.loc[users.region_id == r, 'clsc_inf_hrs'] *= factor[r]
         return users
     def compute_costs(self):
+        """
+        Fonction qui calcule les coûts des CLSC.
+        """
         # cout fixe par usagers
         self.registry['cout_fixe'] = self.registry['cout_residuel']*(self.registry['nb_usagers_home']+self.registry['nb_usagers_rpa'])
         # cout salaire
@@ -431,6 +500,16 @@ class clsc:
         self.registry['cout_total'] = self.registry['cout_fixe'] + self.registry['cout_var'] + self.registry['cout_achete']
         return
     def workforce(self,before_base_yr=False):
+        """
+        Fonction qui ajuste le nombre d'ETC en CLSC selon les besoins supplémentaires en main d'oeuvre et
+        le taux d'ajustement de celle-ci.
+
+        Parameters
+        ----------
+        before_base_yr: boolean
+            True si l'année en cours de la simulation est inférieure 
+            à l'année de départ de la comtabilisation des résultats 
+        """
         self.registry['nb_etc_inf'] = 0
         self.registry['nb_etc_avq'] = 0
         self.registry['nb_etc_avd'] = 0

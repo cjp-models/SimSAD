@@ -7,11 +7,30 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 pd.options.mode.chained_assignment = None
 
 class nsa:
+    """
+    Personnes dans un centre hospitalier en niveau de soins alternatifs (NSA)
+
+    Cette classe permet de modéliser les personnes dans un centre hospitalier en niveau de soins alternatifs.
+    
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.policy = policy
         self.open_capacity = self.policy.nsa_open_capacity
         return
     def load_register(self,start_yr=2019):
+        """
+        Fonction qui permet de créer le registre des NSA. Ce registre contient des informations 
+        sur le nombre de places en centre hospitalier, le nombre d'usagers et leur profil Iso-SMAF.
+
+        Parameters
+        ----------
+        start_yr: integer
+            année de référence (défaut=2019)
+        """
         reg = pd.read_csv(os.path.join(data_dir,'registre_nsa.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
@@ -24,10 +43,29 @@ class nsa:
         self.days_per_year = 365
         return
     def assign(self,applicants,region_id):
+        """
+        Fonction qui comptabilise dans le registre des NSA le nombre de personnes, 
+        leur profil Iso-SMAF.
+
+        Parameters
+        ----------
+        applicants: dataframe
+            nombre de personnes en NSA par profil Iso-SMAF
+        region_id: int
+            numéro de la région
+        """
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
         self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
         return 
     def create_users(self, users):
+        """
+        Fonction qui crée le bassin d'individus en NSA.
+
+        Parameters
+        ----------
+        users: dataframe
+            Nombre de personnes en NSA par région, profil Iso-SMAF et groupe d'âge
+        """
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
@@ -66,9 +104,15 @@ class nsa:
         self.users = []
         return
     def compute_costs(self):
+        """
+        Fonction qui calcule les coûts des NSA.
+        """
         self.registry['cout_total'] = self.registry['cout_place'] * self.registry['nb_usagers']
         return
     def update_users(self):
+        """
+        Fonction qui met à jour les caractéristiques du bassin d'individus en NSA.
+        """
         self.users['tx_serv_inf'] = 100.0
         self.users['tx_serv_avq'] = 100.0
         self.users['tx_serv_avd'] = 100.0

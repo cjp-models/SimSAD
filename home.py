@@ -8,10 +8,24 @@ pd.options.mode.chained_assignment = None
 
 
 class home:
+    """
+    Personnes à domicile
+
+    Cette classe permet de modéliser les personnes à domicile.
+    
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.policy = policy
         return
     def load_register(self):
+        """
+        Fonction qui permet de créer le registre des personnes à domicile. 
+        Ce registre contient des informations sur le nombre de personnes et les profils Iso-SMAF de ceux-ci.
+        """
         self.registry = pd.DataFrame(index=range(1,19))
         self.registry[['iso_smaf_svc'+str(s) for s in range(1,15)]] = 0.0
         self.registry['nb_usagers_svc'] = 0.0
@@ -21,6 +35,21 @@ class home:
         self.days_per_year = 365
         return
     def assign(self,applicants_none, applicants_svc, waiting_users, region_id):
+        """
+        Fonction qui répertorie dans le registre des personnes à domicile le nombre de personnes, 
+        leur profil Iso-SMAF et le nombre de personnes en attente d'une place en SAD en résidence familiale.
+
+        Parameters
+        ----------
+        applicants_none: dataframe
+            Nombre de personnes à domicile sans services par profil Iso-SMAF
+        applicants_svc: dataframe
+            Nombre de personnes à domicile avec du SAD par profil Iso-SMAF
+        waiting_users: object
+            Nombre de personnes en attente de SAD
+        region_id: int
+            numéro de région  
+        """
         self.registry.loc[region_id,['iso_smaf_svc'+str(s) for s in range(1,15)]] = applicants_svc
         self.registry.loc[region_id,'nb_usagers_svc'] = np.sum(applicants_svc)
         self.registry.loc[region_id,['iso_smaf_none'+str(s) for s in range(1,15)]] = applicants_none
@@ -28,6 +57,16 @@ class home:
         self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return
     def create_users(self, users_none, users_svc):
+        """
+        Fonction qui crée le bassin d'individus à domicile.
+
+        Parameters
+        ----------
+        applicants_none: dataframe
+            Nombre de personnes à domicile sans services par région, profil Iso-SMAF et groupe d'âge
+        applicants_svc: dataframe
+            Nombre de personnes à domicile avec du SAD par région, profil Iso-SMAF et groupe d'âge
+        """
         # users with services
         users_svc = users_svc.to_frame()
         users_svc.columns = ['wgt']
@@ -74,6 +113,9 @@ class home:
         return
 
     def update_users(self):
+        """
+        Fonction qui met à jour les caractéristiques du bassin d'individus à domicile.
+        """
         # services
         self.users[['serv_inf', 'serv_avq', 'serv_avd']] = 0.0
         # clsc

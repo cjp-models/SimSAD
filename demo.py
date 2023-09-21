@@ -6,6 +6,22 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 pd.options.mode.chained_assignment = None
 
 class isq:
+    """
+    Démographie
+
+    Cette classe permet de modéliser la démographie.
+
+    Parameters
+    ----------
+    region: str
+        unité géographique des projections démographiques (défaut='Québec')
+    pop_fichier: str
+        nom du fichier contenant les projections démographiques (défaut='pop-isq.csv')
+    start_yr: int
+        année de départ de la simulation (défaut=2020)
+    stop_yr: int
+        année de fin de la simulation (défaut=2040)   
+    """
     def __init__(self,region='Québec',pop_fichier='pop-isq.csv',start_yr=2020,stop_yr=2040):
         pop = pd.read_csv(os.path.join(data_dir,pop_fichier),delimiter=';',low_memory=False)
         pop = pop[pop.sexe=='Total']
@@ -32,6 +48,12 @@ class isq:
         self.nannees = len(self.annees)
         return
     def evaluate(self,yr):
+        """
+        Fonction qui calcule le nombre de personnes par région et âge durant l'année de simulation en cours.
+
+        yr: int
+            année en cours de la simulation    
+        """
         self.count = self.count_isq.loc[self.count_isq.index.get_level_values(1)==yr,:].droplevel(1)
         return
     def collapse(self,domain = 'count', rowvars=['region_id'],colvars=['age']):
@@ -42,6 +64,20 @@ class isq:
         return table
 
 class gps:
+    """
+    Groupes de profil de santé (GPS).
+
+    Cette classe permet de modéliser les groupes de profil de santé.
+
+    Parameters
+    ----------
+    nregions: int
+        nombre de région
+    ages: int
+        liste des tranches d'âge considérées dans la modélisation
+    ngps: int
+        nombre de Groupes de profil de santé (défaut=16)  
+    """
     def __init__(self,nregions, ages, ngps=16):
         self.last_region = nregions + 1
         self.regions = np.arange(1,nregions+1)
@@ -55,6 +91,14 @@ class gps:
         self.count.columns.name = 'age'
         return
     def load(self,set_yr=2016):
+        """
+        Fonction qui permet de charger les paramètres liés aux GPS.
+
+        Parameters
+        ----------
+        start_yr: int
+            année de référence (défaut=2016)
+        """
         self.shares = pd.read_csv(os.path.join(data_dir,'gps.csv'),delimiter=',',low_memory=False)
         # drop all of Quebec (keep regions), keep reference yr
         self.shares = self.shares[self.shares['region_id']!=99]
@@ -81,6 +125,12 @@ class gps:
         self.shares = self.shares[[x for x in range(91)]]
         return
     def evaluate(self, pop, yr):
+        """
+        Fonction qui calcule le nombre de personnes par GPS et région durant l'année de simulation en cours.
+
+        pop: objet
+            objet contenant les informations démographiques    
+        """
         self.count = pop.count * self.shares
         return
     def collapse(self,domain = 'count', rowvars=['region_id'],colvars=['gps']):
@@ -91,6 +141,22 @@ class gps:
         return table
 
 class smaf:
+    """
+    Profils Iso-SMAF.
+
+    Cette classe permet de modéliser les profils Iso-SMAF.
+
+    Parameters
+    ----------
+    nregions: int
+        nombre de région
+    ages: int
+        liste des tranches d'âge considérées dans la modélisation
+    ngps: int
+        nombre de groupes de profil de santé (défaut=16)
+    nsmaf: int
+        nombre de profils Iso-SMAF (défaut=14)    
+    """
     def __init__(self, nregions, ages, ngps = 16, nsmaf = 14):
         self.last_region = nregions+1
         self.regions = np.arange(1,self.last_region)
@@ -118,6 +184,14 @@ class smaf:
         self.count_smaf.columns.name = 'age'
         return
     def load(self,set_yr=2015):
+        """
+        Fonction qui permet de charger les paramètres liés aux profils Iso-SMAF.
+
+        Parameters
+        ----------
+        start_yr: integer
+            année de référence (défaut=2015)
+        """
         # probability of evaluation
         self.prob = pd.read_csv(os.path.join(data_dir,'prob_eval.csv'),delimiter=';',low_memory=False)
         self.prob = self.prob[self.prob['region_id']!=99]
@@ -154,6 +228,17 @@ class smaf:
         self.shares.columns.name = 'age'
         return
     def evaluate(self, grouper,gps_target=[],rate=0.0):
+        """
+        Fonction qui calcule le nombre de personnes par profil Iso-SMAF, GPS, région et âge 
+        durant l'année de simulation en cours
+
+        grouper: objet
+            objet contenant les informations sur les GPS
+        gps_target: series
+            liste de GPS pour lesquels la probabilité d'être évalué pour un profil Iso-SMAF sera augmentée 
+        rate: float
+            taux de croissance de la probabilité d'être évalué pour un profil Iso-SMAF    
+        """
         # allow for changes in prob eval
         prob = self.prob.copy()
         if gps_target:

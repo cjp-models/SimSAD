@@ -5,10 +5,18 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 
 
 class pefsad:
+    """
+    Programme d'exonération financière pour les services d'aide domestique (PEFSAD)
+
+    Cette classe permet de modéliser les services offerts en soutien à l'autonomie par les Entreprises d'économie sociale en aide à domicile.
+    """
     def __init__(self):
         self.load_params()
         return
     def load_params(self):
+        """
+        Fonction qui permet de charger les paramètres liés aux heures de services fournis dans le cadre du PEFSAD.
+        """
         self.pars_home = pd.read_csv(os.path.join(data_dir,'pefsad_home.csv'),
             delimiter=';',low_memory=False)
         self.pars_home['clsc_avd_any'] = (self.pars_home['AVD']==1)
@@ -23,6 +31,21 @@ class pefsad:
         self.pars_rpa.columns = ['prob', 'hrs']
         return
     def assign(self, users, milieu):
+        """
+        Fonction qui détermine les usagers du PEFSAD et qui leur attribue des heures de services fournis (AVD).
+
+        Parameters
+        ----------
+        users: dataframe
+            Bassin d'individus d'un milieu de vie donné
+        milieu: string
+            Nom du milieu de vie
+
+        Returns
+        -------
+        users: dataframe
+           Bassin d'individus d'un milieu de vie donné   
+        """
         merge_key = ['region_id','iso_smaf','gr_age','choice','clsc_avd_any']
         work = users.copy()
         if milieu=='home':

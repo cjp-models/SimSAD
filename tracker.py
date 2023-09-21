@@ -22,17 +22,59 @@ class tracker_entry:
 
 
 class tracker:
+    """
+    Résultats de simulation
+
+    Cette classe permet la création de tableaux de sortie par rapport aux différents résultats du modèle.
+
+    Parameters
+    ----------
+    scn_name: str
+        nom du scénario (défaut='reference')
+    """
     def __init__(self, scn_name = 'reference'):
         self.registry = []
         self.scn_name = scn_name
         return
 
     def add_entry(self, entry_name, class_member, domain, rowvars, colvars, aggfunc, start_yr, stop_yr):
+        """
+        Fonction qui permet la création d'un nouveau tableau de sortie.
+
+        Parameters
+        ----------
+        entry_name: str
+            nom du tableau
+        class_member: str
+            nom de la classe d'où proviennent les résultats
+        domain: str
+            nom du domaine d'où proviennent les résultats
+        rowvars: str
+            variables définissant les groupes d'agrégation (en ligne)
+        colvars: str
+            variables de résultats (en colonne)
+        aggfunc: str
+            nom de la fonction d'agrégation (ex. sum, mean, etc.)
+        start_yr: int
+            année de départ
+        stop_yr: int
+            année de fin
+        """
         entry = tracker_entry(entry_name, class_member, domain, rowvars, colvars, aggfunc, start_yr, stop_yr)
         self.registry.append(entry)
         return
 
     def log(self, p, yr):
+        """
+        Fonction qui procède à la comptabilisation des résultats dans les tableaux de sortie.
+
+        Parameters
+        ----------
+        p: string
+            ???
+        yr: int
+            année en cours dans la simulation
+        """
         for k in self.registry:
             c = getattr(p, k.class_member)
             table = c.collapse(domain=k.domain, rowvars=k.rowvars, colvars=k.colvars).stack()
@@ -45,6 +87,16 @@ class tracker:
         return
 
     def save(self, dir, scn_policy):
+        """
+        Fonction qui procède à la sauvegarde des tableaux de sortie dans un fichier excel.
+
+        Parameters
+        ----------
+        dir: string
+            sentier où sauvegarder les résultats
+        scn_policy: object
+            instance de classe policy
+        """
         cwd = os.getcwd()
         target_dir = os.path.join(cwd,dir)
         check = os.path.isdir(target_dir)

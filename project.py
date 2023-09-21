@@ -24,6 +24,26 @@ pd.options.mode.chained_assignment = None
 import pickle
 
 class projection:
+    """
+    Modèle de simulation SimSAD.
+
+    Cette classe permet de créer une instance de modèle pour la simulation.
+
+    Parameters
+    ----------
+    start_yr: int
+        année de départ de la simulation (défaut=2020)
+    stop_yr: int
+        année de fin de la simulation (défaut=2040)
+    base_yr: int
+        année de départ pour la comtabilisation des résultats (défaut=2023)
+    scn_name: string
+        nom du scénario (défaut='reference')
+    opt_welfare: boolean
+        paramètre d'activation du calcul de l'utilité des individus (défaut=False)
+    seed: float 
+        spécifie la valeur de départ de la séquence aléatoire (défaut=1234)   
+    """
     def __init__(self,start_yr = 2020,stop_yr = 2040, base_yr = 2023,
                  scn_policy = None, scn_name = 'reference', opt_welfare =
                  False, seed = 1234):
@@ -44,6 +64,9 @@ class projection:
         np.random.seed(seed=seed)
         return 
     def load_params(self):
+        """
+        Chargement des paramètres des différentes composantes du modèle.
+        """
         self.load_pop()
         self.load_grouper()
         self.load_smaf()
@@ -57,15 +80,39 @@ class projection:
         self.load_prefs()
         return 
     def load_pop(self,geo='RSS'):
+        """
+        Chargement des paramètres démographiques.
+
+        Parameters
+        ----------
+        geo: str
+            unité géographique des projections démographiques (défaut='Québec')
+        """
         self.pop = isq(region=geo)
         self.nregions = self.pop.nregions
         self.last_region = self.nregions + 1
         return 
     def load_grouper(self,set_yr=2016):
+        """
+        Chargement des paramètres d'attribution des groupes de profil de santé (GPS).
+
+        Parameters
+        ----------
+        set_yr: int
+            année de référence (défaut=2016)
+        """
         self.grouper = gps(self.pop.nregions,self.pop.count.columns)
         self.grouper.load(set_yr=set_yr)
         return 
     def load_smaf(self,set_yr=2016):
+        """
+        Chargement des paramètres d'attribution des profil Iso-SMAF.
+
+        Parameters
+        ----------
+        set_yr: int
+            année de référence (défaut=2016)
+        """
         self.iso = smaf(self.pop.nregions,self.pop.count.columns) 
         self.iso.load(set_yr=set_yr)
         self.nsmaf = self.iso.nsmaf
@@ -105,6 +152,14 @@ class projection:
         self.cmd = cmd()
         return
     def init_tracker(self, scn_name):
+        """
+        Fonction qui spécifie les tableaux de sortie de base dans le modèle.
+
+        Parameters
+        ----------
+        scn_name: string
+            nom du scénario (défaut='reference')
+        """
         self.tracker = tracker(scn_name = scn_name)
         show_yr = 2023
         self.tracker.add_entry('pop_region_age','pop','count',['region_id'],
@@ -171,6 +226,14 @@ class projection:
 
 
     def init_dispatch(self, init_smafs):
+        """
+        Fonction qui formate les paramètres d'attribution des milieux de vie.
+
+        Parameters
+        ----------
+        init_smafs: dataframe
+            nombre de personnes par profil Iso-SMAF selon la région et le groupe d'âge
+        """
         gr_ages = [1,2,3]
         self.init_pars = pd.read_csv(os.path.join(data_dir, 'nb_milieu_vie_init.csv'),
                                      delimiter=';', low_memory=False)
@@ -196,6 +259,9 @@ class projection:
         return
 
     def dispatch(self):
+        """
+        Fonction qui attribue les milieux de vie aux personnes.
+        """
         # initialize counts
         gr_ages = [1,2,3]
         nages = 3
@@ -316,6 +382,9 @@ class projection:
         return
 
     def create_users(self):
+        """
+        Fonction qui crée les bassins d'individus pour l'ensemble des milieux de vie.
+        """
         self.chsld.create_users(self.count['chsld'])
         self.nsa.create_users(self.count['nsa'])
         self.ri.create_users(self.count['ri'])
@@ -323,6 +392,9 @@ class projection:
         self.home.create_users(self.count['none'], self.count['home'])
         return
     def update_users(self):
+        """
+        Fonction qui met à jour les caractéristiques des individus dans les bassins pour l'ensemble des milieux de vie.
+        """
         self.chsld.update_users()
         self.nsa.update_users()
         self.ri.update_users()
@@ -330,6 +402,9 @@ class projection:
         self.home.update_users()
         return
     def welfare(self):
+        """
+        Fonction qui calcule l'utilité des individus.
+        """
         self.chsld.users = self.prefs.compute_utility(self.chsld.users)
         self.nsa.users = self.prefs.compute_utility(self.nsa.users)
         self.ri.users = self.prefs.compute_utility(self.ri.users)
@@ -398,6 +473,9 @@ class projection:
         return
 
     def finance(self):
+        """
+        Fonction qui collige les coûts pour tous les milieux de vie et les programmes de financement.
+        """
         # add total program costs
         items = ['clsc','chsld','ri','nsa','ces','pefsad','cmd',
                     'cah_chsld','cah_ri','cah_nsa','pefsad_usager','total',
@@ -430,6 +508,9 @@ class projection:
         return
 
     def run(self):
+        """
+        Fonction déclenchant le lancement de la simulation.
+        """
         togo = self.stop_yr - self.start_yr + 1
         while togo>0:
             print(self.yr)
@@ -441,6 +522,9 @@ class projection:
         self.save('output')
         return
     def compute(self):
+        """
+        Fonction qui appelle l'ensemble des fonctions permettant de calculer les résultats du modèle.
+        """
         # exogeneous needs composition at aggregate level (region, age, smaf)
         self.pop.evaluate(self.yr)
         self.grouper.evaluate(self.pop,yr=self.yr)
@@ -499,11 +583,22 @@ class projection:
             self.rpa.build()
         return
     def save(self, output_dir):
+        """
+        Fonction qui permet de sauvegarder les données d'un scénario.
+
+        Parameters
+        ----------
+        output_dir: str
+            sentier vers le dossier de sauvegarde des données.
+        """
         self.tracker.save(output_dir, self.policy)
         with open(os.path.join(output_dir,self.scn_name+'.pkl'), 'wb') as f:
             pickle.dump(self, f)
         return
     def load(self):
+        """
+        Fonction qui permet de charger les données d'un scénario préalablement sauvegardé.
+        """
         with open(os.path.join('output',self.scn_name+'.pkl'), 'rb') as f:
             this = pickle.load(f)
         return this

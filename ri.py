@@ -8,6 +8,17 @@ pd.options.mode.chained_assignment = None
 
 
 class ri:
+    """
+    Ressources intermédiaires et ressources de type familial (RI-RTF)
+
+    Cette classe permet de modéliser les différents aspects des ressources intermédiaires 
+    et ressources de type familial.
+
+    Parameters
+    ----------
+    policy: object
+        paramètres du scénario
+    """
     def __init__(self, policy):
         self.policy = policy
         self.opt_build = self.policy.ri_build
@@ -16,6 +27,16 @@ class ri:
         self.avd_rate = self.policy.ri_avd_rate
         return
     def load_register(self,start_yr=2019):
+        """
+        Fonction qui permet de charger les paramètres liés aux RI-RTF et qui crée le registre de ceux-ci.
+        Ce registre contient des informations sur le nombre de places, le nombre d'usagers, leur profil Iso-SMAF,
+        les heures de services fournis, la main d'oeuvre et les coûts.
+        
+        Parameters
+        ----------
+        start_yr: int
+            année de référence (défaut=2019)
+        """
         reg = pd.read_csv(os.path.join(data_dir,'registre_ri.csv'),
             delimiter=';',low_memory=False)
         reg = reg[reg.annee==start_yr]
@@ -47,11 +68,27 @@ class ri:
         self.registry['places_per_installation'] = self.registry['nb_places']/self.registry['nb_installations']
         return
     def assign(self,applicants,waiting_users,region_id):
+        """
+        Fonction qui comptabilise dans le registre des RI-RTF les profils Iso-SMAF des usagers, 
+        le nombre de ceux-ci, et le nombre de personnes en attente d'une place.
+
+        Parameters
+        ----------
+        applicants: dataframe
+            Nombre d'usagers par profil Iso-SMAF
+        waiting_users: dataframe
+            Nombre de personnes en attente d'une place
+        region_id: int
+            Numéro de la région    
+        """
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
         self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
         self.registry.loc[region_id,'attente_usagers'] = waiting_users
         return 
     def build(self):
+        """
+        Fonction qui permet de développer des places en RI-RTF.
+        """
         if self.opt_build:
             work = self.registry[['attente_usagers', 'nb_places']].copy()
             build = self.build_rate * work['attente_usagers']
@@ -62,6 +99,10 @@ class ri:
                 'etc_avd_per_user'] * build * self.avd_rate
         return
     def compute_supply(self):
+        """
+        Fonction qui calcule le nombre total d'heures de services pouvant être fournies en RI-RTF (AVQ et AVD)
+        selon la main d'oeuvre disponible.
+        """
         self.registry['heures_tot_trav_ri_avq'] = self.registry[
             'hours_per_etc_ri_avq'] * self.registry['nb_etc_ri_avq']
         self.registry['heures_tot_trav_ri_avd'] = self.registry[
@@ -84,6 +125,9 @@ class ri:
         self.registry['supply_avd'] = result['avd']
         return result
     def compute_costs(self):
+        """
+        Fonction qui calcule les coûts des RI-RTF.
+        """
         self.registry['cout_fixe'] = self.registry['nb_usagers'] * self.registry['cout_place_fixe']
         self.registry['cout_var'] = 0.0
         for s in range(1,15):
@@ -92,6 +136,9 @@ class ri:
         self.registry['cout_place_total'] = self.registry['cout_total']/self.registry['nb_usagers']
         return
     def update_users(self):
+        """
+        Fonction qui met à jours les caractéristiques des personnes dans le bassin d'individus en RI-RTF.
+        """
         # get how many hours are supplied for each domain
         hrs_per_users_avd = self.registry['heures_tot_trav_ri_avd'] / \
                             self.registry[
@@ -120,6 +167,14 @@ class ri:
         return
 
     def create_users(self, users):
+        """
+        Fonction qui crée le dataframe du bassin d'individus en RI-RTF.
+
+        Parameters
+        ----------
+        users: dataframe
+            Nombre d'usagers en RI-RTF par région, profil Iso-SMAF et groupe d'âge
+        """
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0

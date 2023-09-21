@@ -5,10 +5,23 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 
 
 class ces:
+    """
+    Chèque emploi-service (CES)
+
+    Cette classe permet d'attribuer les services reçus dans le cadre du Chèque emploi-service.
+    """
     def __init__(self):
         self.load_params()
         return
     def load_params(self, start_yr = 2021):
+        """
+        Fonction qui permet de charger les paramètres liés au CES.
+
+        Parameters
+        ----------
+        start_yr: int
+            année de référence (défaut=2021)
+        """
         self.prob =  pd.read_csv(os.path.join(data_dir,'prob_ces.csv'),
             delimiter=';',low_memory=False)
         self.prob = self.prob[self.prob.annee==start_yr]
@@ -25,6 +38,19 @@ class ces:
         self.hrs.sort_index(inplace=True)
         return
     def assign(self,users):
+        """
+        Fonction qui attribue aux individus les heures de services reçues dans le cadre du CES.
+
+        Parameters
+        ----------
+        users: dataframe
+            bassin d'individus d'un milieux de vie donné
+        
+        Returns
+        -------
+        users: dataframe
+            bassin d'individus pour un milieux de vie donné
+        """
         merge_key = ['region_id','iso_smaf','gr_age']
         work = users.copy()
         work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
@@ -43,6 +69,16 @@ class ces:
         return users
 
     def calibrate(self, users, targets_by_region):
+        """
+        Fonction qui calibre les heures de services reçues dans le cadre du CES par rapport aux données observées.
+
+        Parameters
+        ----------
+        users: dataframe
+            bassin d'individus d'un milieux de vie donné
+        targets_by_region: dataframe
+            valeurs cibles par région
+        """
         merge_key = ['region_id','iso_smaf','gr_age']
         work = users.copy()
         work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
@@ -87,14 +123,11 @@ class ces:
         factor_avd.clip(lower=0.0,upper=5.0,inplace=True)
         factor_avd[factor_avd.isna()] = 1.0
         for r in range(1,19):
-            #print(factor_avq.loc[r],factor_avd.loc[r])
             select = self.hrs.index.get_level_values(0)==r
             self.hrs.loc[select,'hrs_avq'] = self.hrs.loc[select,
             'hrs_avq']*factor_avq.loc[r]
             self.hrs.loc[select,'hrs_avd'] = self.hrs.loc[select,
             'hrs_avd']*factor_avd.loc[r]
-            #print(self.hrs.loc[(r,), 'hrs_avq'])
-        #print(self.hrs.head(25))
         return
 
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
