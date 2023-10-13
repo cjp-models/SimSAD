@@ -275,7 +275,8 @@ class clsc:
         # for those without services, set choice to 0 (no services)
         users.loc[users.choice.isna(),'choice'] = 0
         # adjust services to reach target service rate
-        if milieu=='home':
+        #if milieu=='home':
+        if (milieu=='home') | (milieu=='rpa'):
             if yr>=2023:
                 n = needs()
                 needs_cap ={'inf': n.inf[9]*365,'avq':n.avq[9]*365,'avd':n.avd[9]*365}
