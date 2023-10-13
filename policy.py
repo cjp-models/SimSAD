@@ -37,7 +37,7 @@ class policy:
         par rapport aux besoins de places en CHSLD (défaut=0.25)
     nsa_open_capacity: float
         proportion maximale de lit d'hôpitaux pouvant être occupés par les personnes en NSA (défaut=0.06)
-    chsld_purchase: boolean
+    chsld_mda: boolean
         True si la construction des nouvelles places en CHSLD se fait selon le modèle des maisons des aînés 
         (défaut=True)
     infl_construction: float

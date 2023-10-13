@@ -136,6 +136,9 @@ class home:
         self.users['cost'] *= 1/12
         return
     def reset_users(self):
+        """
+        Fonction qui réinitialise le bassin d'individus à domicile.
+        """
         self.users = []
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):

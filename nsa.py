@@ -44,7 +44,7 @@ class nsa:
         return
     def assign(self,applicants,region_id):
         """
-        Fonction qui comptabilise dans le registre des NSA le nombre de personnes, 
+        Fonction qui comptabilise dans le registre des NSA le nombre de personnes et 
         leur profil Iso-SMAF.
 
         Parameters

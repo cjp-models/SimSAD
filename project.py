@@ -157,7 +157,7 @@ class projection:
 
         Parameters
         ----------
-        scn_name: string
+        scn_name: str
             nom du scénario (défaut='reference')
         """
         self.tracker = tracker(scn_name = scn_name)
