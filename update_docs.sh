@@ -1,0 +1,1 @@
+scp -r ../SimSAD-doc/build/html/* docs
