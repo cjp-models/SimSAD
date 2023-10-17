@@ -1,0 +1,9 @@
+*.pyc
+
+*.ipynb_checkpoints
+
+build/
+dist/
+srd.egg-info
+
+main.py
