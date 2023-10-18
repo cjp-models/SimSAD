@@ -71,7 +71,7 @@ class rpa:
         return 
     def build(self):
         """
-        Fonction qui permet le développement de places en RPA subventionnée par le public.
+        Fonction qui permet le développement de places en RPA subventionnées par le public.
         """
         if self.opt_penetrate:
             work = self.registry.copy()
@@ -86,12 +86,12 @@ class rpa:
         return
     def create_users(self, users):
         """
-        Fonction qui crée le dataframe du bassin d'individus en RPA subventionnée.
+        Fonction qui crée le dataframe du bassin d'individus en RPA subventionnées.
 
         Parameters
         ----------
         users: dataframe
-            Nombre d'usagers en RPA subventionnée par région, profil Iso-SMAF et groupe d'âge
+            Nombre d'usagers en RPA subventionnées par région, profil Iso-SMAF et groupe d'âge
         """
         self.users = users.to_frame()
         self.users.columns = ['wgt']

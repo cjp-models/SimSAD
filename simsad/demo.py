@@ -67,16 +67,16 @@ class gps:
     """
     Groupes de profil de santé (GPS).
 
-    Cette classe permet de modéliser les groupes de profil de santé.
+    Cette classe permet de modéliser les groupes de profils de santé.
 
     Parameters
     ----------
     nregions: int
-        nombre de région
+        nombre de régions
     ages: int
         liste des tranches d'âge considérées dans la modélisation
     ngps: int
-        nombre de Groupes de profil de santé (défaut=16)  
+        nombre de Groupes de profils de santé (défaut=16)  
     """
     def __init__(self,nregions, ages, ngps=16):
         self.last_region = nregions + 1
@@ -149,11 +149,11 @@ class smaf:
     Parameters
     ----------
     nregions: int
-        nombre de région
+        nombre de régions
     ages: int
         liste des tranches d'âge considérées dans la modélisation
     ngps: int
-        nombre de groupes de profil de santé (défaut=16)
+        nombre de groupes de profils de santé (défaut=16)
     nsmaf: int
         nombre de profils Iso-SMAF (défaut=14)    
     """

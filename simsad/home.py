@@ -24,7 +24,7 @@ class home:
     def load_register(self):
         """
         Fonction qui permet de créer le registre des personnes à domicile. 
-        Ce registre contient des informations sur le nombre de personnes et les profils Iso-SMAF de ceux-ci.
+        Ce registre contient des informations sur le nombre de personnes et les profils Iso-SMAF de celles-ci.
         """
         self.registry = pd.DataFrame(index=range(1,19))
         self.registry[['iso_smaf_svc'+str(s) for s in range(1,15)]] = 0.0

@@ -58,41 +58,41 @@ class policy:
     purchase_eesad: boolean
         True si achat d'heures de services fournis auprès des EÉSAD par les CLSC (défaut=True)
     clsc_inf_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour les soins infirmiers en CSLC (défaut=0.25)
     clsc_avq_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVQ en CSLC (défaut=0.25)
     clsc_avd_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVD en CSLC (défaut=0.25)
     eesad_avd_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVD en EÉSAD (défaut=0.25)
     prive_avq_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVQ au privé (défaut=0.25)
     prive_avd_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVD au privé (défaut=0.25)
     chsld_inf_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour les soins infirmiers en CHSLD (défaut=0.25)
     chsld_avq_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVQ en CHSLD (défaut=0.25)
     ri_avq_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVQ en RI-RTF (défaut=0.25)
     ri_avd_rate: float
-        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaire en main d'oeuvre
+        taux d'ajustement de la main d'oeuvre par rapport aux besoins supplémentaires en main d'oeuvre
         pour le soutien aux AVD en RI-RTF (défaut=0.25)
     delta_inf_rate: float
-        variation du taux de réponses aux besoins en soins infirmiers au SAD pour les personnes à domicile (défaut=0.0)
+        variation du taux de réponse aux besoins en soins infirmiers au SAD pour les personnes à domicile (défaut=0.0)
     delta_avq_rate: float
-        variation du taux de réponses aux besoins en soutien aux AVQ au SAD pour les personnes à domicile (défaut=0.0)
+        variation du taux de réponse aux besoins en soutien aux AVQ au SAD pour les personnes à domicile (défaut=0.0)
     delta_avd_rate: float
-        variation du taux de réponses aux besoins en soutien aux AVD au SAD pour les personnes à domicile (défaut=0.0)
+        variation du taux de réponse aux besoins en soutien aux AVD au SAD pour les personnes à domicile (défaut=0.0)
     delta_cah_chsld: float
         variation du taux de contribution des usagers en CHSLD (défaut=0.0)
     delta_cah_ri: float

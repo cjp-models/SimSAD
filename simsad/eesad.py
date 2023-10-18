@@ -51,7 +51,7 @@ class eesad:
     def assign(self, users_home, users_rpa):
         """
         Fonction qui calcule la contribution des usagers des EÉSAD dans les bassins de d'individus à domicile ou en RPA,
-         et qui comptabilise le nombre d'usagers et le nombre total d'heures de services fournis (en AVD) par région et profil Iso-SMAF.
+        et qui comptabilise le nombre d'usagers et le nombre total d'heures de services fournis (en AVD) par région et profil Iso-SMAF.
 
         Parameters
         ----------
@@ -154,7 +154,7 @@ class eesad:
         ----------
         before_base_yr: boolean
             True si l'année en cours de la simulation est inférieure 
-            à l'année de départ de la comtabilisation des résultats 
+            à l'année de départ de la comptabilisation des résultats 
         """
         if before_base_yr:
             self.policy.eesad_avd_rate = 1.0

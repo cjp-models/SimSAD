@@ -6,9 +6,9 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data'
 
 class msss:
     """
-    Ministère de la Santé et des services sociaux
+    Ministère de la Santé et des Services sociaux
 
-    Cette classe permet de comptabiliser les coûts pour le ministère de la Santé et des services sociaux.
+    Cette classe permet de comptabiliser les coûts pour le ministère de la Santé et des Services sociaux.
     """
     def __init__(self):
         self.nregions = 18

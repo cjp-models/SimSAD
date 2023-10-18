@@ -34,7 +34,7 @@ class dispatcher:
         return
     def setup_capacity(self,n_rpa, n_ri, n_nsa, n_chsld):
         """
-        Cette fonction spécifie les capacités maximale par milieu de vie.
+        Cette fonction spécifie les capacités maximales par milieu de vie.
         """
         self.n_cap = np.zeros(self.n)
         self.n_cap[0] = 100e3
@@ -47,7 +47,7 @@ class dispatcher:
     def setup_params(self, init_prob, trans_prob, surv_prob, wait_count,
                      wait_prob_chsld, wait_prob_ri):
         """
-        Cette fonction spécifie les différentes probabilité utilisées pour l'attribution des milieux de vie.
+        Cette fonction spécifie les différentes probabilités utilisées pour l'attribution des milieux de vie.
 
         Parameters
         ----------
@@ -201,7 +201,7 @@ class dispatcher:
         return
     def init_state(self):
         """
-        Fonction qui répartie les personnes par milieu de vie au début de l'année.
+        Fonction qui répartit les personnes par milieu de vie au début de l'année.
         """
         self.count_states = np.zeros((self.ns,self.na,self.n,self.m))
         self.count_wait = np.zeros((self.ns,self.na,self.n,self.n,self.m))

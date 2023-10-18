@@ -44,12 +44,12 @@ class ces:
         Parameters
         ----------
         users: dataframe
-            bassin d'individus d'un milieux de vie donné
+            bassin d'individus d'un milieu de vie donné
         
         Returns
         -------
         users: dataframe
-            bassin d'individus pour un milieux de vie donné
+            bassin d'individus pour un milieu de vie donné
         """
         merge_key = ['region_id','iso_smaf','gr_age']
         work = users.copy()

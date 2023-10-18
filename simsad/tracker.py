@@ -70,8 +70,8 @@ class tracker:
 
         Parameters
         ----------
-        p: string
-            ???
+        p: object
+            instance de classe
         yr: int
             année en cours dans la simulation
         """

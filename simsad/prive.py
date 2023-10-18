@@ -63,12 +63,12 @@ class prive:
         Parameters
         ----------
         users: dataframe
-            Bassin d'individus d'une milieu de vie donné
+            Bassin d'individus d'un milieu de vie donné
         
         Returns
         -------
         users: dataframe
-            Bassin d'individus d'une milieu de vie donné
+            Bassin d'individus d'un milieu de vie donné
         """
         for r in range(1,19):
             for s in range(1,15):
@@ -164,7 +164,7 @@ class prive:
         ----------
         before_base_yr: boolean
             True si l'année en cours de la simulation est inférieure 
-            à l'année de départ de la comtabilisation des résultats 
+            à l'année de départ de la comptabilisation des résultats 
         """
         for c in ['avd','avq']:
             if before_base_yr:

@@ -36,7 +36,7 @@ class projection:
     stop_yr: int
         année de fin de la simulation (défaut=2040)
     base_yr: int
-        année de départ pour la comtabilisation des résultats (défaut=2023)
+        année de départ pour la comptabilisation des résultats (défaut=2023)
     scn_name: string
         nom du scénario (défaut='reference')
     opt_welfare: boolean
