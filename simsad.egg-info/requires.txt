@@ -1,0 +1,5 @@
+pandas
+numba>=0.58
+numpy>=1.24
+xlrd
+xlsxwriter

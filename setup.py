@@ -6,10 +6,10 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="simsad",  # Replace with your own username
-    version="0.1.0",
+    version="0.4.0",
     author="Equipe CJP",
     author_email="pierre-carl.michaud@hec.ca",
-    description="Modele de projection des soins a domicile du Quebec",
+    description="Modele de projection du soutien à l'autonomie du Quebec",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://rsi-models.github.io/SimSAD/",
@@ -22,10 +22,10 @@ setuptools.setup(
     ],
     install_requires=[
    'pandas',
-   'numba',
-   'numpy',
+   'numba>=0.58',
+   'numpy>=1.24',
    'xlrd',
-   'srpp'
+   'xlsxwriter',
     ],
     python_requires='>=3.9',
 )

@@ -19,7 +19,7 @@ from .pefsad import pefsad
 from .ces import ces
 from .policy import policy
 from .tracker import tracker
-data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
+data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'simsad/data')
 pd.options.mode.chained_assignment = None
 import pickle
 

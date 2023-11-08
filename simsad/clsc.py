@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from itertools import product
 import os
-data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
+data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'simsad/data')
 from numba import njit, float64, int64, boolean, prange
 from numba.types import Tuple
 from .needs import needs
@@ -557,7 +557,7 @@ class clsc:
 def draw_multinomial(prob):
         n, m = prob.shape
         result = np.zeros(n,dtype='int64')
-        u = np.random.uniform(a=0.0,b=1.0,size=n)
+        u = np.random.uniform(low=0.0,high=1.0,size=n)
         for i in prange(n):
             cp = 0.0
             for j  in range(m):

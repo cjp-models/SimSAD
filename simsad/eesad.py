@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from itertools import product
 import os
-data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
+data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'simsad/data')
 from numba import njit, float64, int64, boolean, prange
 from numba.types import Tuple
 from .needs import needs

@@ -5,7 +5,7 @@ from functools import partial
 from itertools import product
 import multiprocessing as mp 
 from scipy.optimize import minimize 
-data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'SimSAD/data')
+data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),'simsad/data')
 
 class prefs:
     """
