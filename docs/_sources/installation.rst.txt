@@ -1,0 +1,57 @@
+.. _premierpas:
+
+
+*************
+Installation
+*************
+
+.. _installing-docdir:
+
+SimSAD est programmé en langage Python. Il est ainsi nécessaire de posséder la version 3.9 de Python ou une version supérieure pour faire fonctionner SimSAD sur votre ordinateur. Malgré tout, si vous n’avez pas accès au logiciel Python mais que vous disposez d’un compte Google, il vous sera possible d’utiliser SimSAD en accès à distance via Google Colab. Ainsi, il est possible d’avoir accès à SimSAD selon trois méthodes présentées ci-dessous. Dans tous les cas, veuillez lire les condition d’utilisation du site internet pypi qui héberge le package.
+
+1) Installation automatisée
+===========================
+
+Si vous avez accès à Python et à votre invite de commande, il est possible d'installer SimSAD
+de manière automatisée en écrivant simplement cette commande dans l'invite de commande (terminal): ::
+
+  pip install simsad
+
+Par la suite, il est possible d'invoquer SimSAD dans un notebook ou un script en tant que module de la manière suivante: ::
+
+  import simsad
+
+2) Installation manuelle
+===========================
+
+Si vous avez accès au logiciel Python, mais que vous ne pouvez utiliser l'invite de commande,
+il est possible d'installer manuellement SimSAD en complétant les étapes suivantes:
+
+#. Allez sur le site internet `Pypi <https://pypi.org/>`_ et faites une recherche du package "simsad".
+#. Cliquez sur l'onglet "simsad-x.x.x", où "x.x.x" correspond au numéro de version.
+#. Ensuite, cliquez sur "Download files" dans le menu à gauche et puis cliquez sur le nom du fichier "simsad-x.x.x.tar.gz" pour télécharger le fichier compressé.
+#. Une fois le fichier téléchargé, décompressez le fichier "simsad-x.x.x.tar.gz" une première fois.
+#. Ouvrez le dossier créé par l'extraction (ex. simsad-x.x.x.tar), continuez ensuite en ouvrant le dossier "dist" et décompressez le fichier "simsad-x.x.x.tar".
+#. Une fois le fichier décompressé, transférez le dossier "simsad-x.x.x" dans le dossier où vous entreposez vos packages (si vous n'en avez pas, créez-en un à l'endroit qui vous convient le mieux).
+#. Enfin, ajoutez dans votre notebook ou votre script le chemin d'accès de votre dossier de packages et vous pourrez invoquer simsad en tant que module.
+
+::
+
+  import sys
+  sys.path.append('.../packages')
+
+  import simsad
+
+
+3) Accès à distance
+===================
+
+Si vous ne possédez pas ou ne pouvez pas avoir accès au logiciel Python, il est possible d'utiliser
+SimSAD par l'entremise de Google Colab. Après avoir ouvert un compte Google Colab et avoir créé un nouveau
+notebook, vous n'avez qu'à utiliser la commande suivante pour installer SimSAD: ::
+
+  pip install simsad
+
+Par la suite, il est possible d'invoquer SimSAD dans un notebook ou un script en tant que module. ::
+
+  import simsad

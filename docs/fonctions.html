@@ -1,0 +1,2254 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Dictionnaire (classes et fonctions) &mdash; Documentation SimSAD </title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/contentui.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+        <script src="_static/contentui.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Nous joindre" href="credits.html" />
+    <link rel="prev" title="Utilisation" href="utilisation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> SimSAD
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Présentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-automatisee">1) Installation automatisée</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-manuelle">2) Installation manuelle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#acces-a-distance">3) Accès à distance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utilisation.html">Utilisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#importation-de-simsad">1. Importation de SimSAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#choix-des-parametres">2. Choix des paramètres</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#ajout-d-un-tableau-de-resultats">3. Ajout d’un tableau de résultats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#simulation-du-scenario">4. Simulation du scénario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#appel-des-tableaux-de-resultats">5. Appel des tableaux de résultats</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dictionnaire (classes et fonctions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simulation">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#milieux-de-vie">Milieux de vie</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#domicile">Domicile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rpa">RPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ri-rtf">RI-RTF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chsld">CHSLD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nsa">NSA</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#fournisseurs">Fournisseurs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clsc">CLSC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eesad">EÉSAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prive">Privé</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#programmes">Programmes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cheque-emploi-service-ces">Chèque emploi-service (CES)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#credit-d-impot-pour-maintien-a-domicile-des-aines-cmd">Crédit d’impôt pour maintien à domicile des aînés (CMD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#programme-d-exoneration-financiere-pour-les-services-d-aide-domestique-pefsad">Programme d’exonération financière pour les services d’aide domestique (PEFSAD)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#preferences">Préférences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#outils">Outils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Nous joindre</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#principaux-contributeurs">Principaux contributeurs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#personne-contact">Personne-contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#liste-denvoi">Liste d’envoi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#problemes-et-ameliorations">Problèmes et améliorations</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href="genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimSAD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dictionnaire (classes et fonctions)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/fonctions.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dictionnaire-classes-et-fonctions">
+<span id="dictionnaire"></span><h1>Dictionnaire (classes et fonctions)<a class="headerlink" href="#dictionnaire-classes-et-fonctions" title="Lien permanent vers ce titre">¶</a></h1>
+<div class="section" id="simulation">
+<h2>Simulation<a class="headerlink" href="#simulation" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La classe <em>projection</em> permet de réaliser les simulations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.</span></span><span class="sig-name descname"><span class="pre">projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2040</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2023</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scn_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scn_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reference'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_welfare</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1234</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Modèle de simulation SimSAD.</p>
+<p>Cette classe permet de créer une instance de modèle pour la simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_yr</strong> (<em>int</em>) – année de départ de la simulation (défaut=2020)</p></li>
+<li><p><strong>stop_yr</strong> (<em>int</em>) – année de fin de la simulation (défaut=2040)</p></li>
+<li><p><strong>base_yr</strong> (<em>int</em>) – année de départ pour la comptabilisation des résultats (défaut=2023)</p></li>
+<li><p><strong>scn_name</strong> (<em>string</em>) – nom du scénario (défaut=”reference”)</p></li>
+<li><p><strong>opt_welfare</strong> (<em>boolean</em>) – paramètre d’activation du calcul de l’utilité des individus (défaut=False)</p></li>
+<li><p><strong>seed</strong> (<em>float</em>) – spécifie la valeur de départ de la séquence aléatoire (défaut=1234)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes
+(cliquez sur le nom de la fonction pour afficher les détails):</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_params()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.load_params">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.load_params" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Chargement des paramètres des différentes composantes du modèle.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- load_pop()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.load_pop">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">load_pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RSS'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.load_pop" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Chargement des paramètres démographiques.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>geo</strong> (<em>str</em>) – unité géographique des projections démographiques (défaut=”Québec”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- load_grouper()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.load_grouper">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">load_grouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2016</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.load_grouper" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Chargement des paramètres d’attribution des groupes de profil de santé (GPS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>set_yr</strong> (<em>int</em>) – année de référence (défaut=2016)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- load_smaf()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.load_smaf">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">load_smaf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2016</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.load_smaf" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Chargement des paramètres d’attribution des profil Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>set_yr</strong> (<em>int</em>) – année de référence (défaut=2016)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- init_tracker()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.init_tracker">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">init_tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scn_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.init_tracker" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui spécifie les tableaux de sortie de base dans le modèle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>scn_name</strong> (<em>str</em>) – nom du scénario (défaut=”reference”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- init_dispatch()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.init_dispatch">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">init_dispatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_smafs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.init_dispatch" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui formate les paramètres d’attribution des milieux de vie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>init_smafs</strong> (<em>dataframe</em>) – nombre de personnes par profil Iso-SMAF selon la région et le groupe d’âge</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- dispatch()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.dispatch">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">dispatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.dispatch" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui attribue les milieux de vie aux personnes.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- create_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.create_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">create_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.create_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui crée les bassins d’individus pour l’ensemble des milieux de vie.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- update_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.update_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">update_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.update_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui met à jour les caractéristiques des individus dans les bassins pour l’ensemble des milieux de vie.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- welfare()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.welfare">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">welfare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.welfare" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule l’utilité des individus.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- finance()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.finance">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">finance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.finance" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui collige les coûts pour tous les milieux de vie et les programmes de financement.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- run()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.run">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.run" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction déclenchant le lancement de la simulation.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.compute">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.compute" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui appelle l’ensemble des fonctions permettant de calculer les résultats du modèle.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- save()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.save">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.save" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de sauvegarder les données d’un scénario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>output_dir</strong> (<em>str</em>) – sentier vers le dossier de sauvegarde des données.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- load()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.project.projection.load">
+<span class="sig-prename descclassname"><span class="pre">simsad.project.projection.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.project.projection.load" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les données d’un scénario préalablement sauvegardé.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>policy</em> permet de choisir les paramètres du scénario simulé.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.policy.policy">
+<span class="sig-prename descclassname"><span class="pre">simsad.policy.</span></span><span class="sig-name descname"><span class="pre">policy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.policy.policy" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Paramètres du scénario</p>
+<p>Cette classe permet de choisir les paramètres du scénario simulé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chsld_build</strong> (<em>boolean</em>) – True si on permet la construction de places en CHSLD (défaut=True)</p></li>
+<li><p><strong>chsld_build_rate</strong> (<em>float</em>) – taux de construction de places en CHSLD durant une année
+par rapport aux besoins de places dans ce milieu de vie (défaut=0.2)</p></li>
+<li><p><strong>chsld_restricted_eligibility</strong> (<em>boolean</em>) – True si l’admissibilité au CHSLD est limitée pour les personnes avec un profil Iso-SMAF inférieur à 10
+(défaut=False)</p></li>
+<li><p><strong>chsld_restriction_rate</strong> (<em>float</em>) – taux de restriction des probabilités de transition vers les CHSLD pour les personnes
+avec un profil Iso-SMAF inférieur à 10 (défaut=0.95)</p></li>
+<li><p><strong>ri_build</strong> (<em>boolean</em>) – True si on permet la construction de places en RI-RTF (défaut=True)</p></li>
+<li><p><strong>ri_build_rate</strong> (<em>float</em>) – taux de développement de places en RI-RTF durant une année
+par rapport aux besoins de places dans ce milieu de vie (défaut=0.2)</p></li>
+<li><p><strong>rpa_penetrate</strong> (<em>boolean</em>) – True si on permet le développement de nouvelles places en RPA financées par le public (défaut=False)</p></li>
+<li><p><strong>rpa_penetrate_rate</strong> (<em>float</em>) – Proportion maximale de places en RPA financées par le public (défaut=0.25)</p></li>
+<li><p><strong>rpa_adapt_rate</strong> (<em>float</em>) – taux de transformation des places de RPA en place subventionnée par rapport au nombre de personnes en attente
+d’une place subventionnée en RPA (défaut=0.5)</p></li>
+<li><p><strong>chsld_purchase</strong> (<em>boolean</em>) – True si on permet l’achat de places en CHSLD privé non-conventionné (défaut=True)</p></li>
+<li><p><strong>chsld_purchase_rate</strong> (<em>float</em>) – taux d’achat supplémentaire de places en CHSLD non-conventionné durant une année
+par rapport aux besoins de places en CHSLD (défaut=0.25)</p></li>
+<li><p><strong>nsa_open_capacity</strong> (<em>float</em>) – proportion maximale de lit d’hôpitaux pouvant être occupés par les personnes en NSA (défaut=0.06)</p></li>
+<li><p><strong>chsld_mda</strong> (<em>boolean</em>) – True si la construction des nouvelles places en CHSLD se fait selon le modèle des maisons des aînés
+(défaut=True)</p></li>
+<li><p><strong>infl_construction</strong> (<em>float</em>) – taux d’inflation des coûts de construction des CHSLD en dollar constant (défaut=0.01)</p></li>
+<li><p><strong>interest_rate</strong> (<em>float</em>) – taux d’intérêt en dollar constant (défaut=0.03)</p></li>
+<li><p><strong>clsc_cap</strong> (<em>boolean</em>) – True si limitation des heures de services fournis en CLSC selon la capacité en main d’oeuvre de ce fournisseur
+(défaut=True)</p></li>
+<li><p><strong>prive_cap</strong> (<em>boolean</em>) – True si limitation des heures de services fournis par le privé selon la capacité en main d’oeuvre
+de ce fournisseur (défaut=True)</p></li>
+<li><p><strong>eesad_cap</strong> (<em>boolean</em>) – True si limitation des heures de services fournis par les EÉSAD selon la capacité en main d’oeuvre
+de ce fournisseur (défaut=True)</p></li>
+<li><p><strong>purchase_prive</strong> (<em>boolean</em>) – True si achat d’heures de services fournis auprès du privé par les CLSC (défaut=True)</p></li>
+<li><p><strong>purchase_eesad</strong> (<em>boolean</em>) – True si achat d’heures de services fournis auprès des EÉSAD par les CLSC (défaut=True)</p></li>
+<li><p><strong>clsc_inf_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour les soins infirmiers en CSLC (défaut=0.25)</p></li>
+<li><p><strong>clsc_avq_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVQ en CSLC (défaut=0.25)</p></li>
+<li><p><strong>clsc_avd_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVD en CSLC (défaut=0.25)</p></li>
+<li><p><strong>eesad_avd_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVD en EÉSAD (défaut=0.25)</p></li>
+<li><p><strong>prive_avq_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVQ au privé (défaut=0.25)</p></li>
+<li><p><strong>prive_avd_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVD au privé (défaut=0.25)</p></li>
+<li><p><strong>chsld_inf_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour les soins infirmiers en CHSLD (défaut=0.25)</p></li>
+<li><p><strong>chsld_avq_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVQ en CHSLD (défaut=0.25)</p></li>
+<li><p><strong>ri_avq_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVQ en RI-RTF (défaut=0.25)</p></li>
+<li><p><strong>ri_avd_rate</strong> (<em>float</em>) – taux d’ajustement de la main d’oeuvre par rapport aux besoins supplémentaires en main d’oeuvre
+pour le soutien aux AVD en RI-RTF (défaut=0.25)</p></li>
+<li><p><strong>delta_inf_rate</strong> (<em>float</em>) – variation du taux de réponse aux besoins en soins infirmiers au SAD pour les personnes à domicile (défaut=0.0)</p></li>
+<li><p><strong>delta_avq_rate</strong> (<em>float</em>) – variation du taux de réponse aux besoins en soutien aux AVQ au SAD pour les personnes à domicile (défaut=0.0)</p></li>
+<li><p><strong>delta_avd_rate</strong> (<em>float</em>) – variation du taux de réponse aux besoins en soutien aux AVD au SAD pour les personnes à domicile (défaut=0.0)</p></li>
+<li><p><strong>delta_cah_chsld</strong> (<em>float</em>) – variation du taux de contribution des usagers en CHSLD (défaut=0.0)</p></li>
+<li><p><strong>delta_cah_ri</strong> (<em>float</em>) – variation du taux de contribution des usagers en RI-RTF (défaut=0.0)</p></li>
+<li><p><strong>clsc_shift_avq_eesad</strong> (<em>float</em>) – proportion supplémentaire d’heures de services fournis en soutien aux AVQ par les CLSC transférées en achat
+de services aux EÉSAD (défaut=0.0)</p></li>
+<li><p><strong>clsc_shift_avq_prive</strong> (<em>float</em>) – proportion supplémentaire d’heures de services fournis en soutien aux AVQ par les CLSC transférées en achat
+de services au privé (défaut=0.0)</p></li>
+<li><p><strong>clsc_shift_avd_eesad</strong> (<em>float</em>) – proportion supplémentaire d’heures de services fournis en soutien aux AVD par les CLSC transférées en achat
+de services aux EÉSAD (défaut=0.0)</p></li>
+<li><p><strong>clsc_shift_avd_prive</strong> (<em>float</em>) – proportion supplémentaire d’heures de services fournis en soutien aux AVD par les CLSC transférées en achat
+de services au privé (défaut=0.0)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>isq</em> permet de modéliser la démographie.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.isq">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.</span></span><span class="sig-name descname"><span class="pre">isq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Québec'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_fichier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pop-isq.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2040</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.isq" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Démographie</p>
+<p>Cette classe permet de modéliser la démographie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<em>str</em>) – unité géographique des projections démographiques (défaut=”Québec”)</p></li>
+<li><p><strong>pop_fichier</strong> (<em>str</em>) – nom du fichier contenant les projections démographiques (défaut=”pop-isq.csv”)</p></li>
+<li><p><strong>start_yr</strong> (<em>int</em>) – année de départ de la simulation (défaut=2020)</p></li>
+<li><p><strong>stop_yr</strong> (<em>int</em>) – année de fin de la simulation (défaut=2040)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient la fonction suivante:</p>
+<div class="toggle-header docutils container">
+<p><strong>- evaluate()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.isq.evaluate">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.isq.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.isq.evaluate" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre de personnes par région et âge durant l’année de simulation en cours.</p>
+<dl class="simple">
+<dt>yr: int</dt><dd><p>année en cours de la simulation</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>gps</em> permet de modéliser les groupes de profil de santé.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.gps">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.</span></span><span class="sig-name descname"><span class="pre">gps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nregions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.gps" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Groupes de profil de santé (GPS).</p>
+<p>Cette classe permet de modéliser les groupes de profils de santé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nregions</strong> (<em>int</em>) – nombre de régions</p></li>
+<li><p><strong>ages</strong> (<em>int</em>) – liste des tranches d’âge considérées dans la modélisation</p></li>
+<li><p><strong>ngps</strong> (<em>int</em>) – nombre de Groupes de profils de santé (défaut=16)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.gps.load">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.gps.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2016</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.gps.load" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux GPS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>int</em>) – année de référence (défaut=2016)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- evaluate()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.gps.evaluate">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.gps.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.gps.evaluate" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre de personnes par GPS et région durant l’année de simulation en cours.</p>
+<dl class="simple">
+<dt>pop: objet</dt><dd><p>objet contenant les informations démographiques</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>smaf</em> permet de modéliser les profils Iso-SMAF.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.smaf">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.</span></span><span class="sig-name descname"><span class="pre">smaf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nregions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ngps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsmaf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.smaf" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Profils Iso-SMAF.</p>
+<p>Cette classe permet de modéliser les profils Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nregions</strong> (<em>int</em>) – nombre de régions</p></li>
+<li><p><strong>ages</strong> (<em>int</em>) – liste des tranches d’âge considérées dans la modélisation</p></li>
+<li><p><strong>ngps</strong> (<em>int</em>) – nombre de groupes de profils de santé (défaut=16)</p></li>
+<li><p><strong>nsmaf</strong> (<em>int</em>) – nombre de profils Iso-SMAF (défaut=14)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.smaf.load">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.smaf.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2015</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.smaf.load" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux profils Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>integer</em>) – année de référence (défaut=2015)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- evaluate()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.demo.smaf.evaluate">
+<span class="sig-prename descclassname"><span class="pre">simsad.demo.smaf.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gps_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.demo.smaf.evaluate" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre de personnes par profil Iso-SMAF, GPS, région et âge
+durant l’année de simulation en cours</p>
+<dl class="simple">
+<dt>grouper: objet</dt><dd><p>objet contenant les informations sur les GPS</p>
+</dd>
+<dt>gps_target: series</dt><dd><p>liste de GPS pour lesquels la probabilité d’être évalué pour un profil Iso-SMAF sera augmentée</p>
+</dd>
+<dt>rate: float</dt><dd><p>taux de croissance de la probabilité d’être évalué pour un profil Iso-SMAF</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>needs</em> permet de quantifier les besoins en heures de soutien (soins infirmiers, les AVQ et les AVD).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.needs.needs">
+<span class="sig-prename descclassname"><span class="pre">simsad.needs.</span></span><span class="sig-name descname"><span class="pre">needs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.needs.needs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Besoins en heures de soutien à l’autonomie</p>
+<p>Cette classe permet de quantifier les besoins en heures de soutien (soins infirmiers, les AVQ et les AVD)
+par profil Iso-SMAF.</p>
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>dispatcher</em> permet d’attribuer le milieux de vie aux personnes avec un profil Iso-SMAF.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.</span></span><span class="sig-name descname"><span class="pre">dispatcher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Milieux de vie</p>
+<p>Cette classe permet d’attribuer les milieux de vie aux personnes avec un profil Iso-SMAF.</p>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- setup_milieux()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.setup_milieux">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">setup_milieux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.setup_milieux" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction spécifie les milieux de vie.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- setup_ages()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.setup_ages">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">setup_ages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.setup_ages" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction spécifie les groupes d’âge.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- setup_capacity()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.setup_capacity">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">setup_capacity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_rpa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_ri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_nsa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chsld</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.setup_capacity" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction spécifie les capacités maximales par milieu de vie.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- setup_params()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.setup_params">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">setup_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_prob_chsld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_prob_ri</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.setup_params" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction spécifie les différentes probabilités utilisées pour l’attribution des milieux de vie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_prob</strong> (<em>array</em>) – répartition au début de l’année des individus par milieu de vie</p></li>
+<li><p><strong>trans_prob</strong> (<em>array</em>) – probabilité de transition</p></li>
+<li><p><strong>surv_prob</strong> (<em>array</em>) – probabilités de survie</p></li>
+<li><p><strong>wait_count</strong> (<em>array</em>) – nombre de personnes en attente pour chacun des milieux de vie</p></li>
+<li><p><strong>wait_prob_chsld</strong> (<em>array</em>) – probabilité de provenir d’un milieu de vie donné lorsqu’admis en CHSLD</p></li>
+<li><p><strong>wait_prob_ri</strong> (<em>array</em>) – probabilité de provenir d’un milieu de vie donné lorsqu’admis en RI-RTF</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- chsld_restriction()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.chsld_restriction">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">chsld_restriction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.chsld_restriction" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction empêche les transitions vers les CHSLD à partir d’un autre milieu de vie
+pour les personnes avec un profil Iso-SMAF de moins de 10,
+lorsque le paramètre « chsld_restriction_rate » est True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – Paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- marginal_effect()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.marginal_effect">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">marginal_effect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pref_pars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cah_ri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cah_chsld</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.marginal_effect" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction permet l’ajustement des transitions par milieux de vie,
+lorsqu’on fait varier le taux de services fournis dans le SAD hors-RPA
+ou lorsqu’on fait varier la contribution d’adulte hébergé en RI-RTF et CHSLD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p></li>
+<li><p><strong>pref_pars</strong> (<em>dataframe</em>) – paramètres de préférences estimés</p></li>
+<li><p><strong>cah_ri</strong> (<em>float</em>) – valeur initiale de la CAH en RI-RTF</p></li>
+<li><p><strong>cah_chsld</strong> (<em>float</em>) – valeur initiale de la CAH en CHSLD</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- init_state()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.init_state">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">init_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.init_state" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui répartit les personnes par milieu de vie au début de l’année.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- next_state()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.next_state">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">next_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.next_state" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui effectue la transition d’un mois à un autre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>int</em>) – mois pour lequel on calcul le nombre de personnes par milieu de vie</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui enclenche le calcul du nombre de personnes par milieu de vie pour tous les mois.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- collect()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.dispatch.dispatcher.collect">
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">collect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.collect" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise les personnes par milieu de vie, ainsi que les personnes en attente pour ceux-ci.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>La classe <em>msss</em> permet de comptabiliser les coûts pour le ministère de la Santé et des services sociaux.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.msss.msss">
+<span class="sig-prename descclassname"><span class="pre">simsad.msss.</span></span><span class="sig-name descname"><span class="pre">msss</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.msss.msss" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Ministère de la Santé et des Services sociaux</p>
+<p>Cette classe permet de comptabiliser les coûts pour le ministère de la Santé et des Services sociaux.</p>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.msss.msss.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.msss.msss.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.msss.msss.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction assigne les coûts des différents items au registre du MSSS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cost</strong> (<em>float</em>) – valeur du coût de l’item</p></li>
+<li><p><strong>item</strong> (<em>string</em>) – nom de l’item</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- collect()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.msss.msss.collect">
+<span class="sig-prename descclassname"><span class="pre">simsad.msss.msss.</span></span><span class="sig-name descname"><span class="pre">collect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.msss.msss.collect" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Cette fonction calcule les coûts agrégés pour le gouvernement, les usagers, ainsi que les coûts totaux.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="milieux-de-vie">
+<h2>Milieux de vie<a class="headerlink" href="#milieux-de-vie" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="domicile">
+<h3>Domicile<a class="headerlink" href="#domicile" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>home</em> permet de modéliser les personnes vivant à domicile (avec ou sans services financés par le réseau public).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.home.home">
+<span class="sig-prename descclassname"><span class="pre">simsad.home.</span></span><span class="sig-name descname"><span class="pre">home</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.home.home" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Personnes à domicile</p>
+<p>Cette classe permet de modéliser les personnes à domicile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_register()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.home.home.load_register">
+<span class="sig-prename descclassname"><span class="pre">simsad.home.home.</span></span><span class="sig-name descname"><span class="pre">load_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.home.home.load_register" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de créer le registre des personnes à domicile.
+Ce registre contient des informations sur le nombre de personnes et les profils Iso-SMAF de celles-ci.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.home.home.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.home.home.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applicants_none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applicants_svc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiting_users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.home.home.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui répertorie dans le registre des personnes à domicile le nombre de personnes,
+leur profil Iso-SMAF et le nombre de personnes en attente d’une place en SAD en résidence familiale.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>applicants_none</strong> (<em>dataframe</em>) – Nombre de personnes à domicile sans services par profil Iso-SMAF</p></li>
+<li><p><strong>applicants_svc</strong> (<em>dataframe</em>) – Nombre de personnes à domicile avec du SAD par profil Iso-SMAF</p></li>
+<li><p><strong>waiting_users</strong> (<em>object</em>) – Nombre de personnes en attente de SAD</p></li>
+<li><p><strong>region_id</strong> (<em>int</em>) – numéro de région</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- create_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.home.home.create_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.home.home.</span></span><span class="sig-name descname"><span class="pre">create_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_svc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.home.home.create_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui crée le bassin d’individus à domicile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>applicants_none</strong> (<em>dataframe</em>) – Nombre de personnes à domicile sans services par région, profil Iso-SMAF et groupe d’âge</p></li>
+<li><p><strong>applicants_svc</strong> (<em>dataframe</em>) – Nombre de personnes à domicile avec du SAD par région, profil Iso-SMAF et groupe d’âge</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- update_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.home.home.update_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.home.home.</span></span><span class="sig-name descname"><span class="pre">update_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.home.home.update_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui met à jour les caractéristiques du bassin d’individus à domicile.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="rpa">
+<h3>RPA<a class="headerlink" href="#rpa" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>rpa</em> permet de modéliser les personnes vivant en RPA qui reçoivent des services financés par le réseau public.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.rpa.rpa">
+<span class="sig-prename descclassname"><span class="pre">simsad.rpa.</span></span><span class="sig-name descname"><span class="pre">rpa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.rpa.rpa" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Résidence privée pour aînés (RPA)</p>
+<p>Cette classe permet de modéliser les différents aspects des résidences privées pour aînés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_register()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.rpa.rpa.load_register">
+<span class="sig-prename descclassname"><span class="pre">simsad.rpa.rpa.</span></span><span class="sig-name descname"><span class="pre">load_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.rpa.rpa.load_register" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux RPA et qui crée le registre de ceux-ci.
+Ce registre contient de l’information sur le nombre de personnes,
+leur profil Iso-SMAF et le nombre de personnes en attente d’une place en RPA subventionnée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>integer</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.rpa.rpa.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.rpa.rpa.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applicants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiting_users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.rpa.rpa.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise dans le registre des RPA les profils Iso-SMAF des usagers,
+le nombre de ceux-ci, et le nombre de personnes en attente d’une place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>applicants</strong> (<em>dataframe</em>) – Nombre d’usagers par profil Iso-SMAF</p></li>
+<li><p><strong>waiting_users</strong> (<em>dataframe</em>) – Nombre de personnes en attente d’une place</p></li>
+<li><p><strong>region_id</strong> (<em>int</em>) – Numéro de la région</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- build()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.rpa.rpa.build">
+<span class="sig-prename descclassname"><span class="pre">simsad.rpa.rpa.</span></span><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.rpa.rpa.build" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet le développement de places en RPA subventionnées par le public.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- create_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.rpa.rpa.create_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.rpa.rpa.</span></span><span class="sig-name descname"><span class="pre">create_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.rpa.rpa.create_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui crée le dataframe du bassin d’individus en RPA subventionnées.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – Nombre d’usagers en RPA subventionnées par région, profil Iso-SMAF et groupe d’âge</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- update_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.rpa.rpa.update_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.rpa.rpa.</span></span><span class="sig-name descname"><span class="pre">update_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.rpa.rpa.update_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui met à jours les caractéristiques des personnes dans le bassin d’individus en RPA subventionnée.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="ri-rtf">
+<h3>RI-RTF<a class="headerlink" href="#ri-rtf" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>ri</em> permet de modéliser les personnes vivant en RI-RTF, ainsi que les services fournis par les travailleurs de ce milieu de vie.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.</span></span><span class="sig-name descname"><span class="pre">ri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Ressources intermédiaires et ressources de type familial (RI-RTF)</p>
+<p>Cette classe permet de modéliser les différents aspects des ressources intermédiaires
+et ressources de type familial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_register()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.load_register">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">load_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.load_register" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux RI-RTF et qui crée le registre de ceux-ci.
+Ce registre contient des informations sur le nombre de places, le nombre d’usagers, leur profil Iso-SMAF,
+les heures de services fournis, la main d’oeuvre et les coûts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>int</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applicants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiting_users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise dans le registre des RI-RTF les profils Iso-SMAF des usagers,
+le nombre de ceux-ci, et le nombre de personnes en attente d’une place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>applicants</strong> (<em>dataframe</em>) – Nombre d’usagers par profil Iso-SMAF</p></li>
+<li><p><strong>waiting_users</strong> (<em>dataframe</em>) – Nombre de personnes en attente d’une place</p></li>
+<li><p><strong>region_id</strong> (<em>int</em>) – Numéro de la région</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- build()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.build">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.build" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de développer des places en RI-RTF.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_supply()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.compute_supply">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">compute_supply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.compute_supply" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre total d’heures de services pouvant être fournies en RI-RTF (AVQ et AVD)
+selon la main d’oeuvre disponible.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts des RI-RTF.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- create_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.create_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">create_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.create_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui crée le dataframe du bassin d’individus en RI-RTF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – Nombre d’usagers en RI-RTF par région, profil Iso-SMAF et groupe d’âge</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- update_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ri.ri.update_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.ri.ri.</span></span><span class="sig-name descname"><span class="pre">update_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ri.ri.update_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui met à jours les caractéristiques des personnes dans le bassin d’individus en RI-RTF.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="chsld">
+<h3>CHSLD<a class="headerlink" href="#chsld" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>chsld</em> permet de modéliser les personnes vivant en CHSLD, ainsi que les services fournis par les travailleurs de ce milieu de vie.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.</span></span><span class="sig-name descname"><span class="pre">chsld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Centres d’hébergement de soins de longue durée (CHSLD)</p>
+<p>Cette classe permet de modéliser les différents aspects des Centres d’hébergement de soins de longue durée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_register()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.load_register">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">load_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.load_register" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux CHSLD et qui crée le registre de ceux-ci.
+Ce registre contient des informations sur le nombre de places, le nombre d’usagers, leur profil Iso-SMAF,
+les heures de services fournis, la main d’oeuvre et les coûts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>int</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applicants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiting_users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise dans le registre des CHSLD les profils Iso-SMAF des usagers,
+le nombre de ceux-ci, et le nombre de personnes en attente d’une place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>applicants</strong> (<em>array</em>) – Nombre d’usagers par profil Iso-SMAF</p></li>
+<li><p><strong>waiting_users</strong> (<em>array</em>) – Nombre de personnes en attente d’une place</p></li>
+<li><p><strong>region_id</strong> (<em>int</em>) – Numéro de la région</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- purchase()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.purchase">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">purchase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.purchase" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet l’achat de places en CHSLD non-conventionné.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- build()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.build">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.build" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet la construction de places en CHSLD public.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_supply()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.compute_supply">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">compute_supply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.compute_supply" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre total d’heures de services pouvant être fournies en CHSLD
+(soins infirmiers et AVQ)
+selon la main d’oeuvre disponible. On suppose qu’il n’y a pas de contrainte de main d’oeuvre
+pour le soutient au AVD en CHSLD.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts des CHSLD.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- create_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.create_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">create_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.create_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui crée le dataframe du bassin d’individus en CHSLD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – Nombre d’individus en CHSLD par région, profil Iso-SMAF et groupe d’âge</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- update_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.chsld.chsld.update_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.chsld.chsld.</span></span><span class="sig-name descname"><span class="pre">update_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.chsld.chsld.update_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui met à jours les caractéristiques des personnes dans le bassin d’individus en CHSLD.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="nsa">
+<h3>NSA<a class="headerlink" href="#nsa" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>nsa</em> permet de modéliser les personnes en centre hospitalier en niveau de soins alternatifs (NSA), ainsi que les services fournis par les travailleurs de ce milieu de vie.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.nsa.nsa">
+<span class="sig-prename descclassname"><span class="pre">simsad.nsa.</span></span><span class="sig-name descname"><span class="pre">nsa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.nsa.nsa" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Personnes dans un centre hospitalier en niveau de soins alternatifs (NSA)</p>
+<p>Cette classe permet de modéliser les personnes dans un centre hospitalier en niveau de soins alternatifs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_register()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.nsa.nsa.load_register">
+<span class="sig-prename descclassname"><span class="pre">simsad.nsa.nsa.</span></span><span class="sig-name descname"><span class="pre">load_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.nsa.nsa.load_register" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de créer le registre des NSA. Ce registre contient des informations
+sur le nombre de places en centre hospitalier, le nombre d’usagers et leur profil Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>integer</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.nsa.nsa.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.nsa.nsa.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">applicants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.nsa.nsa.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise dans le registre des NSA le nombre de personnes et
+leur profil Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>applicants</strong> (<em>dataframe</em>) – nombre de personnes en NSA par profil Iso-SMAF</p></li>
+<li><p><strong>region_id</strong> (<em>int</em>) – numéro de la région</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- create_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.nsa.nsa.create_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.nsa.nsa.</span></span><span class="sig-name descname"><span class="pre">create_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.nsa.nsa.create_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui crée le bassin d’individus en NSA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – Nombre de personnes en NSA par région, profil Iso-SMAF et groupe d’âge</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.nsa.nsa.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.nsa.nsa.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.nsa.nsa.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts des NSA.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- update_users()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.nsa.nsa.update_users">
+<span class="sig-prename descclassname"><span class="pre">simsad.nsa.nsa.</span></span><span class="sig-name descname"><span class="pre">update_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.nsa.nsa.update_users" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui met à jour les caractéristiques du bassin d’individus en NSA.</p>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="fournisseurs">
+<h2>Fournisseurs<a class="headerlink" href="#fournisseurs" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="clsc">
+<h3>CLSC<a class="headerlink" href="#clsc" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>clsc</em> permet de modéliser les services fournis par les CLSC.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.</span></span><span class="sig-name descname"><span class="pre">clsc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Centres locaux de services communautaires (CLSC)</p>
+<p>Cette classe permet de modéliser les services offerts en soutien à l’autonomie par les Centres locaux
+de services communautaires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_registry()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.load_registry">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">load_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.load_registry" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de créer le registre des CSLC. Ce registre contient des informations concernant
+la main d’oeuvre, les heures de services fournis et les coûts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>int</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- load_params()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.load_params">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.load_params" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux heures de services fournis par les CSLC.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milieu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui détermine les usagers des CLSC et qui leur attribue des heures de services fournis
+(soins infirmier, AVQ, AVD).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p></li>
+<li><p><strong>milieu</strong> (<em>str</em>) – Nom du milieu de vie</p></li>
+<li><p><strong>policy</strong> (<em>object</em>) – Paramètres du scénario</p></li>
+<li><p><strong>yr</strong> (<em>int</em>) – Année en cours de la simulation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_supply()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.compute_supply">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">compute_supply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.compute_supply" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise les heures de services pouvant être fournies en CLSC (soins infirmiers et AVQ)
+selon la main d’oeuvre disponible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>yr</strong> (<em>int</em>) – Année en cours de la simulation</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- cap()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.cap">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">cap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milieu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.cap" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui ajuste les heures de services fournis au niveau individuel (soins infirmier, AVQ, AVD)
+selon la main d’oeuvre disponible et qui comptabilise les besoins supplémentaires en main d’oeuvre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p></li>
+<li><p><strong>milieu</strong> (<em>str</em>) – Nom du milieu de vie</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts des CLSC.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- workforce()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.clsc.clsc.workforce">
+<span class="sig-prename descclassname"><span class="pre">simsad.clsc.clsc.</span></span><span class="sig-name descname"><span class="pre">workforce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_base_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.clsc.clsc.workforce" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui ajuste le nombre d’ETC en CLSC selon les besoins supplémentaires en main d’oeuvre et
+le taux d’ajustement de celle-ci.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>before_base_yr</strong> (<em>boolean</em>) – True si l’année en cours de la simulation est inférieure
+à l’année de départ de la comtabilisation des résultats</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="eesad">
+<h3>EÉSAD<a class="headerlink" href="#eesad" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>eesad</em> permet de modéliser les services fournis par les EÉSAD.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.</span></span><span class="sig-name descname"><span class="pre">eesad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Entreprises d’économie sociale en aide à domicile (EÉSAD)</p>
+<p>Cette classe permet de modéliser les services offerts en soutien à l’autonomie par les entreprises d’économie sociale en aide à domicile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_registry()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad.load_registry">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.eesad.</span></span><span class="sig-name descname"><span class="pre">load_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad.load_registry" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de créer le registre des EÉSAD. Ce registre contient des informations concernant
+la main d’oeuvre et les coûts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>integer</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.eesad.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_home</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_rpa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule la contribution des usagers des EÉSAD dans les bassins de d’individus à domicile ou en RPA,
+et qui comptabilise le nombre d’usagers et le nombre total d’heures de services fournis (en AVD) par région et profil Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_rpa</strong> (<em>dataframe</em>) – Bassin d’individus en RPA</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus en RPA</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_supply()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad.compute_supply">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.eesad.</span></span><span class="sig-name descname"><span class="pre">compute_supply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad.compute_supply" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre total d’heures de services pouvant être fournies en EÉSAD (AVD)
+selon la main d’oeuvre disponible.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- cap()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad.cap">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.eesad.</span></span><span class="sig-name descname"><span class="pre">cap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_home</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_rpa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad.cap" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui ajuste les heures de services fournis au niveau individuel (AVD) selon la main d’oeuvre disponible
+et qui comptabilise les besoins supplémentaires en main d’oeuvre pour les EÉSAD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_home</strong> – Bassin d’individus en RPA</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus en RPA</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.eesad.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts des EÉSAD.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- workforce()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.eesad.eesad.workforce">
+<span class="sig-prename descclassname"><span class="pre">simsad.eesad.eesad.</span></span><span class="sig-name descname"><span class="pre">workforce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_base_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.eesad.eesad.workforce" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui ajuste le nombre d’ETC en EÉSAD selon les besoins supplémentaires en main d’oeuvre et
+le taux d’ajustement de celle-ci.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>before_base_yr</strong> (<em>boolean</em>) – True si l’année en cours de la simulation est inférieure
+à l’année de départ de la comptabilisation des résultats</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="prive">
+<h3>Privé<a class="headerlink" href="#prive" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>prive</em> permet de modéliser les services fournis par les EÉSAD.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.</span></span><span class="sig-name descname"><span class="pre">prive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Secteur privé</p>
+<p>Cette classe permet de modéliser les services offerts par le secteur privé et financés par le public.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>policy</strong> (<em>object</em>) – paramètres du scénario</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_registry()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive.load_registry">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.prive.</span></span><span class="sig-name descname"><span class="pre">load_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive.load_registry" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de créer le registre du secteur privé. Ce registre contient des informations concernant
+la main d’oeuvre, les heures fournies et les coûts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>integer</em>) – année de référence (défaut=2021)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.prive.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui comptabilise le nombre d’usagers et le nombre total d’heures de services fournis (en AVQ et AVD)
+par région et profil Iso-SMAF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_supply()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive.compute_supply">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.prive.</span></span><span class="sig-name descname"><span class="pre">compute_supply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive.compute_supply" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule le nombre total d’heures de services pouvant être fournies par le privé (AVQ et AVD)
+selon la main d’oeuvre disponible.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- cap()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive.cap">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.prive.</span></span><span class="sig-name descname"><span class="pre">cap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive.cap" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui ajuste les heures de services fournis au niveau individuel (AVQ et AVD)
+selon la main d’oeuvre disponible
+et qui comptabilise les besoins supplémentaires en main d’oeuvre pour le privé.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p></li>
+<li><p><strong>milieu</strong> (<em>str</em>) – Nom du milieu de vie</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.prive.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts du privé.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- workforce()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prive.prive.workforce">
+<span class="sig-prename descclassname"><span class="pre">simsad.prive.prive.</span></span><span class="sig-name descname"><span class="pre">workforce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_base_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prive.prive.workforce" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui ajuste le nombre d’ETC du privé selon les besoins supplémentaires en main d’oeuvre et
+le taux d’ajustement de celle-ci.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>before_base_yr</strong> (<em>boolean</em>) – True si l’année en cours de la simulation est inférieure
+à l’année de départ de la comptabilisation des résultats</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="programmes">
+<h2>Programmes<a class="headerlink" href="#programmes" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="cheque-emploi-service-ces">
+<h3>Chèque emploi-service (CES)<a class="headerlink" href="#cheque-emploi-service-ces" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>ces</em> permet de modéliser le Chèque emploi-service.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ces.ces">
+<span class="sig-prename descclassname"><span class="pre">simsad.ces.</span></span><span class="sig-name descname"><span class="pre">ces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ces.ces" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Chèque emploi-service (CES)</p>
+<p>Cette classe permet d’attribuer les services reçus dans le cadre du Chèque emploi-service.</p>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_params()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ces.ces.load_params">
+<span class="sig-prename descclassname"><span class="pre">simsad.ces.ces.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ces.ces.load_params" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés au CES.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>int</em>) – année de référence (défaut=2021)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ces.ces.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.ces.ces.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ces.ces.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui attribue aux individus les heures de services reçues dans le cadre du CES.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – bassin d’individus pour un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- calibrate()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.ces.ces.calibrate">
+<span class="sig-prename descclassname"><span class="pre">simsad.ces.ces.</span></span><span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets_by_region</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.ces.ces.calibrate" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calibre les heures de services reçues dans le cadre du CES par rapport aux données observées.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users</strong> (<em>dataframe</em>) – bassin d’individus d’un milieux de vie donné</p></li>
+<li><p><strong>targets_by_region</strong> (<em>dataframe</em>) – valeurs cibles par région</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="credit-d-impot-pour-maintien-a-domicile-des-aines-cmd">
+<h3>Crédit d’impôt pour maintien à domicile des aînés (CMD)<a class="headerlink" href="#credit-d-impot-pour-maintien-a-domicile-des-aines-cmd" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>cmd</em> permet de modéliser le crédit d’impôt pour maintien à domicile des aînés.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.cmd.cmd">
+<span class="sig-prename descclassname"><span class="pre">simsad.cmd.</span></span><span class="sig-name descname"><span class="pre">cmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.cmd.cmd" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Crédit d’impôt pour maintien à domicile (CMD) des aînés</p>
+<p>Cette classe permet de modéliser les coûts liés au Crédit d’impôt pour maintien à domicile des aînés.</p>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_registry()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.cmd.cmd.load_registry">
+<span class="sig-prename descclassname"><span class="pre">simsad.cmd.cmd.</span></span><span class="sig-name descname"><span class="pre">load_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.cmd.cmd.load_registry" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de créer le registre du CMD. Ce registre contient des informations
+sur les montants agrégés.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- load_params()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.cmd.cmd.load_params">
+<span class="sig-prename descclassname"><span class="pre">simsad.cmd.cmd.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2019</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.cmd.cmd.load_params" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux montants de CMD par individu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>start_yr</strong> (<em>int</em>) – année de référence (défaut=2019)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.cmd.cmd.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.cmd.cmd.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milieu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.cmd.cmd.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui détermine les prestataires du CMD et qui attribue les montants reçu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p></li>
+<li><p><strong>milieu</strong> (<em>str</em>) – Nom du milieu de vie</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- calibrate()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.cmd.cmd.calibrate">
+<span class="sig-prename descclassname"><span class="pre">simsad.cmd.cmd.</span></span><span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_home</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_rpa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.cmd.cmd.calibrate" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calibre les montants simulés de CMD sur les montants agrégés budgétés jusqu’en 2026.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_home</strong> – Bassin d’individus en RPA</p></li>
+<li><p><strong>yr</strong> (<em>int</em>) – Année en cours de la simulation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus en RPA</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_costs()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.cmd.cmd.compute_costs">
+<span class="sig-prename descclassname"><span class="pre">simsad.cmd.cmd.</span></span><span class="sig-name descname"><span class="pre">compute_costs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_home</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_rpa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.cmd.cmd.compute_costs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule les coûts du CMD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users_home</strong> (<em>dataframe</em>) – Bassin d’individus à domicile</p></li>
+<li><p><strong>users_home</strong> – Bassin d’individus en RPA</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="programme-d-exoneration-financiere-pour-les-services-d-aide-domestique-pefsad">
+<h3>Programme d’exonération financière pour les services d’aide domestique (PEFSAD)<a class="headerlink" href="#programme-d-exoneration-financiere-pour-les-services-d-aide-domestique-pefsad" title="Lien permanent vers ce titre">¶</a></h3>
+<p>La classe <em>pefsad</em> permet de modéliser le Programme d’exonération financière pour les services d’aide domestique.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.pefsad.pefsad">
+<span class="sig-prename descclassname"><span class="pre">simsad.pefsad.</span></span><span class="sig-name descname"><span class="pre">pefsad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.pefsad.pefsad" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Programme d’exonération financière pour les services d’aide domestique (PEFSAD)</p>
+<p>Cette classe permet de modéliser les services offerts en soutien à l’autonomie par les Entreprises d’économie sociale en aide à domicile.</p>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- load_params()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.pefsad.pefsad.load_params">
+<span class="sig-prename descclassname"><span class="pre">simsad.pefsad.pefsad.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.pefsad.pefsad.load_params" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet de charger les paramètres liés aux heures de services fournis dans le cadre du PEFSAD.</p>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- assign()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.pefsad.pefsad.assign">
+<span class="sig-prename descclassname"><span class="pre">simsad.pefsad.pefsad.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milieu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.pefsad.pefsad.assign" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui détermine les usagers du PEFSAD et qui leur attribue des heures de services fournis (AVD).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p></li>
+<li><p><strong>milieu</strong> (<em>string</em>) – Nom du milieu de vie</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="section" id="preferences">
+<h2>Préférences<a class="headerlink" href="#preferences" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La classe <em>prefs</em> permet de modéliser les préférences des individus par rapport à la prise en charge de la perte d’autonomie.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prefs.prefs">
+<span class="sig-prename descclassname"><span class="pre">simsad.prefs.</span></span><span class="sig-name descname"><span class="pre">prefs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prefs.prefs" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Préférences pour la prise en charge de la perte d’autonomie</p>
+<p>Cette classe permet de modéliser les préférences par rapport à la prise en charge de la perte d’autonomie.</p>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- utility()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prefs.prefs.utility">
+<span class="sig-prename descclassname"><span class="pre">simsad.prefs.prefs.</span></span><span class="sig-name descname"><span class="pre">utility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prefs.prefs.utility" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule l’utilité pour un individu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>row</strong> (<em>dataframe</em>) – arguments (variables) de la fonction d’utilité</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>u</strong> – utilité de l’individu</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- compute_utility()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.prefs.prefs.compute_utility">
+<span class="sig-prename descclassname"><span class="pre">simsad.prefs.prefs.</span></span><span class="sig-name descname"><span class="pre">compute_utility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.prefs.prefs.compute_utility" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui calcule l’utilité pour l’ensemble d’un groupe en unité et en valeur monétaire.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>users</strong> (<em>dataframe</em>) – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-even">Renvoie</dt>
+<dd class="field-even"><p><strong>users</strong> – Bassin d’individus d’un milieu de vie donné</p>
+</dd>
+<dt class="field-odd">Type renvoyé</dt>
+<dd class="field-odd"><p>dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+<div class="section" id="outils">
+<h2>Outils<a class="headerlink" href="#outils" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La classe <em>tracker</em> permet la création de tableaux de sortie par rapport aux différents résultats du modèle.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.tracker.tracker">
+<span class="sig-prename descclassname"><span class="pre">simsad.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scn_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reference'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.tracker.tracker" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Résultats de simulation</p>
+<p>Cette classe permet la création de tableaux de sortie par rapport aux différents résultats du modèle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><p><strong>scn_name</strong> (<em>str</em>) – nom du scénario (défaut=”reference”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Cette classe contient les fonctions suivantes:</p>
+<div class="toggle-header docutils container">
+<p><strong>- add_entry()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.tracker.tracker.add_entry">
+<span class="sig-prename descclassname"><span class="pre">simsad.tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">add_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rowvars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colvars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggfunc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_yr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.tracker.tracker.add_entry" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui permet la création d’un nouveau tableau de sortie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entry_name</strong> (<em>str</em>) – nom du tableau</p></li>
+<li><p><strong>class_member</strong> (<em>str</em>) – nom de la classe d’où proviennent les résultats</p></li>
+<li><p><strong>domain</strong> (<em>str</em>) – nom du domaine d’où proviennent les résultats</p></li>
+<li><p><strong>rowvars</strong> (<em>str</em>) – variables définissant les groupes d’agrégation (en ligne)</p></li>
+<li><p><strong>colvars</strong> (<em>str</em>) – variables de résultats (en colonne)</p></li>
+<li><p><strong>aggfunc</strong> (<em>str</em>) – nom de la fonction d’agrégation (ex. sum, mean, etc.)</p></li>
+<li><p><strong>start_yr</strong> (<em>int</em>) – année de départ</p></li>
+<li><p><strong>stop_yr</strong> (<em>int</em>) – année de fin</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- log()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.tracker.tracker.log">
+<span class="sig-prename descclassname"><span class="pre">simsad.tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.tracker.tracker.log" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui procède à la comptabilisation des résultats dans les tableaux de sortie.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>object</em>) – instance de classe</p></li>
+<li><p><strong>yr</strong> (<em>int</em>) – année en cours dans la simulation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="toggle-header docutils container">
+<p><strong>- save()</strong></p>
+</div>
+<div class="toggle-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="simsad.tracker.tracker.save">
+<span class="sig-prename descclassname"><span class="pre">simsad.tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scn_policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.tracker.tracker.save" title="Lien permanent vers cette définition">¶</a></dt>
+<dd><p>Fonction qui procède à la sauvegarde des tableaux de sortie dans un fichier excel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<em>string</em>) – sentier où sauvegarder les résultats</p></li>
+<li><p><strong>scn_policy</strong> (<em>object</em>) – instance de classe policy</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="credits.html" class="btn btn-neutral float-right" title="Nous joindre" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="utilisation.html" class="btn btn-neutral float-left" title="Utilisation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2023, Clavet, Hébert,  Michaud, Navaux et Raîche.
+
+    </p>
+  </div>
+    
+    
+    
+    Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

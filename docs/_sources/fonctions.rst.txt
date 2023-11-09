@@ -1,0 +1,776 @@
+.. _dictionnaire:
+
+***********************************
+Dictionnaire (classes et fonctions)
+***********************************
+
+Simulation
+===========
+
+La classe *projection* permet de réaliser les simulations.
+
+.. currentmodule:: simsad.project
+
+.. autofunction:: projection
+
+Cette classe contient les fonctions suivantes  
+(cliquez sur le nom de la fonction pour afficher les détails): 
+
+.. currentmodule:: simsad.project.projection
+
+.. toggle-header::
+    :header: **- load_params()**
+
+    .. autofunction:: load_params
+
+.. toggle-header::
+    :header: **- load_pop()**
+
+    .. autofunction:: load_pop
+
+.. toggle-header::
+    :header: **- load_grouper()**
+
+    .. autofunction:: load_grouper
+
+.. toggle-header::
+    :header: **- load_smaf()**
+
+    .. autofunction:: load_smaf
+
+.. toggle-header::
+    :header: **- init_tracker()**
+
+    .. autofunction:: init_tracker
+
+.. toggle-header::
+    :header: **- init_dispatch()**
+
+    .. autofunction:: init_dispatch
+
+.. toggle-header::
+    :header: **- dispatch()**
+
+    .. autofunction:: dispatch
+
+.. toggle-header::
+    :header: **- create_users()**
+
+    .. autofunction:: create_users
+
+.. toggle-header::
+    :header: **- update_users()**
+
+    .. autofunction:: update_users
+
+.. toggle-header::
+    :header: **- welfare()**
+
+    .. autofunction:: welfare
+
+.. toggle-header::
+    :header: **- finance()**
+
+    .. autofunction:: finance
+
+.. toggle-header::
+    :header: **- run()**
+
+    .. autofunction:: run
+
+.. toggle-header::
+    :header: **- compute()**
+
+    .. autofunction:: compute
+
+.. toggle-header::
+    :header: **- save()**
+
+    .. autofunction:: save
+
+.. toggle-header::
+    :header: **- load()**
+
+    .. autofunction:: load
+
+|
+
+La classe *policy* permet de choisir les paramètres du scénario simulé.
+
+.. currentmodule:: simsad.policy
+
+.. autofunction:: policy
+
+|
+
+La classe *isq* permet de modéliser la démographie.
+
+.. currentmodule:: simsad.demo
+
+.. autofunction:: isq
+
+Cette classe contient la fonction suivante: 
+
+.. currentmodule:: simsad.demo.isq
+
+.. toggle-header::
+    :header: **- evaluate()**
+
+    .. autofunction:: evaluate
+
+|
+
+La classe *gps* permet de modéliser les groupes de profil de santé.
+
+.. currentmodule:: simsad.demo
+
+.. autofunction:: gps
+
+Cette classe contient les fonctions suivantes: 
+
+.. currentmodule:: simsad.demo.gps
+
+.. toggle-header::
+    :header: **- load()**
+
+    .. autofunction:: load
+
+.. toggle-header::
+    :header: **- evaluate()**
+
+    .. autofunction:: evaluate
+
+|
+
+La classe *smaf* permet de modéliser les profils Iso-SMAF.
+
+.. currentmodule:: simsad.demo
+
+.. autofunction:: smaf
+
+Cette classe contient les fonctions suivantes: 
+
+.. currentmodule:: simsad.demo.smaf
+
+.. toggle-header::
+    :header: **- load()**
+
+    .. autofunction:: load
+
+.. toggle-header::
+    :header: **- evaluate()**
+
+    .. autofunction:: evaluate
+
+|
+
+La classe *needs* permet de quantifier les besoins en heures de soutien (soins infirmiers, les AVQ et les AVD). 
+
+.. currentmodule:: simsad.needs
+
+.. autofunction:: needs
+
+|
+
+La classe *dispatcher* permet d'attribuer le milieux de vie aux personnes avec un profil Iso-SMAF. 
+
+.. currentmodule:: simsad.dispatch
+
+.. autofunction:: dispatcher
+
+Cette classe contient les fonctions suivantes: 
+
+.. currentmodule:: simsad.dispatch.dispatcher
+
+.. toggle-header::
+    :header: **- setup_milieux()**
+
+    .. autofunction:: setup_milieux
+
+.. toggle-header::
+    :header: **- setup_ages()**
+
+    .. autofunction:: setup_ages
+
+.. toggle-header::
+    :header: **- setup_capacity()**
+
+    .. autofunction:: setup_capacity
+
+.. toggle-header::
+    :header: **- setup_params()**
+
+    .. autofunction:: setup_params
+
+.. toggle-header::
+    :header: **- chsld_restriction()**
+
+    .. autofunction:: chsld_restriction
+
+.. toggle-header::
+    :header: **- marginal_effect()**
+
+    .. autofunction:: marginal_effect
+
+.. toggle-header::
+    :header: **- init_state()**
+
+    .. autofunction:: init_state
+
+.. toggle-header::
+    :header: **- next_state()**
+
+    .. autofunction:: next_state
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- collect()**
+
+    .. autofunction:: collect
+
+|
+
+La classe *msss* permet de comptabiliser les coûts pour le ministère de la Santé et des services sociaux.
+
+.. currentmodule:: simsad.msss
+
+.. autofunction:: msss
+
+Cette classe contient les fonctions suivantes: 
+
+.. currentmodule:: simsad.msss.msss
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- collect()**
+
+    .. autofunction:: collect
+
+|
+
+Milieux de vie
+===============
+
+Domicile
+***********
+
+La classe *home* permet de modéliser les personnes vivant à domicile (avec ou sans services financés par le réseau public).
+
+.. currentmodule:: simsad.home
+
+.. autofunction:: home
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.home.home
+
+.. toggle-header::
+    :header: **- load_register()**
+
+    .. autofunction:: load_register
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- create_users()**
+
+    .. autofunction:: create_users
+
+.. toggle-header::
+    :header: **- update_users()**
+
+    .. autofunction:: update_users
+
+|
+
+RPA
+****
+
+La classe *rpa* permet de modéliser les personnes vivant en RPA qui reçoivent des services financés par le réseau public. 
+
+.. currentmodule:: simsad.rpa
+
+.. autofunction:: rpa
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.rpa.rpa
+
+.. toggle-header::
+    :header: **- load_register()**
+
+    .. autofunction:: load_register
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- build()**
+
+    .. autofunction:: build
+
+.. toggle-header::
+    :header: **- create_users()**
+
+    .. autofunction:: create_users
+
+.. toggle-header::
+    :header: **- update_users()**
+
+    .. autofunction:: update_users
+
+|
+
+RI-RTF
+*******
+
+La classe *ri* permet de modéliser les personnes vivant en RI-RTF, ainsi que les services fournis par les travailleurs de ce milieu de vie. 
+
+.. currentmodule:: simsad.ri
+
+.. autofunction:: ri
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.ri.ri
+
+.. toggle-header::
+    :header: **- load_register()**
+
+    .. autofunction:: load_register
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- build()**
+
+    .. autofunction:: build
+
+.. toggle-header::
+    :header: **- compute_supply()**
+
+    .. autofunction:: compute_supply
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+.. toggle-header::
+    :header: **- create_users()**
+
+    .. autofunction:: create_users
+
+.. toggle-header::
+    :header: **- update_users()**
+
+    .. autofunction:: update_users
+
+|
+
+CHSLD
+******
+
+La classe *chsld* permet de modéliser les personnes vivant en CHSLD, ainsi que les services fournis par les travailleurs de ce milieu de vie. 
+
+.. currentmodule:: simsad.chsld
+
+.. autofunction:: chsld
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.chsld.chsld
+
+.. toggle-header::
+    :header: **- load_register()**
+
+    .. autofunction:: load_register
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- purchase()**
+
+    .. autofunction:: purchase
+
+.. toggle-header::
+    :header: **- build()**
+
+    .. autofunction:: build
+
+.. toggle-header::
+    :header: **- compute_supply()**
+
+    .. autofunction:: compute_supply
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+.. toggle-header::
+    :header: **- create_users()**
+
+    .. autofunction:: create_users
+
+.. toggle-header::
+    :header: **- update_users()**
+
+    .. autofunction:: update_users
+
+|
+
+NSA
+****
+
+La classe *nsa* permet de modéliser les personnes en centre hospitalier en niveau de soins alternatifs (NSA), ainsi que les services fournis par les travailleurs de ce milieu de vie. 
+
+.. currentmodule:: simsad.nsa
+
+.. autofunction:: nsa
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.nsa.nsa
+
+.. toggle-header::
+    :header: **- load_register()**
+
+    .. autofunction:: load_register
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- create_users()**
+
+    .. autofunction:: create_users
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+.. toggle-header::
+    :header: **- update_users()**
+
+    .. autofunction:: update_users
+
+|
+
+Fournisseurs
+=============
+
+CLSC
+*****
+
+La classe *clsc* permet de modéliser les services fournis par les CLSC.
+
+.. currentmodule:: simsad.clsc
+
+.. autofunction:: clsc
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.clsc.clsc
+
+.. toggle-header::
+    :header: **- load_registry()**
+
+    .. autofunction:: load_registry
+
+.. toggle-header::
+    :header: **- load_params()**
+
+    .. autofunction:: load_params
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- compute_supply()**
+
+    .. autofunction:: compute_supply
+
+.. toggle-header::
+    :header: **- cap()**
+
+    .. autofunction:: cap
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+.. toggle-header::
+    :header: **- workforce()**
+
+    .. autofunction:: workforce
+
+|
+
+EÉSAD
+******
+
+La classe *eesad* permet de modéliser les services fournis par les EÉSAD.
+
+.. currentmodule:: simsad.eesad
+
+.. autofunction:: eesad
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.eesad.eesad
+
+.. toggle-header::
+    :header: **- load_registry()**
+
+    .. autofunction:: load_registry
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- compute_supply()**
+
+    .. autofunction:: compute_supply
+
+.. toggle-header::
+    :header: **- cap()**
+
+    .. autofunction:: cap
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+.. toggle-header::
+    :header: **- workforce()**
+
+    .. autofunction:: workforce
+
+|
+
+Privé
+******
+
+La classe *prive* permet de modéliser les services fournis par les EÉSAD.
+
+.. currentmodule:: simsad.prive
+
+.. autofunction:: prive
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.prive.prive
+
+.. toggle-header::
+    :header: **- load_registry()**
+
+    .. autofunction:: load_registry
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- compute_supply()**
+
+    .. autofunction:: compute_supply
+
+.. toggle-header::
+    :header: **- cap()**
+
+    .. autofunction:: cap
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+.. toggle-header::
+    :header: **- workforce()**
+
+    .. autofunction:: workforce
+
+|
+
+Programmes
+===========
+
+Chèque emploi-service (CES)
+****************************
+
+La classe *ces* permet de modéliser le Chèque emploi-service.
+
+.. currentmodule:: simsad.ces
+
+.. autofunction:: ces
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.ces.ces
+
+.. toggle-header::
+    :header: **- load_params()**
+
+    .. autofunction:: load_params
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- calibrate()**
+
+    .. autofunction:: calibrate
+
+|
+
+Crédit d'impôt pour maintien à domicile des aînés (CMD)
+********************************************************
+
+La classe *cmd* permet de modéliser le crédit d'impôt pour maintien à domicile des aînés.
+
+.. currentmodule:: simsad.cmd
+
+.. autofunction:: cmd
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.cmd.cmd
+
+.. toggle-header::
+    :header: **- load_registry()**
+
+    .. autofunction:: load_registry
+
+.. toggle-header::
+    :header: **- load_params()**
+
+    .. autofunction:: load_params
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+.. toggle-header::
+    :header: **- calibrate()**
+
+    .. autofunction:: calibrate
+
+.. toggle-header::
+    :header: **- compute_costs()**
+
+    .. autofunction:: compute_costs
+
+|
+
+Programme d'exonération financière pour les services d'aide domestique (PEFSAD)
+********************************************************************************
+
+La classe *pefsad* permet de modéliser le Programme d'exonération financière pour les services d'aide domestique.
+
+.. currentmodule:: simsad.pefsad
+
+.. autofunction:: pefsad
+
+Cette classe contient les fonctions suivantes:
+
+.. currentmodule:: simsad.pefsad.pefsad
+
+.. toggle-header::
+    :header: **- load_params()**
+
+    .. autofunction:: load_params
+
+.. toggle-header::
+    :header: **- assign()**
+
+    .. autofunction:: assign
+
+|
+
+Préférences
+============
+
+La classe *prefs* permet de modéliser les préférences des individus par rapport à la prise en charge de la perte d'autonomie.
+
+.. currentmodule:: simsad.prefs
+
+.. autofunction:: prefs
+
+Cette classe contient les fonctions suivantes: 
+
+.. currentmodule:: simsad.prefs.prefs
+
+.. toggle-header::
+    :header: **- utility()**
+
+    .. autofunction:: utility
+
+.. toggle-header::
+    :header: **- compute_utility()**
+
+    .. autofunction:: compute_utility
+
+|
+
+Outils
+=======
+
+La classe *tracker* permet la création de tableaux de sortie par rapport aux différents résultats du modèle.
+
+.. currentmodule:: simsad.tracker
+
+.. autofunction:: tracker
+
+Cette classe contient les fonctions suivantes: 
+
+.. currentmodule:: simsad.tracker.tracker
+
+.. toggle-header::
+    :header: **- add_entry()**
+
+    .. autofunction:: add_entry
+
+.. toggle-header::
+    :header: **- log()**
+
+    .. autofunction:: log
+
+.. toggle-header::
+    :header: **- save()**
+
+    .. autofunction:: save
+
+|

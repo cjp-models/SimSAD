@@ -1,0 +1,56 @@
+.. _transition_models:
+
+Présentation
+=====================
+
+Le modèle SimSAD comporte six modules qui sont présentés schématiquement dans la Figure ci-contre. Chacun des modules fait l’objet d’une partie qui lui est dédiée à la suite de la figure.
+
+.. figure:: fig/schema.jpg
+    :width: 1000
+    :align: center
+
+**Population**
+
+
+L’approche retenue quant à l’évolution de la structure d’âge de la population s’appuie sur les projections démographiques de l’Institut de la statistique du Québec (ISQ) publiées dans le cadre des Perspectives démographiques du Québec et des régions. Parmi ces projections, nous avons choisi celles au niveau des `régions sociosanitaires du Québec (RSS) <https://publications.msss.gouv.qc.ca/msss/document-001617/>`_. Ces données par âge, année et RSS constituent le premier intrant du modèle.
+
+**Besoins**
+
+La deuxième étape consiste à déterminer les besoins de soutien à l’autonomie. Nous avons recours aux profils Iso-SMAF qui sont utilisés par le réseau de la santé et des services sociaux pour gérer les services aux personnes présentant des incapacités. La porte d’entrée du système vers le soutien à l’autonomie est l’évaluation des besoins par un intervenant. En se basant sur le fichier du Réseau de services intégrés pour les personnes adultes (RSIPA), croisé avec les données médicales par groupes de profils de santé (GPS), nous imputons la proportion de personnes ayant une évaluation SMAF par âge et région.
+
+Nous imputons par la suite la distribution des profils Iso-SMAF, de 1 à 14 dans pour chacun de ces groupes (âge et région) [1]_. Comme présenté dans la figure ci-contre, les profils 1 à 3 sont des profils avec des atteintes principales aux tâches domestiques allant en grandissant. Les profils 4, 6 et 9 sont des profils avec une atteinte surtout motrice, donc physique. Les personnes ayant des profils 5, 7, 8 et 10 ont une atteinte principalement au niveau des fonctions mentales avec des besoins toujours allant en grandissant. Par exemple, ce groupe de profils inclut les personnes souffrant de troubles neurocognitifs à différents stades. Finalement, les profils 11 et plus regroupent des personnes ayant des atteintes mixtes importantes nécessitant de l’aide dans pratiquement toutes les dimensions et étant dépendantes dans plusieurs d’entre elles.
+
+.. figure:: fig/iso.jpg
+    :width: 600
+    :align: center
+
+Les profils Iso-SMAF sont rattachés à un nombre d’heures requis de services dans trois domaines, soit les soins infirmiers, les soins d’assistance visant les activités de la vie quotidienne (AVQ) et finalement les activités de la vie domestique (AVD). Ces sont ces trois types de besoins qui servent de base à la modélisation de la demande et de l’offre pour le soutien à l’autonomie.
+
+**Milieu de vie**
+
+Les personnes ayant un profil Iso-SMAF peuvent résider dans divers milieux de vie. Pour les fins de la modélisation, nous distinguons le domicile privé, la résidence pour personnes âgée (RPA), la ressource-intermédiaire (RI-RTF), le Centre d’hébergement en soins de longue durée (CHSLD) et finalement le centre hospitalier en niveau de soins alternatifs (NSA) [2]_. Le croisement de plusieurs fichiers administratifs nous permet d’observer les dates d’entrée et de sortie dans ces différents milieux. La modélisation est réalisée au niveau mensuel pour tenir compte des transitions de milieu de vie à l’intérieure d’une année selon l’âge, la région et le profil Iso-SMAF. Au terme d’une année de simulation, nous sommes en mesure d’obtenir le nombre de personnes par mois dans chacun des milieux de vie. La simulation tient compte des contraintes de capacité en termes de places en RPA, RI-RTF et CHSLD. Elle prend aussi en compte les personnes en attente d’une place dans un milieu de vie. Une description plus détaillée de cette modélisation se trouve dans le rapport méthodologique.
+
+**Services fournis**
+
+Le modèle tient compte de plusieurs acteurs dans la fourniture des services. Certains fournisseurs sont présents dans un seul milieu de vie, alors que d’autres œuvrent dans plusieurs. En CHSLD, les soins sont fournis directement par la main d’œuvre du MSSS. Pour les RI-RTF, les soins infirmiers sont fournis par le CLSC, alors que les soins d’assistance (AVQ et AVD) sont fournis par les travailleurs des RI-RTF. À domicile, les soins sont fournis par les CLSC, les entreprises d’économie sociale en aide à domicile (EÉSAD), ainsi que par le secteur privé à but lucratif. Notons aussi que dans les CLSC, certains services sont sous-traités aux EÉSAD et au secteur privé à but lucratif. Ces aspects sont pris en compte dans le modèle.
+La modélisation de l’offre de service est caractérisée en termes de nombre d’heures travaillées, qui se résument en équivalents temps complet de travail (ETC) par fournisseur et par milieu de vie, qui sont calculées selon les 18 régions sociosanitaires du Québec. En plus des heures travaillées en services directs, le modèle considère également les heures de travail indirectes qui incluent du temps de travail administratif et du temps de transport.
+Le nombre d’heures de services fournis par usager est stable dans le temps selon le profil Iso-SMAF, le milieu de vie et la région, à moins que le nombre d’ETC du fournisseur soit insuffisant pour donner le même nombre d’heures de services que l’année précédente. Dans cette situation, les heures de services fournis par usager sont réduites proportionnellement à travers tous les usagers de manière à ce que la sommes des ces heures correspondent à la capacité en main d’œuvre du fournisseur. Le modèle permet aux fournisseurs d’augmenter leur nombre d’ETC à un rythme plus ou moins élevé, lorsque des besoins de main d’œuvre supplémentaire surviennent.
+Le nombre de places qui sont disponibles dans les milieux de vie institutionnels exercent une contrainte sur les capacités d’hébergement, tout particulièrement en CHSLD public pour lesquels les coûts de construction sont assumés par le gouvernement du Québec. Le modèle permet également l’achat de places en CHSLD privé non-conventionné.
+
+**Financement**
+
+Le calcul de coûts sont réalisés indépendamment pour chaque type de fournisseur : CHSLD, CLSC, RI-RTF, EÉSAD, et le secteur privé à but lucratif. À ces fournisseurs sont également ajoutés les coûts du crédit pour maintien à domicile des aînés (CMD) et les coûts des personnes en attente d’une place qui sont dans un centre hospitalier en NSA. Il est à noter que les coûts liés au Programme d’exonération financière pour les services d’aide domestique (PEFSAD) sont inclus dans les coûts des EÉSAD, et les coûts liés au Chèque emploi-service (CES) sont inclus dans le secteur privé à but lucratif.
+Des coûts de fonctionnement, qui intègrent des coûts variables et des coûts fixes, sont calculés. Les coûts variables dépendent du nombre d’heures de travail nécessaires pour fournir les soins infirmiers, les soins d’assistance en AVQ et les soins d’assistance en AVD. Des coûts fixes sont également pris en compte en CLSC, en CHSLD et en RI-RTF. Ils correspondent à l’ensemble des coûts qui ne sont pas intégrés aux coûts variables, comme par exemple les coûts d’hébergement, de gestion ou de repas en CHSLD ou les services psychosociaux et d’ergothérapie dispensés par les CLSC à domicile.
+Des coûts de constructions sont inclus en CHSLD, lorsque de nouvelles places sont ajoutées au parc immobilier existant. De plus, la construction de places entraîne des coûts de fonctionnement supplémentaires qui correspondent aux frais d’intérêts et d’amortissement.
+Le modèle inclut également les sources de financement des soins de longue durée, que ce soit par le secteur public, donc le gouvernement du Québec, ou bien par les usagers, qui payent par exemple une contribution des adultes hébergés (CAH) en CHSLD et en RI-RTF.
+
+**Préférences**
+
+Le module de préférences, qui repose sur une nouvelle enquête sur les préférences pour la prise en charge de la perte d’autonomie, a pour objectif d’intégrer les préférences des usagers quant à différents scénarios de prise en charge de la perte d’autonomie. Il est basé sur une méthode de préférences déclarées à partir de différents scénarios de prise en charge présentés au répondant (qui font varier le milieu de vie, le type de fournisseur, le niveau de service offert par rapport aux besoins, le temps d’attente, le prix net payé par l’usager).
+
+|
+
+.. [1] Cette méthode présente deux limites : 1) le nombre de personnes présentant des besoins ne tient pas compte des personnes n’ayant pas été évaluées mais ayant possiblement des besoins, car il n’a pas été possible de capter ces personnes avec les données disponibles. 2) les proportions et distributions par âge et région qui sont utilisées datent d’avant la pandémie, soit de 2015-2016 à 2019-2020 (d’avril à mars). Il convient aussi de noter qu’il nous a été impossible de déceler des tendances dans ces distributions étant donné la courte période pour laquelle nous avions accès aux données sur les profils Iso-SMAF.
+.. [2] Correspond aux personnes qui sont en centre hospitaliers, mais qui sont en attente d’une place dans un autre milieu de vie.
+
+|

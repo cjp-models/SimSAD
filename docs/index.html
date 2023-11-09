@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Documentation de SimSAD &mdash; Documentation SimSAD </title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/contentui.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+        <script src="_static/contentui.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Présentation" href="presentation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> SimSAD
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Présentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-automatisee">1) Installation automatisée</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-manuelle">2) Installation manuelle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#acces-a-distance">3) Accès à distance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utilisation.html">Utilisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#importation-de-simsad">1. Importation de SimSAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#choix-des-parametres">2. Choix des paramètres</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#ajout-d-un-tableau-de-resultats">3. Ajout d’un tableau de résultats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#simulation-du-scenario">4. Simulation du scénario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilisation.html#appel-des-tableaux-de-resultats">5. Appel des tableaux de résultats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions.html">Dictionnaire (classes et fonctions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#simulation">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#milieux-de-vie">Milieux de vie</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#domicile">Domicile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#rpa">RPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#ri-rtf">RI-RTF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#chsld">CHSLD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#nsa">NSA</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#fournisseurs">Fournisseurs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#clsc">CLSC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#eesad">EÉSAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#prive">Privé</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#programmes">Programmes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#cheque-emploi-service-ces">Chèque emploi-service (CES)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#credit-d-impot-pour-maintien-a-domicile-des-aines-cmd">Crédit d’impôt pour maintien à domicile des aînés (CMD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#programme-d-exoneration-financiere-pour-les-services-d-aide-domestique-pefsad">Programme d’exonération financière pour les services d’aide domestique (PEFSAD)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#preferences">Préférences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#outils">Outils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Nous joindre</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#principaux-contributeurs">Principaux contributeurs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#personne-contact">Personne-contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#liste-denvoi">Liste d’envoi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#problemes-et-ameliorations">Problèmes et améliorations</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href="genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">SimSAD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Documentation de SimSAD</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="documentation-de-simsad">
+<h1>Documentation de SimSAD<a class="headerlink" href="#documentation-de-simsad" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Bienvenue dans la documentation du modèle de projection du soutien à l’autonomie du Québec produit par la <a class="reference external" href="https://cjp.hec.ca/">Chaire de recherche Jacques-Parizeau en politiques économiques</a> de <a class="reference external" href="https://www.hec.ca/">HEC Montréal</a>.</p>
+<p>SimSAD est un modèle de simulations qui a été créé par une équipe de chercheurs sous la direction de <a class="reference external" href="https://www.hec.ca/profs/pierre-carl.michaud.html?_gl=1*8v40vh*_ga*Njg1NzA0NTU3LjE2NjQyNzgzMTE.*_ga_FPW0B8V0CE*MTY5NTA1MDUxNC42Ni4xLjE2OTUwNTIyMjAuMC4wLjA.*_fplc*VDlyYUpJTGEwVzBZVkFidGI3UEg2MGZTeUlPSEx4NEhtYnc3RUY5c1c3NGF6Y2k5NTlsUDQlMkJEdWhlMml2WlZLSjU4QWY1ZjRIaVFJY1F4JTJCRUdqQzM4MEQwbndEbjdINFpxZmdDNHlJMHNiQ01iQnBEeUI5bFFwVTVNNkRKQSUzRCUzRA..">Pierre-Carl Michaud</a> et composée de <a class="reference external" href="https://www.linkedin.com/in/nicholas-james-clavet-2b670753/">Nicholas-James Clavet</a>, <a class="reference external" href="https://espum.umontreal.ca/lespum/equipe/personnel-enseignant/professeur/in/in19642/sg/R%C3%A9jean%20H%C3%A9bert/">Réjean Hébert</a>, <a class="reference external" href="https://www.julien-navaux.ca/">Julien Navaux</a> et <a class="reference external" href="https://www.linkedin.com/in/michel-raiche-23471979/?originalSubdomain=ca">Michel Raîche</a>.</p>
+<p>Le modèle SimSAD est issu d’un mandat confié par le <a class="reference external" href="https://www.csbe.gouv.qc.ca/accueil.html">Commissaire à la santé et au bien-être (CSBE)</a> à l’équipe de chercheurs, avec l’objectif de modéliser la demande, l’offre et le financement des services de soutien à domicile (SAD) au Québec. La modélisation permet de réaliser des projections dans le futur proche, de réaliser des simulations de scénarios et d’en estimer les impacts. Etant donné que les services de soutien à l’autonomie représentent un continuum du domicile à l’hébergement, les services dispensés dans les autres milieux de vie sont également inclus au modèle. Les résidences pour aînés (RPA), les ressources intermédiaires et de types familiales (RI-RTF) et les centres d’hébergement de soins de longue durée (CHSLD) ont une place importante dans SimSAD.</p>
+<p>Pour rester informé.e des mises à jour de SimSAD, inscrivez-vous à notre <a class="reference external" href="http://eepurl.com/izYh7E">liste d’envoi dédiée</a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="droits-dutilisation">
+<h2>Droits d’utilisation<a class="headerlink" href="#droits-dutilisation" title="Lien permanent vers ce titre">¶</a></h2>
+<p>SimSAD est fourni sous <a class="reference external" href="https://opensource.org/licenses/MIT">licence MIT</a> (« MIT License »). Les conditions de la licence sont les suivantes:</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the « Software »), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED « AS IS », WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+</div>
+</div>
+<div class="section" id="index">
+<h1>Index<a class="headerlink" href="#index" title="Lien permanent vers ce titre">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="documentation-en-pdf">
+<h1>Documentation en PDF<a class="headerlink" href="#documentation-en-pdf" title="Lien permanent vers ce titre">¶</a></h1>
+<ul class="simple">
+<li><p>Documentation technique <a class="reference download internal" download="" href="_downloads/284e1ecd90eee8383f08e62ec854d6b7/rapport_methodologique.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a></p></li>
+<li><p>Documentation sur la programmation <a class="reference download internal" download="" href="_downloads/02c5499a993218e27eb39fb6daa6256c/simsad.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="presentation.html" class="btn btn-neutral float-right" title="Présentation" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2023, Clavet, Hébert,  Michaud, Navaux et Raîche.
+
+    </p>
+  </div>
+    
+    
+    
+    Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

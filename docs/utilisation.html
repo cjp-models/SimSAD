@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Utilisation &mdash; Documentation SimSAD </title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/contentui.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+        <script src="_static/contentui.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Dictionnaire (classes et fonctions)" href="fonctions.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> SimSAD
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Présentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-automatisee">1) Installation automatisée</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-manuelle">2) Installation manuelle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#acces-a-distance">3) Accès à distance</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utilisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#importation-de-simsad">1. Importation de SimSAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#choix-des-parametres">2. Choix des paramètres</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ajout-d-un-tableau-de-resultats">3. Ajout d’un tableau de résultats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-du-scenario">4. Simulation du scénario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#appel-des-tableaux-de-resultats">5. Appel des tableaux de résultats</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fonctions.html">Dictionnaire (classes et fonctions)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#simulation">Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#milieux-de-vie">Milieux de vie</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#domicile">Domicile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#rpa">RPA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#ri-rtf">RI-RTF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#chsld">CHSLD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#nsa">NSA</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#fournisseurs">Fournisseurs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#clsc">CLSC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#eesad">EÉSAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#prive">Privé</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#programmes">Programmes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#cheque-emploi-service-ces">Chèque emploi-service (CES)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#credit-d-impot-pour-maintien-a-domicile-des-aines-cmd">Crédit d’impôt pour maintien à domicile des aînés (CMD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fonctions.html#programme-d-exoneration-financiere-pour-les-services-d-aide-domestique-pefsad">Programme d’exonération financière pour les services d’aide domestique (PEFSAD)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#preferences">Préférences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fonctions.html#outils">Outils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Nous joindre</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#principaux-contributeurs">Principaux contributeurs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#personne-contact">Personne-contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#liste-denvoi">Liste d’envoi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="credits.html#problemes-et-ameliorations">Problèmes et améliorations</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href="genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimSAD</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Utilisation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/utilisation.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="utilisation">
+<span id="id1"></span><h1>Utilisation<a class="headerlink" href="#utilisation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Cette section a pour objectif de guider les utilisateurs de SimSAD dans l’utilisation de celui-ci.
+Pour davantage d’information, la section <a class="reference internal" href="fonctions.html#dictionnaire"><span class="std std-ref">Dictionnaire (classes et fonctions)</span></a> donne une description des classes et des
+fonctions du modèle.
+Lors de la rédaction d’un notebook ou d’un script Python, cinq étapes principales doivent être suivies afin
+d’obtenir des résultats de simulation avec SimSAD:</p>
+<div class="section" id="importation-de-simsad">
+<h2>1. Importation de SimSAD<a class="headerlink" href="#importation-de-simsad" title="Lien permanent vers ce titre">¶</a></h2>
+<p>La première étape est d’importer les modules de SimSAD comme suit :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">SimSAD</span> <span class="kn">import</span> <span class="n">projection</span><span class="p">,</span> <span class="n">policy</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="choix-des-parametres">
+<h2>2. Choix des paramètres<a class="headerlink" href="#choix-des-parametres" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Ensuite, on fixe l’année de début et de fin des projections :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">annee_debut</span> <span class="o">=</span> <span class="mi">2023</span>
+<span class="n">annee_fin</span> <span class="o">=</span> <span class="mi">2040</span>
+</pre></div>
+</div>
+<p>On choisit les paramètres du scénario, qui par défaut sont les suivants:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">policy</span><span class="p">()</span>
+
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_build</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_build_rate</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_restricted_eligibility</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_restriction_rate</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">params</span><span class="o">.</span><span class="n">ri_build</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">ri_build_rate</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">params</span><span class="o">.</span><span class="n">rpa_penetrate</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">params</span><span class="o">.</span><span class="n">rpa_penetrate_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">rpa_adapt_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_purchase</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_purchase_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">nsa_open_capacity</span> <span class="o">=</span> <span class="mf">0.06</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_mda</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">infl_construction</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">params</span><span class="o">.</span><span class="n">interest_rate</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_cap</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">prive_cap</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">eesad_cap</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">purchase_prive</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">purchase_eesad</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_inf_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_avq_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_avd_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">eesad_avd_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">prive_avq_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">prive_avd_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_inf_rate</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">chsld_avq_rate</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">ri_avq_rate</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">ri_avd_rate</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">delta_inf_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">delta_avq_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">delta_avd_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">delta_cah_chsld</span>  <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">delta_cah_ri</span>  <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_shift_avq_eesad</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_shift_avq_prive</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_shift_avd_eesad</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">params</span><span class="o">.</span><span class="n">clsc_shift_avd_prive</span> <span class="o">=</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>La commande suivante crée un gabarit permettant entre autres de comptabiliser les résultats propres à la simulation selon les paramètres d’utilisation choisis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scenario</span> <span class="o">=</span> <span class="n">projection</span><span class="p">(</span><span class="n">base_yr</span> <span class="o">=</span> <span class="n">annee_debut</span><span class="p">,</span> <span class="n">stop_yr</span> <span class="o">=</span> <span class="n">annee_fin</span><span class="p">,</span> <span class="n">scn_policy</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">opt_welfare</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>où <em>base_yr</em> correspond à l’année à partir de laquelle les résultats de projection sont rapportés,
+<em>stop_yr</em> correspond à l’année de fin de la simulation,
+<em>scn_policy</em> correspond à l’ensemble des paramètres spécifiés pour le scénario,
+et <em>opt_welfare</em> correspond à l’option de calcul de l’utilité des individus <a class="footnote-reference brackets" href="#id3" id="id2">1</a>. Cette option doit être fixée à <em>True</em>
+pour que cette opération s’effectue, puisque celle-ci est fixée à <em>False</em> par défaut
+(le calcul de l’utilité augmente le temps d’exécution des projections).
+En pratique, la simulation débute en 2020, car les données initiales du modèle sont de 2019,
+mais les résultats ne sont rapportés dans les tableaux de sortie qu’à partir de l’année <em>base_yr</em>.
+Si les arguments <em>base_yr</em> et <em>stop_yr</em> ne sont pas spécifiés, SimSAD produira par défaut des projections allant
+de 2023 à 2040.</p>
+</div>
+<div class="section" id="ajout-d-un-tableau-de-resultats">
+<h2>3. Ajout d’un tableau de résultats<a class="headerlink" href="#ajout-d-un-tableau-de-resultats" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Plusieurs tableaux de sortie de résultats existent par défaut, mais ceux-ci ne contiennent pas l’ensemble
+des valeurs évaluées par le modèle lors des projections. Cette approche a été adoptée afin d’améliorer
+la rapidité d’exécution des projections. Plus le nombre de tableaux de sortie est élevé, plus le temps d’exécution
+des projections augmente. Voici la liste des noms des 13 tableaux de sortie par défaut et les informations qu’ils contiennent:</p>
+<ol class="arabic simple" start="0">
+<li><p><strong>pop_region_age</strong>: nombre de personnes (par région et âge);</p></li>
+<li><p><strong>smaf_region_age</strong>: nombre de personnes avec un profil Iso-SMAF donné (par région);</p></li>
+<li><p><strong>chsld_users</strong>: nombre total d’usagers en CHSLD, taux de réponse aux besoins en soins infirmiers dans ce milieu de vie, taux de réponse aux besoins en assistance aux AVQ dans ce milieu de vie, et nombre de personnes en attente d’une place en CHSLD (par région);</p></li>
+<li><p><strong>nsa_users</strong>: nombre total d’usagers en NSA (par région);</p></li>
+<li><p><strong>ri_users</strong>: nombre total d’usagers en RI-RTF (par région);</p></li>
+<li><p><strong>rpa_users</strong>: nombre total d’usagers en RPA avec services financés par le secteur public (par région);</p></li>
+<li><p><strong>home_none_users</strong>: nombre total de personnes avec un profil Iso-SMAF vivant à domicile et ne recevant aucun services de soutien (par région);</p></li>
+<li><p><strong>home_svc_users</strong>: nombre total de personnes avec un profil Iso-SMAF vivant à domicile et recevant des services de soutien à domicile (par région);</p></li>
+<li><p><strong>ces_users</strong>: nombre total d’usagers du CES, nombre total d’heures de services en soutien aux AVD reçus dans le cadre du CES, et nombre total d’heures de services d’assistance aux AVQ reçus dans le cadre du CES (par région);</p></li>
+<li><p><strong>pefsad_users</strong>: nombre total d’usagers du PEFSAD, et nombre total d’heures de services en soutien aux AVD reçus dans le cadre du PEFSAD (par région);</p></li>
+<li><p><strong>clsc_workforce</strong>: nombre total d’ETC en soins infirmiers en CLSC, nombre total d’ETC en assistance aux AVQ en CLSC, et nombre total d’ETC en soutien aux AVD en CLSC (par région);</p></li>
+<li><p><strong>total_cost</strong>: coûts totaux par fournisseurs (CLSC, CHSLD, RI-RTF, NSA) et programmes (CES, PEFSAD, CMD), contributions totales des usagers par milieu de vie (RI-RTF, CHSLD, NSA), coûts totaux pour le gouvernement, coûts totaux pour les usagers, et sommes de l’ensemble des coûts (par région);</p></li>
+<li><p><strong>clsc_worker_needs</strong>: besoin de recrutement en nombre total d’ETC pour les soins infirmiers, l’assistance aux AVQ, et le soutien aux AVD (par région);</p></li>
+</ol>
+<p>Ces tableaux de sortie font appel à différent objets du modèle : <em>pop.count</em>, <em>iso.count_eval</em>, <em>registry</em>, et <em>users</em>.
+L’objet <em>pop.count</em> contient des informations uniquement liées au nombre de personnes dans la population.
+L’objet <em>iso.count_eval</em> contient, pour sa part, les informations sur le nombre de personnes par profil Iso-SMAF.
+L’objet <em>regitry</em> contient les informations se rattachant aux caractéristiques des milieux de vie et des fournisseurs.
+Ainsi, il existe un <em>registry</em> pour chaque milieu de vie et chaque fournisseur
+(ex. chsld.registry, clsc.regitry, ets.).
+L’objet <em>users</em> contient les informations sur les usagers de chacun des milieux de vie
+(Domicile, RPA, RI-RTF, CHSLD, NSA) dans 5 objets différents (home.users, rpa.users, ri.users, chsld.users, nsa.user).
+Ces informations sont exprimées sous la forme d’une base de microdonnées synthétique
+où chaque individu a des caractéristiques déterminées par le modèle.
+L’ensemble de ces objets contiennent seulement des informations par rapport à l’année en cours dans la simulation
+(à la fin de la simulation <strong>les objets contiennent les informations de la dernière année de simulation</strong>).
+Pour connaître les variables contenues dans chacun des objets, vous pouvez par exemple
+utiliser les commandes suivantes pour afficher les différentes variables incluses dans les objets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scenario</span><span class="o">.</span><span class="n">clsc</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+<p>ou</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scenario</span><span class="o">.</span><span class="n">home</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+<p>La dernière commande fonctionnera seulement lorsque la simulation des projections aura été complétée au moins une première fois.
+En effet, les <em>users</em> sont uniquement créés au cours de la simulation,
+alors que les <em>registry</em> sont créés en même temps que le gabarit de la simulation.</p>
+<p><strong>→ Commandes pour ajouter un tableau de résultats</strong> :</p>
+<p>Pour ajouter un tableau de sortie sur le nombre d’ETC en RI-RTF par région et qui récolte des résultats <strong>pour chaque année</strong> entre <em>annee_debut</em> et <em>annee_fin</em>,
+il vous suffit d’ajouter dans votre notebook le code suivant:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scenario</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">add_entry</span><span class="p">(</span><span class="s1">&#39;ri_workforce&#39;</span><span class="p">,</span> <span class="s1">&#39;ri&#39;</span><span class="p">,</span> <span class="s1">&#39;registry&#39;</span><span class="p">,</span>
+                          <span class="n">rowvars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;region_id&#39;</span><span class="p">],</span>
+                          <span class="n">colvars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nb_etc_ri_avq&#39;</span><span class="p">,</span> <span class="s1">&#39;nb_etc_ri_avd&#39;</span><span class="p">],</span>
+                          <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span>
+                          <span class="n">start_yr</span><span class="o">=</span><span class="n">annee_debut</span><span class="p">,</span> <span class="n">stop_yr</span><span class="o">=</span><span class="n">annee_fin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>où <em>ri_workforce</em> correspond au nom du tableau de sortie,
+<em>ri</em> correpond à la classe de provenance de l’objet utilisé,
+<em>registry</em> correpond à l’objet d’où les résultats sont puissés,
+<em>rowvars</em> correspond aux variables d’agrégation ([“region_id”]),
+<em>colvars</em> correspond aux variables de résultat ([“nb_etc_ri_avq”, “nb_etc_ri_avd”]),
+<em>aggfunc</em> correspond à la fonction d’agrégation (<em>sum</em> pour le total ou <em>mean</em> pour la moyenne),
+<em>start_yr</em> correspond à l’année de départ de la comptabilisation des résultats,
+et <em>stop_yr</em> correspond à l’année de fin de la comptabilisation des résultats.</p>
+</div>
+<div class="section" id="simulation-du-scenario">
+<h2>4. Simulation du scénario<a class="headerlink" href="#simulation-du-scenario" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour lancer la simulation, il vous suffit d’utiliser la commande suivante:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scenario</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="appel-des-tableaux-de-resultats">
+<h2>5. Appel des tableaux de résultats<a class="headerlink" href="#appel-des-tableaux-de-resultats" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Une fois la simulation terminée, vous pouvez appeler directement le tableau de sortie via son numéro de <em>tracker</em>. Par exemple si vous souhaitez appeler le tableau home_svc_users dont le numéro de <em>tracker</em> est 7, vous pouvez
+l’afficher à l’aide du code suivant:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">scenario</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">registry</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">table</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+<p>Ce tableau de sortie vous donnera le nombre d’usagers à domicile recevant des services de soutien à domicile par région. Veuillez noter que les tableaux que vous aurez créés prendrons la suite des tableaux existants numérotés de 0 à 12. Par conséquent le premier tableau que vous aurez créé prendra le numéro 13, le deuxième tableau que vous aurez créé prendra le numéro 14 et ainsi de suite.</p>
+<p>Si vous ne connaissez pas le numéro du <em>tracker</em>, mais que vous connaissez le nom de ce dernier,
+vous pouvez l’afficher à l’aide du code suivant:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">registry</span><span class="p">:</span>
+  <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">entry_name</span><span class="o">==</span><span class="s1">&#39;home_svc_users&#39;</span><span class="p">:</span>
+      <span class="n">df</span><span class="o">=</span><span class="n">k</span><span class="o">.</span><span class="n">table</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>voir la partie 7 et en particulier la partie 7.3 « Utiliser les estimations pour évaluer le bien-être » de la documentation technique pour obtenir plus de détails à propos du calcul de l’utilité dans SimSAD.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="fonctions.html" class="btn btn-neutral float-right" title="Dictionnaire (classes et fonctions)" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2023, Clavet, Hébert,  Michaud, Navaux et Raîche.
+
+    </p>
+  </div>
+    
+    
+    
+    Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

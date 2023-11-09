@@ -1,0 +1,23 @@
+Nous joindre
+--------------------------------
+
+Principaux contributeurs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Nicholas-James Clavet, Réjean Hébert, Pierre-Carl Michaud, Julien Navaux et Michel Raîche.
+
+Personne-contact
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+`Julien Navaux <mailto:julien.navaux@hec.ca>`_
+
+Liste d’envoi
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Pour rester informé.e des mises à jour de SimSAD, inscrivez-vous à notre `liste d’envoi dédiée <http://eepurl.com/izYh7E>`_.
+
+Problèmes et améliorations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SimSAD est un modèle dit "open source". Les utilisateurs sont donc invités à signaler les problèmes liés à SimSAD et à soumettre des propositions d'ajout au code
+en cliquant sur le `lien <https://github.com/rsi-models/SimSAD/issues>`_ suivant, et en cliquant sur le bouton vert "New issue".

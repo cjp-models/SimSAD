@@ -1,0 +1,193 @@
+.. _utilisation:
+
+*****************
+Utilisation
+*****************
+
+Cette section a pour objectif de guider les utilisateurs de SimSAD dans l'utilisation de celui-ci.
+Pour davantage d'information, la section :ref:`dictionnaire` donne une description des classes et des
+fonctions du modèle.
+Lors de la rédaction d'un notebook ou d'un script Python, cinq étapes principales doivent être suivies afin
+d'obtenir des résultats de simulation avec SimSAD:
+
+
+1. Importation de SimSAD
+***************************************
+
+La première étape est d'importer les modules de SimSAD comme suit : ::
+
+ from SimSAD import projection, policy
+
+2. Choix des paramètres
+***************************************
+
+Ensuite, on fixe l'année de début et de fin des projections : ::
+
+  annee_debut = 2023
+  annee_fin = 2040
+
+On choisit les paramètres du scénario, qui par défaut sont les suivants: ::
+
+ params = policy()
+
+ params.chsld_build = True
+ params.chsld_build_rate = 0.2
+ params.chsld_restricted_eligibility = False
+ params.chsld_restriction_rate = 0.95
+ params.ri_build = True
+ params.ri_build_rate = 0.2
+ params.rpa_penetrate = False
+ params.rpa_penetrate_rate = 0.25
+ params.rpa_adapt_rate = 0.5
+ params.chsld_purchase = True
+ params.chsld_purchase_rate = 0.25
+ params.nsa_open_capacity = 0.06
+ params.chsld_mda = True
+ params.infl_construction = 0.01
+ params.interest_rate = 0.03
+ params.clsc_cap = True
+ params.prive_cap = True
+ params.eesad_cap = True
+ params.purchase_prive = True
+ params.purchase_eesad = True
+ params.clsc_inf_rate = 0.25
+ params.clsc_avq_rate = 0.25
+ params.clsc_avd_rate = 0.25
+ params.eesad_avd_rate = 0.25
+ params.prive_avq_rate = 0.25
+ params.prive_avd_rate = 0.25
+ params.chsld_inf_rate = 1.0
+ params.chsld_avq_rate = 1.0
+ params.ri_avq_rate = 1.0
+ params.ri_avd_rate = 1.0
+ params.delta_inf_rate = 0.0
+ params.delta_avq_rate = 0.0
+ params.delta_avd_rate = 0.0
+ params.delta_cah_chsld  = 0.0
+ params.delta_cah_ri  = 0.0
+ params.clsc_shift_avq_eesad = 0.0
+ params.clsc_shift_avq_prive = 0.0
+ params.clsc_shift_avd_eesad = 0.0
+ params.clsc_shift_avd_prive = 0.0
+
+La commande suivante crée un gabarit permettant entre autres de comptabiliser les résultats propres à la simulation selon les paramètres d'utilisation choisis: ::
+
+ scenario = projection(base_yr = annee_debut, stop_yr = annee_fin, scn_policy = params, opt_welfare=True)
+
+où *base_yr* correspond à l'année à partir de laquelle les résultats de projection sont rapportés,
+*stop_yr* correspond à l'année de fin de la simulation,
+*scn_policy* correspond à l'ensemble des paramètres spécifiés pour le scénario,
+et *opt_welfare* correspond à l'option de calcul de l'utilité des individus [1]_. Cette option doit être fixée à *True*
+pour que cette opération s'effectue, puisque celle-ci est fixée à *False* par défaut
+(le calcul de l'utilité augmente le temps d'exécution des projections).
+En pratique, la simulation débute en 2020, car les données initiales du modèle sont de 2019,
+mais les résultats ne sont rapportés dans les tableaux de sortie qu'à partir de l'année *base_yr*.
+Si les arguments *base_yr* et *stop_yr* ne sont pas spécifiés, SimSAD produira par défaut des projections allant
+de 2023 à 2040.
+
+3. Ajout d'un tableau de résultats
+***************************************
+Plusieurs tableaux de sortie de résultats existent par défaut, mais ceux-ci ne contiennent pas l'ensemble
+des valeurs évaluées par le modèle lors des projections. Cette approche a été adoptée afin d'améliorer
+la rapidité d'exécution des projections. Plus le nombre de tableaux de sortie est élevé, plus le temps d'exécution
+des projections augmente. Voici la liste des noms des 13 tableaux de sortie par défaut et les informations qu'ils contiennent:
+
+0. **pop_region_age**: nombre de personnes (par région et âge);
+
+1. **smaf_region_age**: nombre de personnes avec un profil Iso-SMAF donné (par région);
+
+2. **chsld_users**: nombre total d'usagers en CHSLD, taux de réponse aux besoins en soins infirmiers dans ce milieu de vie, taux de réponse aux besoins en assistance aux AVQ dans ce milieu de vie, et nombre de personnes en attente d'une place en CHSLD (par région);
+
+3. **nsa_users**: nombre total d'usagers en NSA (par région);
+
+4. **ri_users**: nombre total d'usagers en RI-RTF (par région);
+
+5. **rpa_users**: nombre total d'usagers en RPA avec services financés par le secteur public (par région);
+
+6. **home_none_users**: nombre total de personnes avec un profil Iso-SMAF vivant à domicile et ne recevant aucun services de soutien (par région);
+
+7. **home_svc_users**: nombre total de personnes avec un profil Iso-SMAF vivant à domicile et recevant des services de soutien à domicile (par région);
+
+8. **ces_users**: nombre total d'usagers du CES, nombre total d'heures de services en soutien aux AVD reçus dans le cadre du CES, et nombre total d'heures de services d'assistance aux AVQ reçus dans le cadre du CES (par région);
+
+9. **pefsad_users**: nombre total d'usagers du PEFSAD, et nombre total d'heures de services en soutien aux AVD reçus dans le cadre du PEFSAD (par région);
+
+10. **clsc_workforce**: nombre total d'ETC en soins infirmiers en CLSC, nombre total d'ETC en assistance aux AVQ en CLSC, et nombre total d'ETC en soutien aux AVD en CLSC (par région);
+
+11. **total_cost**: coûts totaux par fournisseurs (CLSC, CHSLD, RI-RTF, NSA) et programmes (CES, PEFSAD, CMD), contributions totales des usagers par milieu de vie (RI-RTF, CHSLD, NSA), coûts totaux pour le gouvernement, coûts totaux pour les usagers, et sommes de l'ensemble des coûts (par région);
+
+12. **clsc_worker_needs**: besoin de recrutement en nombre total d'ETC pour les soins infirmiers, l'assistance aux AVQ, et le soutien aux AVD (par région);
+
+Ces tableaux de sortie font appel à différent objets du modèle : *pop.count*, *iso.count_eval*, *registry*, et *users*.
+L'objet *pop.count* contient des informations uniquement liées au nombre de personnes dans la population.
+L'objet *iso.count_eval* contient, pour sa part, les informations sur le nombre de personnes par profil Iso-SMAF.
+L'objet *regitry* contient les informations se rattachant aux caractéristiques des milieux de vie et des fournisseurs.
+Ainsi, il existe un *registry* pour chaque milieu de vie et chaque fournisseur
+(ex. chsld.registry, clsc.regitry, ets.).
+L'objet *users* contient les informations sur les usagers de chacun des milieux de vie
+(Domicile, RPA, RI-RTF, CHSLD, NSA) dans 5 objets différents (home.users, rpa.users, ri.users, chsld.users, nsa.user).
+Ces informations sont exprimées sous la forme d'une base de microdonnées synthétique
+où chaque individu a des caractéristiques déterminées par le modèle.
+L'ensemble de ces objets contiennent seulement des informations par rapport à l'année en cours dans la simulation
+(à la fin de la simulation **les objets contiennent les informations de la dernière année de simulation**).
+Pour connaître les variables contenues dans chacun des objets, vous pouvez par exemple
+utiliser les commandes suivantes pour afficher les différentes variables incluses dans les objets: ::
+
+ scenario.clsc.registry.columns
+
+ou ::
+
+ scenario.home.users.columns
+
+La dernière commande fonctionnera seulement lorsque la simulation des projections aura été complétée au moins une première fois.
+En effet, les *users* sont uniquement créés au cours de la simulation,
+alors que les *registry* sont créés en même temps que le gabarit de la simulation.
+
+**→ Commandes pour ajouter un tableau de résultats** :
+
+Pour ajouter un tableau de sortie sur le nombre d'ETC en RI-RTF par région et qui récolte des résultats **pour chaque année** entre *annee_debut* et *annee_fin*,
+il vous suffit d'ajouter dans votre notebook le code suivant: ::
+
+  scenario.tracker.add_entry('ri_workforce', 'ri', 'registry',
+                            rowvars=['region_id'],
+                            colvars=['nb_etc_ri_avq', 'nb_etc_ri_avd'],
+                            aggfunc='sum',
+                            start_yr=annee_debut, stop_yr=annee_fin)
+
+où *ri_workforce* correspond au nom du tableau de sortie,
+*ri* correpond à la classe de provenance de l'objet utilisé,
+*registry* correpond à l'objet d'où les résultats sont puissés,
+*rowvars* correspond aux variables d'agrégation (['region_id']),
+*colvars* correspond aux variables de résultat (['nb_etc_ri_avq', 'nb_etc_ri_avd']),
+*aggfunc* correspond à la fonction d'agrégation (*sum* pour le total ou *mean* pour la moyenne),
+*start_yr* correspond à l'année de départ de la comptabilisation des résultats,
+et *stop_yr* correspond à l'année de fin de la comptabilisation des résultats.
+
+4. Simulation du scénario
+***************************************
+
+Pour lancer la simulation, il vous suffit d'utiliser la commande suivante: ::
+
+  scenario.run()
+
+5. Appel des tableaux de résultats
+***************************************
+
+Une fois la simulation terminée, vous pouvez appeler directement le tableau de sortie via son numéro de *tracker*. Par exemple si vous souhaitez appeler le tableau home_svc_users dont le numéro de *tracker* est 7, vous pouvez
+l'afficher à l'aide du code suivant: ::
+
+  df = scenario.tracker.registry[7].table
+  df
+
+Ce tableau de sortie vous donnera le nombre d'usagers à domicile recevant des services de soutien à domicile par région. Veuillez noter que les tableaux que vous aurez créés prendrons la suite des tableaux existants numérotés de 0 à 12. Par conséquent le premier tableau que vous aurez créé prendra le numéro 13, le deuxième tableau que vous aurez créé prendra le numéro 14 et ainsi de suite.
+
+
+Si vous ne connaissez pas le numéro du *tracker*, mais que vous connaissez le nom de ce dernier,
+vous pouvez l'afficher à l'aide du code suivant: ::
+
+  for k in p.tracker.registry:
+    if k.entry_name=='home_svc_users':
+        df=k.table
+  df
+
+.. [1] voir la partie 7 et en particulier la partie 7.3 "Utiliser les estimations pour évaluer le bien-être" de la documentation technique pour obtenir plus de détails à propos du calcul de l'utilité dans SimSAD.

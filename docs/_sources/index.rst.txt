@@ -1,0 +1,48 @@
+.. SimSAD documentation master file, created by
+   sphinx-quickstart on Tue Jul 12 13:56:24 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Documentation de SimSAD
+=======================
+
+Bienvenue dans la documentation du modèle de projection du soutien à l’autonomie du Québec produit par la `Chaire de recherche Jacques-Parizeau en politiques économiques  <https://cjp.hec.ca/>`_ de `HEC Montréal <https://www.hec.ca/>`_.
+
+SimSAD est un modèle de simulations qui a été créé par une équipe de chercheurs sous la direction de `Pierre-Carl Michaud <https://www.hec.ca/profs/pierre-carl.michaud.html?_gl=1*8v40vh*_ga*Njg1NzA0NTU3LjE2NjQyNzgzMTE.*_ga_FPW0B8V0CE*MTY5NTA1MDUxNC42Ni4xLjE2OTUwNTIyMjAuMC4wLjA.*_fplc*VDlyYUpJTGEwVzBZVkFidGI3UEg2MGZTeUlPSEx4NEhtYnc3RUY5c1c3NGF6Y2k5NTlsUDQlMkJEdWhlMml2WlZLSjU4QWY1ZjRIaVFJY1F4JTJCRUdqQzM4MEQwbndEbjdINFpxZmdDNHlJMHNiQ01iQnBEeUI5bFFwVTVNNkRKQSUzRCUzRA..>`_ et composée de `Nicholas-James Clavet <https://www.linkedin.com/in/nicholas-james-clavet-2b670753/>`_, `Réjean Hébert <https://espum.umontreal.ca/lespum/equipe/personnel-enseignant/professeur/in/in19642/sg/R%C3%A9jean%20H%C3%A9bert/>`_, `Julien Navaux <https://www.julien-navaux.ca/>`_ et `Michel Raîche <https://www.linkedin.com/in/michel-raiche-23471979/?originalSubdomain=ca>`_.
+
+Le modèle SimSAD est issu d'un mandat confié par le `Commissaire à la santé et au bien-être (CSBE) <https://www.csbe.gouv.qc.ca/accueil.html>`_ à l’équipe de chercheurs, avec l'objectif de modéliser la demande, l’offre et le financement des services de soutien à domicile (SAD) au Québec. La modélisation permet de réaliser des projections dans le futur proche, de réaliser des simulations de scénarios et d’en estimer les impacts. Etant donné que les services de soutien à l’autonomie représentent un continuum du domicile à l’hébergement, les services dispensés dans les autres milieux de vie sont également inclus au modèle. Les résidences pour aînés (RPA), les ressources intermédiaires et de types familiales (RI-RTF) et les centres d'hébergement de soins de longue durée (CHSLD) ont une place importante dans SimSAD.
+
+Pour rester informé.e des mises à jour de SimSAD, inscrivez-vous à notre `liste d’envoi dédiée <http://eepurl.com/izYh7E>`_.
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Contents:
+
+   presentation.rst
+   installation.rst
+   utilisation.rst
+   fonctions.rst
+   credits.rst
+
+Droits d’utilisation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SimSAD est fourni sous `licence MIT <https://opensource.org/licenses/MIT>`_ (« MIT License »). Les conditions de la licence sont les suivantes:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the « Software »), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED « AS IS », WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Index
+===============
+
+* :ref:`genindex`
+
+Documentation en PDF
+==============================
+
+- Documentation technique :download:`pdf <../source/pdf/rapport_methodologique.pdf>`
+- Documentation sur la programmation :download:`pdf <../build/latex/simsad.pdf>`
