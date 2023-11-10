@@ -7,7 +7,7 @@ Installation
 
 .. _installing-docdir:
 
-SimSAD est programmé en langage Python. Il est ainsi nécessaire de posséder la version 3.9 de Python ou une version supérieure pour faire fonctionner SimSAD sur votre ordinateur. Malgré tout, si vous n’avez pas accès au logiciel Python mais que vous disposez d’un compte Google, il vous sera possible d’utiliser SimSAD en accès à distance via Google Colab. Ainsi, il est possible d’avoir accès à SimSAD selon trois méthodes présentées ci-dessous. Dans tous les cas, veuillez lire les condition d’utilisation du site internet pypi qui héberge le package.
+SimSAD est programmé en langage Python. Il est ainsi nécessaire de posséder la version 3.9 de Python ou une version supérieure pour faire fonctionner SimSAD sur votre ordinateur. Il est à noter que vous devez avoir une version supérieur ou égale à 0.58 pour le package *numba* et 1.24 pour le package *numpy* pour que le modèle fonctionne correctement. Malgré tout, si vous n’avez pas accès au logiciel Python mais que vous disposez d’un compte Google, il vous sera possible d’utiliser SimSAD en accès à distance via Google Colab. Ainsi, il est possible d’avoir accès à SimSAD selon trois méthodes présentées ci-dessous. Dans tous les cas, veuillez lire les condition d’utilisation du site internet pypi qui héberge le package.
 
 1) Installation automatisée
 ===========================
