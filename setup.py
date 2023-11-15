@@ -5,14 +5,14 @@ with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="simsad",  # Replace with your own username
-    version="0.4.0",
+    name="simsad-cjp",  # Replace with your own username
+    version="1.0.0",
     author="Equipe CJP",
     author_email="pierre-carl.michaud@hec.ca",
     description="Modele de projection du soutien à l'autonomie du Quebec",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://rsi-models.github.io/SimSAD/",
+    url="https://cjp-models.github.io/SimSAD/",
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[

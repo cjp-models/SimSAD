@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: simsad-cjp
+Version: 1.0.0
+Summary: Modele de projection du soutien à l'autonomie du Quebec
+Home-page: https://rsi-models.github.io/SimSAD/
+Author: Equipe CJP
+Author-email: pierre-carl.michaud@hec.ca
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# Modèle de projection du soutien à l'autonomie du Québec
+
+Ce package contient le modèle de projection du soutien à l'autonomie du Québec produit par la [Chaire de recherche Jacques-Parizeau en politiques économiques](https://cjp.hec.ca/). Le simulateur est disponible sur [pip](https://pypi.org/project/simsad/). La [documentation](https://cjp-models.github.io/SimSAD/) du modèle devrait être consultée concernant l'installation et l'utilisation du modèle.
