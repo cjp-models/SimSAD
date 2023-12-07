@@ -134,6 +134,7 @@ class policy:
         self.clsc_inf_rate = 0.25
         self.clsc_avq_rate = 0.25
         self.clsc_avd_rate = 0.25
+        self.eesad_avq_rate = 0.25
         self.eesad_avd_rate = 0.25
         self.prive_avq_rate = 0.25
         self.prive_avd_rate = 0.25

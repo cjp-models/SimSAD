@@ -438,11 +438,12 @@ class clsc:
                 if c in ['avq','avd']:
                     excess_base = excess.copy()
                     for s in ['eesad','prive']:
-                        rate = getattr(self.policy,'clsc_shift_'+c+'_'+s)
+                        shifting_rate = getattr(self.policy,'clsc_shift_'+c+'_'+s)
+                        adjusment_rate = getattr(self.policy,s+'_'+c+'_rate')
                         self.registry['add_hrs_sa_' + c + '_' + s + '_' +
                                       milieu] = \
-                            rate * excess_base
-                        excess -= rate*excess_base
+                            adjusment_rate * shifting_rate * excess_base
+                        excess -= adjusment_rate*shifting_rate*excess_base
                 indirect = (1.0 - self.registry[
                         'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
                 excess = excess / indirect

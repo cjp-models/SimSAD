@@ -84,13 +84,19 @@ class eesad:
                 self.count.loc[(r,s),'users'] += users_rpa.loc[select,'wgt'].sum()
                 self.count.loc[(r,s),'hrs'] += users_rpa.loc[select,['wgt','pefsad_avd_hrs']].prod(axis=1).sum()
         return users_home, users_rpa
-    def compute_supply(self):
+    def compute_supply(self,avq_sold_clsc,avd_sold_cslc):
         """
         Fonction qui calcule le nombre total d'heures de services pouvant être fournies en EÉSAD (AVD)
         selon la main d'oeuvre disponible.
         """
         self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['supply_avd'] *= (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
+
+        self.registry['nb_etc_avq_clsc'] = avq_sold_clsc * \
+                  (1.0 - self.registry['tx_hrs_dep_avq'] - self.registry['tx_hrs_admin_avq']) / self.registry['hrs_per_etc']
+        self.registry['nb_etc_avd_clsc'] = avd_sold_cslc * \
+                  (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd']) / self.registry['hrs_per_etc']
+        
         return
     def cap(self, users_home, users_rpa):
         """

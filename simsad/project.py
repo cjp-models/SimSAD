@@ -446,7 +446,9 @@ class projection:
                                                           self.rpa.users)
         return
     def eesad_services_cap(self):
-        self.eesad.compute_supply()
+        avq_sold_clsc = self.clsc.registry.loc[:,['hrs_sa_avq_eesad_home','hrs_sa_avq_eesad_rpa']].sum(axis=1)
+        avd_sold_clsc = self.clsc.registry.loc[:,['hrs_sa_avd_eesad_home','hrs_sa_avd_eesad_rpa']].sum(axis=1)
+        self.eesad.compute_supply(avq_sold_clsc,avd_sold_clsc)
         if self.policy.eesad_cap:
             self.home.users, self.rpa.users = self.eesad.cap(self.home.users, self.rpa.users)
         self.eesad.compute_costs()
