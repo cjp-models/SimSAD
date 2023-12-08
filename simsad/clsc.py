@@ -521,9 +521,17 @@ class clsc:
                     attr = 1.0
                 else:
                     attr = getattr(self,'clsc_'+c+'_rate')
+
+                shift = 0.0
+                if before_base_yr==False:
+                    if c!='inf':
+                        shift += min((getattr(self.policy,'clsc_shift_' + c + '_eesad') \
+                                + getattr(self.policy,'clsc_shift_' + c + '_prive')),1)
+                
                 self.registry['nb_etc_'+tag] += \
-                    attr * self.worker_needs.loc[:,tag]
+                    attr * (1-shift) * self.worker_needs.loc[:,tag]
                 self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
+                
                 if before_base_yr==False:
                     if c in ['avq','avd']:
                         for s in ['eesad','prive']:
