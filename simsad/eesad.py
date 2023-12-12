@@ -92,10 +92,10 @@ class eesad:
         self.registry['supply_avd'] = self.registry['nb_etc_avd'] * self.registry['hrs_per_etc']
         self.registry['supply_avd'] *= (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd'])
 
-        self.registry['nb_etc_avq_clsc'] = avq_sold_clsc * \
-                  (1.0 - self.registry['tx_hrs_dep_avq'] - self.registry['tx_hrs_admin_avq']) / self.registry['hrs_per_etc']
-        self.registry['nb_etc_avd_clsc'] = avd_sold_cslc * \
-                  (1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd']) / self.registry['hrs_per_etc']
+        self.registry['nb_etc_avq_clsc'] = avq_sold_clsc / \
+                  ((1.0 - self.registry['tx_hrs_dep_avq'] - self.registry['tx_hrs_admin_avq']) * self.registry['hrs_per_etc'])
+        self.registry['nb_etc_avd_clsc'] = avd_sold_cslc / \
+                  ((1.0 - self.registry['tx_hrs_dep_avd'] - self.registry['tx_hrs_admin_avd']) * self.registry['hrs_per_etc'])
         
         return
     def cap(self, users_home, users_rpa):
@@ -162,10 +162,10 @@ class eesad:
             True si l'année en cours de la simulation est inférieure 
             à l'année de départ de la comptabilisation des résultats 
         """
+        rate = self.policy.eesad_avd_rate
         if before_base_yr:
-            self.policy.eesad_avd_rate = 1.0
-        self.registry['nb_etc_avd'] += self.policy.eesad_avd_rate * \
-                                           self.registry['worker_needs']
+            rate = 1.0
+        self.registry['nb_etc_avd'] += rate * self.registry['worker_needs']
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['needs_inf']):
         if domain == 'registry':

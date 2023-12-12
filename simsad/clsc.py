@@ -331,17 +331,15 @@ class clsc:
                 self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * \
                                               self.registry['hrs_etc_'+tag]
                 self.registry['supply_'+tag] *= (1.0-self.registry[
-                    'tx_hrs_dep_'+c] - self.registry[
-                    'tx_hrs_admin_'+c])
+                    'tx_hrs_dep_'+c] - self.registry['tx_hrs_admin_'+c])
         # if policy yr, outsource avq and avq
         if yr==2023:
             for m in ['home', 'rpa']:
                 for c in ['avq','avd']:
                     tag = c + '_' + m
                     supply_hrs = self.registry['supply_'+tag].copy()
-                    indirect = (1.0 - self.registry[
-                        'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' +
-                                                           c]) * self.registry['hrs_etc_' + tag]
+                    indirect = (1.0 - self.registry['tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' +c]) \
+                          * self.registry['hrs_etc_' + tag]
                     for s in ['eesad', 'prive']:
                         rate = getattr(self.policy,'clsc_shift_' + c + '_' + s)
                         self.registry['hrs_sa_' + c + '_' + s + '_'+m] += \
@@ -353,11 +351,9 @@ class clsc:
                     self.registry['supply_' + tag].clip(lower=0.0,inplace=True)
                     self.registry['nb_etc_' + tag].clip(lower=0.0,inplace=True)
         tag = 'inf_ri'
-        self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * \
-                                              self.registry['hrs_etc_'+tag]
-        self.registry['supply_'+tag] *= (1.0-self.registry[
-                    'tx_hrs_dep_inf'] - self.registry[
-                    'tx_hrs_admin_inf'])
+        self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * self.registry['hrs_etc_'+tag]
+        self.registry['supply_'+tag] *= (1.0-self.registry['tx_hrs_dep_inf'] - 
+                                         self.registry['tx_hrs_admin_inf'])
 
         # add hours purchased from EESAD and PRIVE for home care
         for c in self.care_types:
@@ -408,7 +404,7 @@ class clsc:
         self.registry[['worker_needs_inf','worker_needs_avq','worker_needs_avd']] = 0.0
         return
 
-    def cap(self, users, milieu):
+    def cap(self, users, milieu, yr):
         """
         Fonction qui ajuste les heures de services fournis au niveau individuel (soins infirmier, AVQ, AVD) 
         selon la main d'oeuvre disponible et qui comptabilise les besoins supplémentaires en main d'oeuvre.
@@ -435,15 +431,17 @@ class clsc:
                 factor.clip(upper=1.0,inplace=True)
                 excess = hrs_free.loc[:,(milieu,c)] - self.registry['supply_' + tag]
                 excess.clip(lower=0.0,inplace=True)
-                if c in ['avq','avd']:
-                    excess_base = excess.copy()
-                    for s in ['eesad','prive']:
-                        shifting_rate = getattr(self.policy,'clsc_shift_'+c+'_'+s)
-                        adjusment_rate = getattr(self.policy,s+'_'+c+'_rate')
-                        self.registry['add_hrs_sa_' + c + '_' + s + '_' +
-                                      milieu] = \
-                            adjusment_rate * shifting_rate * excess_base
-                        excess -= adjusment_rate*shifting_rate*excess_base
+                
+                if yr>=2023:
+                    if c!='inf':
+                        excess_base = excess.copy()
+                        for s in ['eesad','prive']:
+                            shifting_rate = getattr(self.policy,'clsc_shift_'+c+'_'+s)
+                            adjusment_rate = getattr(self.policy,s+'_'+c+'_rate')
+                            self.registry['add_hrs_sa_' + c + '_' + s + '_' + milieu] = \
+                                adjusment_rate * shifting_rate * excess_base
+                            excess -= adjusment_rate * shifting_rate*excess_base
+                
                 indirect = (1.0 - self.registry[
                         'tx_hrs_dep_' + c] - self.registry['tx_hrs_admin_' + c])
                 excess = excess / indirect
@@ -525,18 +523,17 @@ class clsc:
                 shift = 0.0
                 if before_base_yr==False:
                     if c!='inf':
-                        shift += min((getattr(self.policy,'clsc_shift_' + c + '_eesad') \
-                                + getattr(self.policy,'clsc_shift_' + c + '_prive')),1)
+                        shift += (getattr(self.policy,'clsc_shift_' + c + '_eesad') \
+                                + getattr(self.policy,'clsc_shift_' + c + '_prive'))
+                        
+                        for s in ['eesad','prive']:
+                            tag_sa = 'hrs_sa_' + c + '_' + s + '_' + m
+                            self.registry[tag_sa] += self.registry['add_'+tag_sa]
                 
                 self.registry['nb_etc_'+tag] += \
                     attr * (1-shift) * self.worker_needs.loc[:,tag]
                 self.registry['nb_etc_'+c] += self.registry['nb_etc_'+tag]
-                
-                if before_base_yr==False:
-                    if c in ['avq','avd']:
-                        for s in ['eesad','prive']:
-                            tag_sa = 'hrs_sa_' + c + '_' + s + '_' + m
-                            self.registry[tag_sa] += self.registry['add_'+tag_sa]
+                        
         tag = 'inf_ri'
         self.registry['nb_etc_' + tag] += \
             self.clsc_inf_rate * self.worker_needs.loc[:, tag]

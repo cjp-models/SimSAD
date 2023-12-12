@@ -433,9 +433,9 @@ class projection:
     def clsc_services_cap(self):
         self.clsc.compute_supply(self.yr)
         if self.policy.clsc_cap:
-            self.home.users = self.clsc.cap(self.home.users,'home')
-            self.rpa.users = self.clsc.cap(self.rpa.users,'rpa')
-            self.ri.users = self.clsc.cap(self.ri.users,'ri')
+            self.home.users = self.clsc.cap(self.home.users,'home',self.yr)
+            self.rpa.users = self.clsc.cap(self.rpa.users,'rpa',self.yr)
+            self.ri.users = self.clsc.cap(self.ri.users,'ri',self.yr)
         # determine costs
         self.clsc.compute_costs()
         return
