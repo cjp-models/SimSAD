@@ -44,7 +44,7 @@ class dispatcher:
         self.n_cap[4] = n_nsa
         self.n_cap[5] = n_chsld
         return
-    def setup_params(self, init_prob, trans_prob, surv_prob, wait_count,
+    def setup_params(self, init_prob, old_prob, trans_prob, surv_prob, wait_count,
                      wait_prob_chsld, wait_prob_ri):
         """
         Cette fonction spécifie les différentes probabilités utilisées pour l'attribution des milieux de vie.
@@ -72,6 +72,7 @@ class dispatcher:
         self.na = 3
         # initial probabilities
         self.pi0 = init_prob
+        self.pi1 = old_prob
         # transition probabilities across states (conditional on survival)
         self.pi = np.zeros((self.ns,self.na,self.n,self.n))
         for s in range(self.ns):
@@ -208,7 +209,7 @@ class dispatcher:
         self.count_wait[:,:,:,:,0] = self.wait_init
         for s in range(self.ns):
             for a in range(self.na):
-                    self.count_states[s,a,:,0] = self.smafs[s,a] * self.pi0[s,a,:]
+                    self.count_states[s,a,:,0] = self.smafs[s,a] * (1.0*self.pi0[s,a,:]+0.0*self.pi1[s,a,:])
         #for n in range(self.n-1,-1,-1):
         #    nusers = np.sum(self.count_states[:, :, n, 0])
         #    avail_spots = max(self.n_cap[n] - nusers,0)

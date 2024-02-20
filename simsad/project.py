@@ -297,7 +297,12 @@ class projection:
                 for s in range(1,self.last_smaf):
                     for a in gr_ages:
                         self.last_iprob[r-1,s-1,a-1,:] = self.init_pars.loc[(r,s,a),:]
- 
+        ####Ajout###
+        self.init_iprob = np.zeros((self.nregions,self.nsmaf,nages,self.nmilieux))
+        for r in range(1,self.last_region):
+            for s in range(1,self.last_smaf):
+                for a in gr_ages:
+                    self.init_iprob[r-1,s-1,a-1,:] = self.init_pars.loc[(r,s,a),:]
         # main algorithm
         for r in range(1,self.last_region):
             agent = dispatcher()
@@ -308,9 +313,12 @@ class projection:
             agent.init_smaf(ismaf)   
             # load parameters for region 
             iprob = np.zeros((self.nsmaf,nages,self.nmilieux))
+            oprob = np.zeros((self.nsmaf,nages,self.nmilieux))
             for s in range(self.nsmaf):
                 for a in range(nages):
-                    iprob[s, a, :] = self.last_iprob[r-1, s, a,:]
+                    #iprob[s, a, :] = self.last_iprob[r-1, s, a,:]
+                    oprob[s, a, :] = self.last_iprob[r-1, s, a,:]
+                    iprob[s, a, :] = self.init_iprob[r-1, s, a,:]
             # load parameters for region 
             tprob = np.zeros((self.nsmaf,nages,self.nmilieux**2))
             for s in range(self.nsmaf):
@@ -330,7 +338,7 @@ class projection:
                     wprob_ri[s,a,:] = self.wait_pars_ri.loc[(r,s+1,a+1),:].values
             # wait
             wait_count = self.last_wait[r-1,:,:,:,:]
-            agent.setup_params(init_prob = iprob, trans_prob = tprob,
+            agent.setup_params(init_prob = iprob, old_prob=oprob, trans_prob = tprob,
                                surv_prob = sprob, wait_count = wait_count,
                                wait_prob_chsld = wprob_chsld,
                                wait_prob_ri = wprob_ri)
