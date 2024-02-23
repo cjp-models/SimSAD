@@ -55,7 +55,7 @@ class nsa:
             numéro de la région
         """
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
-        self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
+        self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants).astype(int)
         return 
     def create_users(self, users):
         """

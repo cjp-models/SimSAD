@@ -190,7 +190,7 @@ class clsc:
             itups = pd.MultiIndex.from_tuples(tups)
             self.count = pd.DataFrame(index=itups, columns = ['users','hrs'],
                                       dtype = 'float64')
-            self.count.loc[:,:] = 0.0
+            self.count.fillna(0.0)
             self.count.sort_index(inplace=True)
             self.count.index.names = ['milieux','region_id','iso_smaf','svc']
         return

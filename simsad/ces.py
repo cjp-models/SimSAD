@@ -60,8 +60,8 @@ class ces:
 
         work = work.merge(self.hrs,left_on = merge_key,right_on = merge_key,
                    how = 'left')
-        work['ces_hrs_avq'] = 0
-        work['ces_hrs_avd'] = 0
+        work['ces_hrs_avq'] = 0.0
+        work['ces_hrs_avd'] = 0.0
         work.loc[work.ces_any,'ces_hrs_avq'] = work.loc[work.ces_any,'hrs_avq']
         work.loc[work.ces_any,'ces_hrs_avd'] = work.loc[work.ces_any,'hrs_avd']
         users[['ces_any','ces_hrs_avd','ces_hrs_avq']] = work.loc[:,['ces_any',
