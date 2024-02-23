@@ -238,6 +238,7 @@ class projection:
         self.init_pars = pd.read_csv(os.path.join(data_dir, 'nb_milieu_vie_init.csv'),
                                      delimiter=';', low_memory=False)
         self.init_pars.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
+        self.init_pars = self.init_pars.astype(float)
         for r in range(1, self.last_region):
             for s in range(1, self.last_smaf):
                 for a in gr_ages:
@@ -257,7 +258,7 @@ class projection:
                                         delimiter=';', low_memory=False)
         self.wait_pars_ri.set_index(['region_id', 'iso_smaf', 'gr_age'], inplace=True)
         return
-
+     
     def dispatch(self):
         """
         Fonction qui attribue les milieux de vie aux personnes.
@@ -286,9 +287,11 @@ class projection:
         init_smafs.columns = gr_ages
         init_smafs.columns.names = ['gr_age']
         init_smafs = pd.pivot_table(init_smafs.stack().to_frame(),
-                                    index=['region_id','gr_age'],columns=['smaf'],aggfunc=sum)[0]
+                                    index=['region_id','gr_age'],columns=['smaf'],aggfunc='sum')[0]
+        
         # load parameters for transitions
         if self.yr == self.start_yr:
+            self.lysmafs = init_smafs
             self.init_dispatch(init_smafs)
 
             self.last_iprob = np.zeros((self.nregions,self.nsmaf,nages,self.nmilieux))
@@ -297,26 +300,28 @@ class projection:
                 for s in range(1,self.last_smaf):
                     for a in gr_ages:
                         self.last_iprob[r-1,s-1,a-1,:] = self.init_pars.loc[(r,s,a),:]
-        ####Ajout###
+        
         self.init_iprob = np.zeros((self.nregions,self.nsmaf,nages,self.nmilieux))
         for r in range(1,self.last_region):
             for s in range(1,self.last_smaf):
                 for a in gr_ages:
                     self.init_iprob[r-1,s-1,a-1,:] = self.init_pars.loc[(r,s,a),:]
+
         # main algorithm
         for r in range(1,self.last_region):
             agent = dispatcher()
             ismaf = np.zeros((self.nsmaf,nages))
+            lysmaf = np.zeros((self.nsmaf,nages))
             for s in range(self.nsmaf):
                 for a in range(nages):
                     ismaf[s,a] = init_smafs.loc[(r,a+1),s+1]
-            agent.init_smaf(ismaf)   
+                    lysmaf[s,a] = self.lysmafs.loc[(r,a+1),s+1]
+            agent.init_smaf(ismaf,lysmaf)   
             # load parameters for region 
             iprob = np.zeros((self.nsmaf,nages,self.nmilieux))
             oprob = np.zeros((self.nsmaf,nages,self.nmilieux))
             for s in range(self.nsmaf):
                 for a in range(nages):
-                    #iprob[s, a, :] = self.last_iprob[r-1, s, a,:]
                     oprob[s, a, :] = self.last_iprob[r-1, s, a,:]
                     iprob[s, a, :] = self.init_iprob[r-1, s, a,:]
             # load parameters for region 
@@ -384,7 +389,10 @@ class projection:
             self.ri.assign(nb_usagers[:,3],nb_waiting[3],r)
             self.rpa.assign(nb_usagers[:,2],nb_waiting[2],r)
             self.home.assign(nb_usagers[:,0], nb_usagers[:,1], nb_waiting[1], r)
- 
+            # create smaf count for next year
+            for s in range(1,self.last_smaf):
+                for a in gr_ages:
+                    self.lysmafs.loc[(r,a),s] = agent.count_states[s-1,a-1,:,12].sum()
         # create user sets
         self.create_users()
         return

@@ -196,8 +196,9 @@ class dispatcher:
                         for j in range(1,self.n):
                             self.pi[s,a,w,j]=self.pi[s,a,w,j]*(1-self.pi[s,a,w,0])/sum
         return
-    def init_smaf(self,smafs):
+    def init_smaf(self,smafs,lysmafs):
         self.smafs = smafs
+        self.lysmafs = lysmafs
         self.nsmafs = np.sum(self.smafs)
         return
     def init_state(self):
@@ -209,7 +210,11 @@ class dispatcher:
         self.count_wait[:,:,:,:,0] = self.wait_init
         for s in range(self.ns):
             for a in range(self.na):
-                    self.count_states[s,a,:,0] = self.smafs[s,a] * (1.0*self.pi0[s,a,:]+0.0*self.pi1[s,a,:])
+                old_ratio = min((self.lysmafs[s,a]/self.smafs[s,a]),1.0)
+                self.count_states[s,a,:,0] = self.smafs[s,a] * \
+                                            ((1-old_ratio)*self.pi0[s,a,:]+old_ratio*self.pi1[s,a,:])
+                #if a==2:
+                #    print(s,old_ratio)
         #for n in range(self.n-1,-1,-1):
         #    nusers = np.sum(self.count_states[:, :, n, 0])
         #    avail_spots = max(self.n_cap[n] - nusers,0)
