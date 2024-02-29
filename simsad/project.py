@@ -169,7 +169,7 @@ class projection:
         self.tracker.add_entry('chsld_users', 'chsld', 'registry',
                             rowvars=['region_id'],
                             colvars=['nb_usagers_tot',
-                                     'tx_serv_inf', 'tx_serv_avq','attente_usagers'],
+                                     'tx_serv_inf', 'tx_serv_avq'],
                                aggfunc='sum', start_yr=
                             show_yr,
                             stop_yr=self.stop_yr)
