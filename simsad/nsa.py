@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 import os
 from itertools import product
 from .needs import needs
@@ -36,6 +37,7 @@ class nsa:
         reg = reg[reg.annee==start_yr]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
+        self.nb_original_nsa = reg['nb_usagers'].copy()
         reg['nb_usagers'] = 0
         reg[['iso_smaf'+str(s) for s in range(1,15)]] = 0.0
         reg['nb_places'] *= self.open_capacity

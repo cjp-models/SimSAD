@@ -329,10 +329,10 @@ class projection:
             for s in range(self.nsmaf):
                 for a in range(nages):
                     tprob[s,a,:] = self.pars.loc[(r,s+1,a+1),:].values
-            sprob = np.zeros((self.nsmaf,nages,self.nmilieux))
+            sprob = np.zeros((self.nsmaf,nages))
             for s in range(self.nsmaf):
                 for a in range(nages):
-                    sprob[s,a,:] = self.surv_pars.loc[(r,s+1,a+1),:].values
+                    sprob[s,a] = self.surv_pars.loc[(r,s+1,a+1),:].values
             wprob_chsld = np.zeros((self.nsmaf,nages,self.nmilieux))
             for s in range(self.nsmaf):
                 for a in range(nages):
@@ -346,7 +346,7 @@ class projection:
             agent.setup_params(init_prob = iprob, old_prob=oprob, trans_prob = tprob,
                                surv_prob = sprob, wait_count = wait_count,
                                wait_prob_chsld = wprob_chsld,
-                               wait_prob_ri = wprob_ri)
+                               wait_prob_ri = wprob_ri, nsa_transfer_rate=self.policy.nsa_transfer_rate)
             # restricting transition to CHSLD for smaf under 10
             if self.yr>(self.base_yr):
                 agent.chsld_restriction(self.policy)
@@ -359,7 +359,10 @@ class projection:
             # deal with capacity
             cap_chsld = self.chsld.registry.loc[r,'nb_places_tot']
             cap_ri = self.ri.registry.loc[r, 'nb_places']
-            cap_nsa = self.nsa.registry.loc[r,'nb_places']
+            if self.yr<=self.base_yr:
+                cap_nsa = self.nsa.nb_original_nsa[r]
+            else:
+                cap_nsa = self.nsa.registry.loc[r,'nb_places']
             cap_rpa = self.rpa.registry.loc[r, 'nb_places_sad']
             agent.setup_capacity(cap_rpa, cap_ri, cap_nsa, cap_chsld)
             # now assign

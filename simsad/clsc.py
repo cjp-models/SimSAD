@@ -277,13 +277,11 @@ class clsc:
         # adjust services to reach target service rate
         if milieu=='home':
             if yr>=2023:
-                n = needs()
-                needs_cap ={'inf': n.inf[9]*365,'avq':n.avq[9]*365,'avd':n.avd[9]*365}
                 for c in self.care_types:
                     delta = getattr(policy,'delta_'+c+'_rate')/100.0
                     smafs = [s for s in range(4,15)]
                     cond = users['iso_smaf'].isin(smafs)
-                    users.loc[cond, 'clsc_'+c+'_hrs'] += delta * users.loc[cond, 'needs_'+c].clip(upper=needs_cap[c])
+                    users.loc[cond, 'clsc_'+c+'_hrs'] += delta * users.loc[cond, 'needs_'+c]
  
         if milieu!='ri':
             counts_any_svc = users.groupby(['region_id']).apply(

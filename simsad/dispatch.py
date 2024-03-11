@@ -45,7 +45,7 @@ class dispatcher:
         self.n_cap[5] = n_chsld
         return
     def setup_params(self, init_prob, old_prob, trans_prob, surv_prob, wait_count,
-                     wait_prob_chsld, wait_prob_ri):
+                     wait_prob_chsld, wait_prob_ri,nsa_transfer_rate):
         """
         Cette fonction spécifie les différentes probabilités utilisées pour l'attribution des milieux de vie.
 
@@ -62,7 +62,9 @@ class dispatcher:
         wait_prob_chsld: array
             probabilité de provenir d'un milieu de vie donné lorsqu'admis en CHSLD
         wait_prob_ri: array
-            probabilité de provenir d'un milieu de vie donné lorsqu'admis en RI-RTF        
+            probabilité de provenir d'un milieu de vie donné lorsqu'admis en RI-RTF
+        nsa_transfer_rate: float
+            proportion de personnes en attente d'une place en CHSLD qui sont transférées en NSA        
         """
         # number of months (includes an initial state)
         self.m = 13
@@ -83,6 +85,8 @@ class dispatcher:
         self.wait_init = wait_count
         self.wprob_chsld = wait_prob_chsld
         self.wprob_ri = wait_prob_ri
+        # transfer rate of chsld waiters to nsa
+        self.nsa_transfer_rate = nsa_transfer_rate
         return
     def chsld_restriction(self, policy):
         """
@@ -149,9 +153,9 @@ class dispatcher:
                 beta_inf = 0.0
                 beta_avq = 0.0
                 beta_avd = 0.0
-            dz = beta_inf*min(dx_inf,dx_inf*n.inf[9]/n.inf[s]) \
-                 + beta_avq*min(dx_avq,dx_avq*n.avq[9]/n.avq[s]) \
-                 + beta_avd*min(dx_avd,dx_avd*n.avd[9]/n.avd[s])
+            dz = beta_inf*dx_inf \
+                 + beta_avq*dx_avq \
+                 + beta_avd*dx_avd
             for a in range(self.na):
                 for j in range(1,self.n):
                     if j==k:
@@ -213,27 +217,59 @@ class dispatcher:
                 old_ratio = min((self.lysmafs[s,a]/self.smafs[s,a]),1.0)
                 self.count_states[s,a,:,0] = self.smafs[s,a] * \
                                             ((1-old_ratio)*self.pi0[s,a,:]+old_ratio*self.pi1[s,a,:])
-                #if a==2:
-                #    print(s,old_ratio)
-        #for n in range(self.n-1,-1,-1):
-        #    nusers = np.sum(self.count_states[:, :, n, 0])
-        #    avail_spots = max(self.n_cap[n] - nusers,0)
-        #    if avail_spots>0:
-        #        for s in range(self.ns-1,-1,-1):
-        #            for a in range(self.na-1,-1,-1):
-        #                for j in range(self.n-1,-1,-1):
-        #                    waiters = self.count_wait[s,a,j,n,0]
-        #                    if avail_spots > waiters:
-        #                        self.count_states[s,a,n,0] += waiters
-        #                        self.count_wait[s,a,j,n,0] = 0
-        #                        avail_spots -= waiters
-        #                    else :
-        #                        self.count_states[s,a,n,0] += avail_spots
-        #                        self.count_wait[s,a,j,n,0] -= avail_spots
-        #                        avail_spots = 0
-
+        
+        # transfer waiters to state if available spots 
+        for n in range(self.n-1,-1,-1):
+            nusers = np.sum(self.count_states[:, :, n, 0])
+            avail_spots = max(self.n_cap[n] - nusers,0)
+            if avail_spots>0:
+                for s in range(self.ns-1,-1,-1):
+                    for a in range(self.na-1,-1,-1):
+                        for j in range(self.n-1,-1,-1):
+                            waiters = self.count_wait[s,a,j,n,0]
+                            if avail_spots > waiters:
+                                self.count_states[s,a,n,0] += waiters
+                                self.count_wait[s,a,j,n,0] = 0
+                                avail_spots -= waiters
+                            else :
+                                self.count_states[s,a,n,0] += avail_spots
+                                self.count_wait[s,a,j,n,0] -= avail_spots
+                                avail_spots = 0
         # once checked waiting list, deal with excess users
-        for n in range(self.n-1,0,-1):
+        # Excess users in CHSLD
+        n = self.n-1
+        nusers = np.sum(self.count_states[:,:,n,0]) + np.sum(self.count_wait[:,:,n,:,0])
+        if nusers > self.n_cap[n]:
+            excess = max(nusers - self.n_cap[n],0)
+            for s in range(self.ns):
+                for a in range(self.na):
+                    users = self.count_states[s, a, n, 0]
+                    if excess <= users:
+                        self.count_states[s,a,n,0] -= excess
+                        self.count_wait[s,a,n-1,n,0] += excess*self.nsa_transfer_rate
+                        self.count_wait[s,a,n-2,n,0] += excess*(1.0-self.nsa_transfer_rate)
+                        excess = 0
+                    else :
+                        self.count_states[s,a,n,0] -= users
+                        self.count_wait[s,a,n-1,n,0] += users*self.nsa_transfer_rate
+                        self.count_wait[s,a,n-2,n,0] += users*(1.0-self.nsa_transfer_rate)
+                        excess -= users
+            for j in range(self.n-1,0,-1):
+                for s in range(self.ns):
+                    for a in range(self.na):
+                        waiters = self.count_wait[s,a,n,j,0]
+                        if excess <= waiters:
+                            self.count_wait[s,a,n,j,0] -= excess
+                            self.count_wait[s,a,n-1,j,0] += excess*self.nsa_transfer_rate
+                            self.count_wait[s,a,n-2,j,0] += excess*(1.0-self.nsa_transfer_rate)
+                            excess = 0
+                        else :
+                            self.count_states[s,a,n,0] -= waiters
+                            self.count_wait[s,a,n-1,n,0] += waiters*self.nsa_transfer_rate
+                            self.count_wait[s,a,n-2,n,0] += waiters*(1.0-self.nsa_transfer_rate)
+                            excess -= waiters
+        #Excess users in other living arrangements
+        for n in range(self.n-2,0,-1):
             nusers = np.sum(self.count_states[:,:,n,0]) + np.sum(self.count_wait[:,:,n,:,0])
             if nusers > self.n_cap[n]:
                 excess = max(nusers - self.n_cap[n],0)
@@ -271,7 +307,7 @@ class dispatcher:
             mois pour lequel on calcul le nombre de personnes par milieu de vie 
         """
         self.count_states[:,:,:,m+1], self.count_wait[:,:,:,:,m+1] = transition(self.count_states[:,:,:,m],self.count_wait[:,:,:,:,m], self.pi,
-                     self.ss, self.n_cap, self.wprob_chsld, self.wprob_ri)
+                     self.ss, self.n_cap, self.wprob_chsld, self.wprob_ri, self.nsa_transfer_rate)
         return
     def assign(self):
         """
@@ -320,9 +356,8 @@ class dispatcher:
                 else:
                     self.last_state[s,a,:] = 0.0
         return
-
-@njit(Tuple((float64[:,:,:],float64[:,:,:,:]))(float64[:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:,:,:], float64[:], float64[:,:,:], float64[:,:,:]))
-def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
+@njit(Tuple((float64[:,:,:],float64[:,:,:,:]))(float64[:,:,:], float64[:,:,:,:], float64[:,:,:,:], float64[:,:], float64[:], float64[:,:,:], float64[:,:,:],float64))
+def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri, nsa_rate):
     ns, na, nn = state.shape
     next_state = np.zeros(state.shape) 
     next_wait = np.zeros(wait.shape)
@@ -331,19 +366,19 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
         # figure out how many stay (some die)j = n
         for s in range(ns-1,-1,-1):
             for a in range(na-1,-1,-1):
-                next_state[s,a,n] = max(pi[s,a,n,n] * ss[s,a,n] * state[s,a,n],0)
+                next_state[s,a,n] = max(pi[s,a,n,n] * ss[s,a] * state[s,a,n],0)
         # figure out how many want to enter and from where (upon surviving)
         appl = np.zeros((ns,na,nn))
         for s in range(ns-1,-1,-1):
             for a in range(na-1,-1,-1):
                 for j in range(nn-1,-1,-1):
                     if j!=n:
-                        appl[s,a,j] = max(pi[s,a,j,n] * ss[s,a,j] * state[s,a,j],0)
+                        appl[s,a,j] = max(pi[s,a,j,n] * ss[s,a] * state[s,a,j],0)
         # next year's waiting list with those already on it, but account for survival
         for s in range(ns-1,-1,-1):
             for a in range(na-1,-1,-1):
                 for j in range(nn-1,-1,-1):
-                      next_wait[s,a,j,n] = max(wait[s,a,j,n] * ss[s,a,j],0)
+                      next_wait[s,a,j,n] = max(wait[s,a,j,n] * ss[s,a],0)
         # currently those who have a spot are those who stay and those on waiting list in that state
         nstay = np.sum(next_state[:, :, n])
         nstay += np.sum(next_wait[:,:,n,:])
@@ -355,6 +390,7 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
             for s in range(ns-1,-1,-1):
                 for a in range(na-1,-1,-1):
                     # need adapt to use probabilities, but add to ranks and reduce waiting list
+                    #CHLSD
                     if n == nn - 1:
                         pw = np.sum(next_wait[s, a, :, n])
                         if pw>0:
@@ -368,6 +404,7 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
                                 pej[j] = min(wprob_chsld[s, a, j]*pe/pj[j],1)
                             else :
                                 pej[j] = 1.0
+                    #RI
                     elif n == nn - 3:
                         pw = np.sum(next_wait[s, a, :, n])
                         if pw>0:
@@ -423,7 +460,28 @@ def transition(state, wait, pi, ss, ncaps, wprob_chsld, wprob_ri):
                 for j in range(nn-1,-1,-1):
                   next_wait[s,a,j,n] += appl[s,a,j]
     # deal with excess users
-    for n in range(nn-1,-1,-1):
+    # excess users in CHSLD
+    n = nn-1
+    nstay = np.sum(next_state[:, :, n])
+    nstay += np.sum(next_wait[:,:,n,:])
+    if nstay>ncaps[n]:
+        excess = max(nstay - ncaps[n],0)
+        for j in range(nn-1,0,-1):
+            for s in range(0,ns):
+                for a in range(0,na):
+                    waiters = next_wait[s,a,n,j]
+                    if (excess <= waiters) & (waiters>0) & (n-1!=j):
+                        next_wait[s,a,n,j] -= excess
+                        next_wait[s,a,n-1,j] += excess*nsa_rate
+                        next_wait[s,a,n-2,j] += excess*(1.0-nsa_rate)
+                        excess = 0
+                    elif (excess > waiters) & (waiters>0) & (n-1!=j):
+                        next_wait[s,a,n,j] -= waiters
+                        next_wait[s,a,n-1,j] += waiters*nsa_rate
+                        next_wait[s,a,n-2,j] += waiters*(1.0-nsa_rate)
+                        excess -= waiters
+    # excess users in other living arangement
+    for n in range(nn-2,-1,-1):
         nstay = np.sum(next_state[:, :, n])
         nstay += np.sum(next_wait[:,:,n,:])
 
