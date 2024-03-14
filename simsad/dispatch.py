@@ -149,13 +149,16 @@ class dispatcher:
         """
         # change for service rates (domicile)
         pi_temp = np.copy(self.pi)
+        pi0_temp = np.copy(self.pi0)
         k = 1
         n = needs()
+        nc = 1
+        nsub = [2,3,4,5]
         dx_inf = policy.delta_inf_rate
         dx_avq = policy.delta_avq_rate
         dx_avd = policy.delta_avd_rate
         for s in range(self.ns):
-            # only for smaf 4 to 10
+            # only for smaf 4+
             if s >= 3:
                 beta_inf = pref_pars.loc['tx_serv_inf',1+s]
                 beta_avq = pref_pars.loc['tx_serv_avq',1+s]
@@ -173,18 +176,29 @@ class dispatcher:
                         for w in range(1,self.n):
                             self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
                                 + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,w,j]) * dz
+                            
+                        self.pi0[s,a,j] = pi0_temp[s,a,j] + pi0_temp[s,a,j]*(1-pi0_temp[s,a,j])*dz
                     else :
                         for w in range(1,self.n):
                             self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
                                 - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
+                            
+                        self.pi0[s,a,j] = pi0_temp[s,a,j] - pi0_temp[s,a,j]*pi0_temp[s,a,k]*dz
+
                 for w in range(1,self.n):
                     sum = np.sum(self.pi[s,a,w,1:])
                     if sum>0:
                         for j in range(1,self.n):
                             self.pi[s,a,w,j]=self.pi[s,a,w,j]*(1-self.pi[s,a,w,0])/sum
+                
+                sum = np.sum(self.pi0[s,a,1:])
+                if sum>0:
+                    for j in range(1,self.n):
+                        self.pi0[s,a,j]=self.pi0[s,a,j]*(1-self.pi0[s,a,0])/sum
         # change for cost
         for k in [3, 4, 5]:
             pi_temp = np.copy(self.pi)
+            pi0_temp = np.copy(self.pi0)
             for s in range(self.ns):
                 beta = pref_pars.loc['cost',1+s]
                 if k==3:
@@ -199,17 +213,26 @@ class dispatcher:
                         if j==k:
                             for w in range(self.n):
                                 self.pi[s,a,w,j] = pi_temp[s,a,w,j]   \
-                                        + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,
-                                w,j]) * dz
+                                        + pi_temp[s,a,w,j]*(1.0-pi_temp[s,a,w,j]) * dz
+                                
+                            self.pi0[s,a,j] = pi0_temp[s,a,j] + pi0_temp[s,a,j]*(1-pi0_temp[s,a,j])*dz
                         else :
                             for w in range(self.n):
                                 self.pi[s,a,w,j] = pi_temp[s,a,w,j] \
                                     - pi_temp[s,a,w,j]*pi_temp[s,a,w,k] * dz
+                                
+                            self.pi0[s,a,j] = pi0_temp[s,a,j] - pi0_temp[s,a,j]*pi0_temp[s,a,k]*dz
+                            
                 for w in range(1,self.n):
                     sum = np.sum(self.pi[s,a,w,1:])
                     if sum>0:
                         for j in range(1,self.n):
                             self.pi[s,a,w,j]=self.pi[s,a,w,j]*(1-self.pi[s,a,w,0])/sum
+
+                sum = np.sum(self.pi0[s,a,1:])
+                if sum>0:
+                    for j in range(1,self.n):
+                        self.pi0[s,a,j]=self.pi0[s,a,j]*(1-self.pi0[s,a,0])/sum
         return
     def init_smaf(self,smafs,lysmafs):
         self.smafs = smafs
