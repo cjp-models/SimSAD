@@ -100,7 +100,7 @@ class dispatcher:
             Paramètres du scénario
         """
         # change for service rates (domicile)
-        pi_temp = np.copy(self.pi)
+        #pi_temp = np.copy(self.pi)
         dx_prob = policy.chsld_restriction_rate
         
         if policy.chsld_restricted_eligibility:
@@ -108,16 +108,27 @@ class dispatcher:
             nsub = [1,2,3]
             for s in range(9):
                 for a in range(self.na):
+                    # modify chsld share for new arrival in smaf profiles
+                    # mass to distribute to other states
+                    mass = self.pi0[s,a,nc] * dx_prob
+                    tot_prob = np.sum([self.pi0[s,a,n] for n in nsub])
+                    # distribute
+                    if tot_prob>0.0:
+                            for n in nsub:
+                                self.pi0[s,a,n] += mass * self.pi0[s,a,n]/tot_prob
+                    # reduce CHSLD share 
+                    self.pi0[s,a,nc] *= (1.0 - dx_prob)
+
                     for w in range(self.n):
-                        # reduce probability transition to CHSLD
-                        self.pi[s, a, w, nc] *= (1.0 - dx_prob)
                         # mass to distribute to other states
-                        mass = pi_temp[s,a,w,nc] * dx_prob
-                        tot_prob = np.sum([pi_temp[s, a, w, n] for n in nsub])
+                        mass = self.pi[s,a,w,nc] * dx_prob
+                        tot_prob = np.sum([self.pi[s,a,w,n] for n in nsub])
                         # distribute
                         if tot_prob>0.0:
                             for n in nsub:
-                                self.pi[s, a, w, n] += mass * pi_temp[s,a,w,n]/tot_prob
+                                self.pi[s,a,w,n] += mass * self.pi[s,a,w,n]/tot_prob
+                        # reduce probability transition to CHSLD
+                        self.pi[s,a,w,nc] *= (1.0 - dx_prob)
         return
     def marginal_effect(self, policy, pref_pars, cah_ri, cah_chsld):
         """
@@ -217,7 +228,6 @@ class dispatcher:
                 old_ratio = min((self.lysmafs[s,a]/self.smafs[s,a]),1.0)
                 self.count_states[s,a,:,0] = self.smafs[s,a] * \
                                             ((1-old_ratio)*self.pi0[s,a,:]+old_ratio*self.pi1[s,a,:])
-        
         # transfer waiters to state if available spots 
         for n in range(self.n-1,-1,-1):
             nusers = np.sum(self.count_states[:, :, n, 0])
