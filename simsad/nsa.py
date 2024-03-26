@@ -72,7 +72,7 @@ class nsa:
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.wgt.clip(lower=0.0, inplace=True)
-        self.users.wgt = self.users.wgt.astype('int64')
+        self.users.wgt = self.users.wgt.apply(lambda x: np.round(x)).astype('int64')
         sample_ratio = 1
         self.users.wgt *= sample_ratio
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))

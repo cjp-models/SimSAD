@@ -86,7 +86,7 @@ class home:
         self.users = pd.concat([users_svc,users_none],axis=0)
         sample_ratio = 0.1
         self.users.wgt *= sample_ratio
-        self.users.wgt = self.users.wgt.astype('int64')
+        self.users.wgt = self.users.wgt.apply(lambda x: np.round(x)).astype('int64')
         self.users = self.users.reindex(self.users.index.repeat(self.users.wgt))
         self.users.wgt = 1/sample_ratio
         self.users['smaf'] = self.users.index.get_level_values(1)
