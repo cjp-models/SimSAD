@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: simsad-cjp
-Version: 1.0.0
+Version: 1.0.1
 Summary: Modele de projection du soutien à l'autonomie du Quebec
-Home-page: https://rsi-models.github.io/SimSAD/
+Home-page: https://cjp-models.github.io/SimSAD/
 Author: Equipe CJP
 Author-email: pierre-carl.michaud@hec.ca
 Classifier: Programming Language :: Python :: 3
