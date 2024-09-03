@@ -9,7 +9,7 @@ Nicholas-James Clavet, Réjean Hébert, Pierre-Carl Michaud, Julien Navaux et Mi
 Personne-contact
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`Julien Navaux <mailto:julien.navaux@hec.ca>`_
+`Nicholas-James Clavet <mailto:nicholas-james.clavet@hec.ca>`_
 
 Liste d’envoi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
