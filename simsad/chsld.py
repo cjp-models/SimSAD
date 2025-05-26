@@ -207,7 +207,7 @@ class chsld:
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
-        self.users.wgt.clip(lower=0.0, inplace=True)
+        self.users.loc[self.users.wgt<0.0,'wgt'] = 0.0
         self.users.wgt = self.users.wgt.astype('int64')
         sample_ratio = 0.25
         self.users.wgt *= sample_ratio

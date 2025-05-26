@@ -37,6 +37,8 @@ class policy:
         par rapport aux besoins de places en CHSLD (défaut=0.25)
     nsa_open_capacity: float
         proportion maximale de lit d'hôpitaux pouvant être occupés par les personnes en NSA (défaut=0.06)
+    nsa_transfer_rate: float
+        proportion de personnes en attente d'une place en CHSLD qui sont transférées en NSA 
     chsld_mda: boolean
         True si la construction des nouvelles places en CHSLD se fait selon le modèle des maisons des aînés 
         (défaut=True)
@@ -122,7 +124,8 @@ class policy:
         self.rpa_adapt_rate = 0.5
         self.chsld_purchase = True
         self.chsld_purchase_rate = 0.25
-        self.nsa_open_capacity = 0.06
+        self.nsa_open_capacity = 1.0
+        self.nsa_transfer_rate = 0.5297748
         self.chsld_mda = True
         self.infl_construction = 0.01
         self.interest_rate = 0.03

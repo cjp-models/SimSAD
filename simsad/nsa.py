@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 import os
 from itertools import product
 from .needs import needs
@@ -36,6 +37,7 @@ class nsa:
         reg = reg[reg.annee==start_yr]
         reg.set_index(['region_id'],inplace=True)
         reg.drop(labels='annee',axis=1,inplace=True)
+        self.nb_original_nsa = reg['nb_usagers'].copy()
         reg['nb_usagers'] = 0
         reg[['iso_smaf'+str(s) for s in range(1,15)]] = 0.0
         reg['nb_places'] *= self.open_capacity
@@ -55,7 +57,7 @@ class nsa:
             numéro de la région
         """
         self.registry.loc[region_id,['iso_smaf'+str(s) for s in range(1,15)]] = applicants
-        self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants)
+        self.registry.loc[region_id,'nb_usagers'] = np.sum(applicants).astype(int)
         return 
     def create_users(self, users):
         """
@@ -69,7 +71,7 @@ class nsa:
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
-        self.users.wgt.clip(lower=0.0, inplace=True)
+        self.users.loc[self.users.wgt<0.0,'wgt'] = 0.0
         self.users.wgt = self.users.wgt.astype('int64')
         sample_ratio = 1
         self.users.wgt *= sample_ratio

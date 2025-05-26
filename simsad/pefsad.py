@@ -56,7 +56,7 @@ class pefsad:
                    how = 'left')
         work['u'] = np.random.uniform(size=len(work))
         work['pefsad_avd_any'] = (work['u']<work['prob'])
-        work['pefsad_avd_hrs'] = 0
+        work['pefsad_avd_hrs'] = 0.0
         work.loc[work.pefsad_avd_any,'pefsad_avd_hrs'] = work.loc[work.pefsad_avd_any, 'hrs']
         users[['pefsad_avd_any','pefsad_avd_hrs']] = work[['pefsad_avd_any','pefsad_avd_hrs']]
         return users
