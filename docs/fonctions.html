@@ -18,7 +18,7 @@
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/translations.js?v=041d0952"></script>
-        <script src="_static/contentui.js?v=9ee86694"></script>
+        <script src="_static/contentui.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
@@ -518,7 +518,8 @@ d’une place subventionnée en RPA (défaut=0.5)</p></li>
 <li><p><strong>chsld_purchase</strong> (<em>boolean</em>) – True si on permet l’achat de places en CHSLD privé non-conventionné (défaut=True)</p></li>
 <li><p><strong>chsld_purchase_rate</strong> (<em>float</em>) – taux d’achat supplémentaire de places en CHSLD non-conventionné durant une année
 par rapport aux besoins de places en CHSLD (défaut=0.25)</p></li>
-<li><p><strong>nsa_open_capacity</strong> (<em>float</em>) – proportion maximale de lit d’hôpitaux pouvant être occupés par les personnes en NSA (défaut=0.06)</p></li>
+<li><p><strong>nsa_open_capacity</strong> (<em>float</em>) – proportion maximale de lit d’hôpitaux pouvant être occupés par les personnes en NSA (défaut=1.0)</p></li>
+<li><p><strong>nsa_transfer_rate</strong> (<em>float</em>) – proportion de personnes en attente d’une place en CHSLD qui sont transférées en NSA (défaut=0.53)</p></li>
 <li><p><strong>chsld_mda</strong> (<em>boolean</em>) – True si la construction des nouvelles places en CHSLD se fait selon le modèle des maisons des aînés
 (défaut=True)</p></li>
 <li><p><strong>infl_construction</strong> (<em>float</em>) – taux d’inflation des coûts de construction des CHSLD en dollar constant (défaut=0.01)</p></li>
@@ -779,7 +780,7 @@ par profil Iso-SMAF.</p>
 <div class="toggle-content docutils container">
 <dl class="py function">
 <dt class="sig sig-object py" id="simsad.dispatch.dispatcher.setup_params">
-<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">setup_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_prob_chsld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_prob_ri</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.setup_params" title="Lien vers cette définition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">simsad.dispatch.dispatcher.</span></span><span class="sig-name descname"><span class="pre">setup_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_prob_chsld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_prob_ri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsa_transfer_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.dispatch.dispatcher.setup_params" title="Lien vers cette définition"></a></dt>
 <dd><p>Cette fonction spécifie les différentes probabilités utilisées pour l’attribution des milieux de vie.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Paramètres<span class="colon">:</span></dt>
@@ -790,6 +791,7 @@ par profil Iso-SMAF.</p>
 <li><p><strong>wait_count</strong> (<em>array</em>) – nombre de personnes en attente pour chacun des milieux de vie</p></li>
 <li><p><strong>wait_prob_chsld</strong> (<em>array</em>) – probabilité de provenir d’un milieu de vie donné lorsqu’admis en CHSLD</p></li>
 <li><p><strong>wait_prob_ri</strong> (<em>array</em>) – probabilité de provenir d’un milieu de vie donné lorsqu’admis en RI-RTF</p></li>
+<li><p><strong>nsa_transfer_rate</strong> (<em>float</em>) – proportion de personnes en attente d’une place en CHSLD qui sont transférées en NSA</p></li>
 </ul>
 </dd>
 </dl>
@@ -2244,15 +2246,14 @@ sur les montants agrégés.</p>
 <dt class="sig sig-object py" id="simsad.tracker.tracker.save">
 <span class="sig-prename descclassname"><span class="pre">simsad.tracker.tracker.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scn_policy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#simsad.tracker.tracker.save" title="Lien vers cette définition"></a></dt>
 <dd><p>Fonction qui procède à la sauvegarde des tableaux de sortie dans un fichier excel.</p>
-<section id="parametersf">
-<h3>Parametersƒ<a class="headerlink" href="#parametersf" title="Lien vers cette rubrique"></a></h3>
-<dl class="simple">
-<dt>dir: string</dt><dd><p>sentier où sauvegarder les résultats</p>
-</dd>
-<dt>scn_policy: object</dt><dd><p>instance de classe policy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<em>string</em>) – sentier où sauvegarder les résultats</p></li>
+<li><p><strong>scn_policy</strong> (<em>object</em>) – instance de classe policy</p></li>
+</ul>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
 </div>
@@ -2273,7 +2274,7 @@ sur les montants agrégés.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Droits d'auteur 2024, Clavet, Hébert,  Michaud, Navaux et Raîche.</p>
+    <p>&#169; Droits d'auteur 2025, Clavet, Hébert,  Michaud, Navaux et Raîche.</p>
   </div>
 
   Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
