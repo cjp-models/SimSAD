@@ -36,9 +36,9 @@ class policy:
         taux d'achat supplémentaire de places en CHSLD non-conventionné durant une année 
         par rapport aux besoins de places en CHSLD (défaut=0.25)
     nsa_open_capacity: float
-        proportion maximale de lit d'hôpitaux pouvant être occupés par les personnes en NSA (défaut=0.06)
+        proportion maximale de lit d'hôpitaux pouvant être occupés par les personnes en NSA (défaut=1.0)
     nsa_transfer_rate: float
-        proportion de personnes en attente d'une place en CHSLD qui sont transférées en NSA 
+        proportion de personnes en attente d'une place en CHSLD qui sont transférées en NSA (défaut=0.53) 
     chsld_mda: boolean
         True si la construction des nouvelles places en CHSLD se fait selon le modèle des maisons des aînés 
         (défaut=True)
