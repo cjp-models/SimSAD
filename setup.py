@@ -6,7 +6,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="simsad-cjp",  # Replace with your own username
-    version="1.0.0",
+    version="1.1.0",
     author="Equipe CJP",
     author_email="pierre-carl.michaud@hec.ca",
     description="Modele de projection du soutien à l'autonomie du Quebec",
