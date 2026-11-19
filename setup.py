@@ -21,7 +21,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-   'pandas',
+   'pandas>=2.2',
    'numba>=0.58',
    'numpy>=1.24',
    'xlrd',

@@ -68,7 +68,7 @@ class nsa:
         users: dataframe
             Nombre de personnes en NSA par région, profil Iso-SMAF et groupe d'âge
         """
-        self.users = users.to_frame()
+        self.users = users.to_frame().copy()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.loc[self.users.wgt<0.0,'wgt'] = 0.0
@@ -118,10 +118,8 @@ class nsa:
         self.users['tx_serv_inf'] = 100.0
         self.users['tx_serv_avq'] = 100.0
         self.users['tx_serv_avd'] = 100.0
-        for r in range(1,19):
-            self.users.loc[self.users.region_id==r,'cost'] = \
-                self.registry.loc[r,'cah'] * (1.0 +
-                                              self.policy.delta_cah_chsld/100.0)
+        self.users['cost'] = self.users['region_id'].map(
+            self.registry['cah']) * (1.0 + self.policy.delta_cah_chsld/100.0)
         self.users['cost'] *= 1/12
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
@@ -132,7 +130,7 @@ class nsa:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

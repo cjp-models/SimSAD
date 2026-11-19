@@ -68,7 +68,7 @@ class pefsad:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

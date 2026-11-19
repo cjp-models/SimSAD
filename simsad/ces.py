@@ -84,7 +84,7 @@ class ces:
         work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
                    how = 'left')
         users_by_region = work.groupby('region_id').apply(lambda d: (d['prob'] *
-                                                                      d.wgt).sum())
+                                                                      d.wgt).sum(), include_groups=False)
         factor = targets_by_region['nb_usagers']/users_by_region
 
         factor[factor.isna()] = 1.0
@@ -97,7 +97,7 @@ class ces:
         work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
                    how = 'left')
         users_by_region = work.groupby('region_id').apply(lambda d: (d['prob'] *
-                                                                      d.wgt).sum())
+                                                                      d.wgt).sum(), include_groups=False)
         # hours (use updated probs)
         work = users.copy()
         work = work.merge(self.prob,left_on = merge_key,right_on = merge_key,
@@ -108,11 +108,11 @@ class ces:
         hrs_avq_by_region = work.groupby('region_id').apply(lambda d: (d[
                                                                            'prob']*d[
                                                                          'hrs_avq'] *
-                                                                      d.wgt).sum())
+                                                                      d.wgt).sum(), include_groups=False)
         hrs_avd_by_region = work.groupby('region_id').apply(lambda d: (d[
                                                                            'prob']*d[
                                                                          'hrs_avd'] *
-                                                                      d.wgt).sum())
+                                                                      d.wgt).sum(), include_groups=False)
         # compute factors
         factor_avq = targets_by_region['heures_tot_trav_avq']*(1.0-targets_by_region['tx_hrs_dep_avq']) / \
                      hrs_avq_by_region
@@ -138,7 +138,7 @@ class ces:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

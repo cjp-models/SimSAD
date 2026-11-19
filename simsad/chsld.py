@@ -204,7 +204,7 @@ class chsld:
         users: dataframe
             Nombre d'individus en CHSLD par région, profil Iso-SMAF et groupe d'âge
         """
-        self.users = users.to_frame()
+        self.users = users.to_frame().copy()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
         self.users.loc[self.users.wgt<0.0,'wgt'] = 0.0
@@ -246,14 +246,11 @@ class chsld:
         hrs_per_users_avq = self.registry['supply_avq']/self.registry[
             'nb_usagers_pub']
         self.users[['serv_inf','serv_avq','serv_avd']] = 0.0
-        for r in range(1,19):
-            self.users.loc[self.users.region_id==r,'serv_inf'] = \
-                hrs_per_users_inf.loc[r]
-            self.users.loc[self.users.region_id==r,'serv_avq'] = \
-                hrs_per_users_avq.loc[r]
-            self.users.loc[self.users.region_id==r,'cost'] = \
-                self.registry.loc[r,'cah'] * (1.0 +
-                                              self.policy.delta_cah_chsld/100.0)
+        region = self.users['region_id']
+        self.users['serv_inf'] = region.map(hrs_per_users_inf)
+        self.users['serv_avq'] = region.map(hrs_per_users_avq)
+        self.users['cost'] = region.map(self.registry['cah']) * (
+            1.0 + self.policy.delta_cah_chsld/100.0)
         self.users['serv_avd'] = self.users['needs_avd']
         for c in ['inf','avq','avd']:
             self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
@@ -270,7 +267,7 @@ class chsld:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

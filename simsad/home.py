@@ -68,7 +68,7 @@ class home:
             Nombre de personnes à domicile avec du SAD par région, profil Iso-SMAF et groupe d'âge
         """
         # users with services
-        users_svc = users_svc.to_frame()
+        users_svc = users_svc.to_frame().copy()
         users_svc.columns = ['wgt']
         users_svc['any_svc'] = True
         users_svc.loc[users_svc.wgt.isna(), 'wgt'] = 0.0
@@ -76,7 +76,7 @@ class home:
         users_svc = users_svc.reset_index()
         users_svc.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
         # users without services
-        users_none = users_none.to_frame()
+        users_none = users_none.to_frame().copy()
         users_none.columns = ['wgt']
         users_none['any_svc'] = False
         users_none.loc[users_none.wgt.isna(), 'wgt'] = 0.0
@@ -149,7 +149,7 @@ class home:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

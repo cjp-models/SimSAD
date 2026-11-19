@@ -28,6 +28,9 @@ class clsc:
         self.clsc_inf_rate = policy.clsc_inf_rate
         self.clsc_avq_rate = policy.clsc_avq_rate
         self.clsc_avd_rate = policy.clsc_avd_rate
+        # générateur des tirages de draw_multinomial; projection le remplace
+        # par un générateur semé
+        self.rng = np.random.default_rng()
         self.load_params()
         self.load_registry()
         return
@@ -247,10 +250,13 @@ class clsc:
         # find choice for INF and AVQ
         # copie modifiable : sous Copy-on-Write, .values renvoie un tableau
         # en lecture seule que la signature Numba explicite refuse
+        # les tirages uniformes viennent de self.rng (semé par projection) :
+        # le générateur interne de Numba ignore np.random.seed
         work['choice'] = draw_multinomial(work[['inf_avq_00', 'inf_avq_01',
                                                 'inf_avq_10',
                                                 'inf_avq_11']].to_numpy(
-                                                dtype=np.float64, copy=True))
+                                                dtype=np.float64, copy=True),
+                                          self.rng.uniform(size=len(work)))
         # merge probability for AVD
         if milieu != 'ri':
             merge_key = ['region_id', 'iso_smaf', 'gr_age', 'choice']
@@ -288,10 +294,10 @@ class clsc:
  
         if milieu!='ri':
             counts_any_svc = users.groupby(['region_id']).apply(
-                lambda d: (d['any_svc']*d['wgt']).sum())
+                lambda d: (d['any_svc']*d['wgt']).sum(), include_groups=False)
             self.registry['nb_usagers_'+milieu] = counts_any_svc
         counts = pd.concat([users.groupby(['region_id','iso_smaf']).apply(
-            lambda d: (d['clsc_'+c+'_any']*d['wgt']).sum()) for c in self.care_types],
+            lambda d: (d['clsc_'+c+'_any']*d['wgt']).sum(), include_groups=False) for c in self.care_types],
                                axis=1)
         counts.columns = self.care_types
         counts = counts.stack()
@@ -302,7 +308,7 @@ class clsc:
         counts.columns = ['users']
         hrs = pd.concat([users.groupby(['region_id',
                                                'iso_smaf']).apply(lambda d: (d[
-                'clsc_'+c+'_hrs']*d['wgt']).sum()) for c in self.care_types],
+                'clsc_'+c+'_hrs']*d['wgt']).sum(), include_groups=False) for c in self.care_types],
                                axis=1)
         hrs.columns = self.care_types
         hrs = hrs.stack()
@@ -554,17 +560,16 @@ class clsc:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table
 
 
-@njit((int64[:])(float64[:,:]), cache=True, parallel=True)
-def draw_multinomial(prob):
+@njit((int64[:])(float64[:,:], float64[:]), cache=True, parallel=True)
+def draw_multinomial(prob, u):
         n, m = prob.shape
         result = np.zeros(n,dtype='int64')
-        u = np.random.uniform(low=0.0,high=1.0,size=n)
         for i in prange(n):
             cp = 0.0
             for j  in range(m):
