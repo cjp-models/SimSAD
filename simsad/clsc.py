@@ -245,9 +245,12 @@ class clsc:
         work = work.merge(pars_hrs, left_on=merge_key, right_on=merge_key,
                           how='left')
         # find choice for INF and AVQ
+        # copie modifiable : sous Copy-on-Write, .values renvoie un tableau
+        # en lecture seule que la signature Numba explicite refuse
         work['choice'] = draw_multinomial(work[['inf_avq_00', 'inf_avq_01',
                                                 'inf_avq_10',
-                                                'inf_avq_11']].values)
+                                                'inf_avq_11']].to_numpy(
+                                                dtype=np.float64, copy=True))
         # merge probability for AVD
         if milieu != 'ri':
             merge_key = ['region_id', 'iso_smaf', 'gr_age', 'choice']

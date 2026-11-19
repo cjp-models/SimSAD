@@ -280,9 +280,15 @@ class projection:
 
         # figure out distribution of smaf by region
         init_smafs = self.iso.collapse(rowvars=['region_id','smaf'],colvars=['age'])
-        init_smafs['18-64'] = init_smafs[[x for x in range(18,65)]].sum(axis=1)
-        init_smafs['65-69'] = init_smafs[[x for x in range(65,70)]].sum(axis=1)
-        init_smafs['70-90'] = init_smafs[[x for x in range(70,91)]].sum(axis=1)
+        # Sommes sur une copie en ordre Fortran : l'ordre d'addition de numpy
+        # dépend de la disposition mémoire, qui diffère selon que le mode
+        # Copy-on-Write de pandas est actif ou non. Les écarts d'arrondi
+        # (~1e-13) seraient ensuite amplifiés par la troncature des poids.
+        for label, (lo, hi) in {'18-64': (18, 65), '65-69': (65, 70),
+                                '70-90': (70, 91)}.items():
+            block = np.asfortranarray(init_smafs[[x for x in range(lo, hi)]]
+                                      .to_numpy(dtype=np.float64))
+            init_smafs[label] = block.sum(axis=1)
         init_smafs = init_smafs.loc[:,['18-64','65-69','70-90']]
         init_smafs.columns = gr_ages
         init_smafs.columns.names = ['gr_age']
