@@ -96,7 +96,7 @@ class rpa:
         self.users = users.to_frame()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
-        self.users.wgt.clip(lower=0.0, inplace=True)
+        self.users['wgt'] = self.users['wgt'].clip(lower=0.0)
         self.users.wgt = self.users.wgt.astype('int64')
         sample_ratio = 0.25
         self.users.wgt *= sample_ratio
@@ -141,8 +141,8 @@ class rpa:
         for c in ['inf','avq','avd']:
             self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
                 'needs_'+c])
-            self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
-                                        inplace=True)
+            self.users['tx_serv_' + c] = self.users['tx_serv_' + c].clip(
+                lower=0.0, upper=100.0)
         self.users['cost'] *= 1 / 12
         return
 

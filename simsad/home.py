@@ -72,7 +72,7 @@ class home:
         users_svc.columns = ['wgt']
         users_svc['any_svc'] = True
         users_svc.loc[users_svc.wgt.isna(), 'wgt'] = 0.0
-        users_svc.wgt.clip(lower=0.0, inplace=True)
+        users_svc['wgt'] = users_svc['wgt'].clip(lower=0.0)
         users_svc = users_svc.reset_index()
         users_svc.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
         # users without services
@@ -80,7 +80,7 @@ class home:
         users_none.columns = ['wgt']
         users_none['any_svc'] = False
         users_none.loc[users_none.wgt.isna(), 'wgt'] = 0.0
-        users_none.wgt.clip(lower=0.0, inplace=True)
+        users_none['wgt'] = users_none['wgt'].clip(lower=0.0)
         users_none = users_none.reset_index()
         users_none.set_index(['region_id','iso_smaf','gr_age','any_svc'], inplace = True)
         self.users = pd.concat([users_svc,users_none],axis=0)
@@ -131,8 +131,8 @@ class home:
         for c in ['inf','avq','avd']:
             self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
                 'needs_'+c])
-            self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
-                                        inplace=True)
+            self.users['tx_serv_' + c] = self.users['tx_serv_' + c].clip(
+                lower=0.0, upper=100.0)
         self.users['cost'] *= 1/12
         return
     def reset_users(self):

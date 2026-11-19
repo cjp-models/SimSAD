@@ -346,8 +346,8 @@ class clsc:
                             'supply_' + tag] - rate*supply_hrs
                         self.registry['nb_etc_' + tag] = self.registry[
                             'nb_etc_' + tag] - rate*supply_hrs/indirect
-                    self.registry['supply_' + tag].clip(lower=0.0,inplace=True)
-                    self.registry['nb_etc_' + tag].clip(lower=0.0,inplace=True)
+                    self.registry['supply_' + tag] = self.registry['supply_' + tag].clip(lower=0.0)
+                    self.registry['nb_etc_' + tag] = self.registry['nb_etc_' + tag].clip(lower=0.0)
         tag = 'inf_ri'
         self.registry['supply_'+tag] = self.registry['nb_etc_'+tag] * self.registry['hrs_etc_'+tag]
         self.registry['supply_'+tag] *= (1.0-self.registry['tx_hrs_dep_inf'] - 

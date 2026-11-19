@@ -258,7 +258,7 @@ class chsld:
         for c in ['inf','avq','avd']:
             self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
                 'needs_'+c])
-            self.users['tx_serv_'+c].clip(lower=0.0,upper=100.0,inplace=True)
+            self.users['tx_serv_'+c] = self.users['tx_serv_'+c].clip(lower=0.0,upper=100.0)
         self.users['cost'] *= 1/12
         return
     def collapse(self, domain = 'registry', rowvars=['region_id'],colvars=['smaf']):
