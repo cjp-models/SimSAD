@@ -117,8 +117,8 @@ class eesad:
         users_home: dataframe
             Bassin d'individus en RPA    
         """
-        hrs_home = users_home.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
-        hrs_rpa = users_rpa.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum())
+        hrs_home = users_home.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum(), include_groups=False)
+        hrs_rpa = users_rpa.groupby('region_id').apply(lambda d: (d['pefsad_avd_hrs']*d['wgt']).sum(), include_groups=False)
         hrs_tot = hrs_home + hrs_rpa
         hrs_tot[hrs_tot.isna()] = 0.0
         factor = self.registry['supply_avd']/hrs_tot
@@ -175,7 +175,7 @@ class eesad:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

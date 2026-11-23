@@ -93,10 +93,10 @@ class rpa:
         users: dataframe
             Nombre d'usagers en RPA subventionnées par région, profil Iso-SMAF et groupe d'âge
         """
-        self.users = users.to_frame()
+        self.users = users.to_frame().copy()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
-        self.users.wgt.clip(lower=0.0, inplace=True)
+        self.users['wgt'] = self.users['wgt'].clip(lower=0.0)
         self.users.wgt = self.users.wgt.astype('int64')
         sample_ratio = 0.25
         self.users.wgt *= sample_ratio
@@ -141,8 +141,8 @@ class rpa:
         for c in ['inf','avq','avd']:
             self.users['tx_serv_'+c] = 100.0*(self.users['serv_'+c]/self.users[
                 'needs_'+c])
-            self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
-                                        inplace=True)
+            self.users['tx_serv_' + c] = self.users['tx_serv_' + c].clip(
+                lower=0.0, upper=100.0)
         self.users['cost'] *= 1 / 12
         return
 
@@ -157,7 +157,7 @@ class rpa:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

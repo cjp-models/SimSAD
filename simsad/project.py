@@ -62,6 +62,9 @@ class projection:
         self.nmilieux = 6
         self.opt_welfare = opt_welfare
         np.random.seed(seed=seed)
+        # générateur distinct pour les tirages passés à Numba, afin de ne pas
+        # décaler la séquence np.random utilisée par les autres modules
+        self.clsc.rng = np.random.default_rng(seed)
         return 
     def load_params(self):
         """
@@ -280,9 +283,15 @@ class projection:
 
         # figure out distribution of smaf by region
         init_smafs = self.iso.collapse(rowvars=['region_id','smaf'],colvars=['age'])
-        init_smafs['18-64'] = init_smafs[[x for x in range(18,65)]].sum(axis=1)
-        init_smafs['65-69'] = init_smafs[[x for x in range(65,70)]].sum(axis=1)
-        init_smafs['70-90'] = init_smafs[[x for x in range(70,91)]].sum(axis=1)
+        # Sommes sur une copie en ordre Fortran : l'ordre d'addition de numpy
+        # dépend de la disposition mémoire, qui diffère selon que le mode
+        # Copy-on-Write de pandas est actif ou non. Les écarts d'arrondi
+        # (~1e-13) seraient ensuite amplifiés par la troncature des poids.
+        for label, (lo, hi) in {'18-64': (18, 65), '65-69': (65, 70),
+                                '70-90': (70, 91)}.items():
+            block = np.asfortranarray(init_smafs[[x for x in range(lo, hi)]]
+                                      .to_numpy(dtype=np.float64))
+            init_smafs[label] = block.sum(axis=1)
         init_smafs = init_smafs.loc[:,['18-64','65-69','70-90']]
         init_smafs.columns = gr_ages
         init_smafs.columns.names = ['gr_age']
@@ -332,7 +341,7 @@ class projection:
             sprob = np.zeros((self.nsmaf,nages))
             for s in range(self.nsmaf):
                 for a in range(nages):
-                    sprob[s,a] = self.surv_pars.loc[(r,s+1,a+1),:].values
+                    sprob[s,a] = self.surv_pars.loc[(r,s+1,a+1),:].values.item()
             wprob_chsld = np.zeros((self.nsmaf,nages,self.nmilieux))
             for s in range(self.nsmaf):
                 for a in range(nages):
@@ -510,19 +519,19 @@ class projection:
         self.msss.assign(self.cmd.registry['cout_total'],'cmd')
         # add user fees
         cah_chsld = 12.0* self.chsld.users.groupby('region_id').apply(lambda d:
-                                                                (d['cost']*d['wgt']).sum())
+                                                                (d['cost']*d['wgt']).sum(), include_groups=False)
         self.msss.assign(cah_chsld,'cah_chsld')
 
         cah_nsa = 12.0* self.nsa.users.groupby('region_id').apply(lambda d:
-                                                                (d['cost']*d['wgt']).sum())
+                                                                (d['cost']*d['wgt']).sum(), include_groups=False)
         self.msss.assign(cah_nsa,'cah_nsa')
         cah_ri = 12.0* self.ri.users.groupby('region_id').apply(lambda d:
-                                                                (d['cost']*d['wgt']).sum())
+                                                                (d['cost']*d['wgt']).sum(), include_groups=False)
         self.msss.assign(cah_ri,'cah_ri')
         user_pefsad_home = 12.0 * self.home.users.groupby('region_id').apply(
-            lambda d: (d['cost']*d['wgt']).sum())
+            lambda d: (d['cost']*d['wgt']).sum(), include_groups=False)
         user_pefsad_rpa = 12.0 * self.rpa.users.groupby('region_id').apply(
-            lambda d: (d['cost']*d['wgt']).sum())
+            lambda d: (d['cost']*d['wgt']).sum(), include_groups=False)
         user_pefsad = user_pefsad_home + user_pefsad_rpa
         self.msss.assign(user_pefsad,'pefsad_usager')
         self.msss.collect()

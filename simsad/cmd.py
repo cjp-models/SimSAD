@@ -113,8 +113,8 @@ class cmd:
         users_home: dataframe
             Bassin d'individus en RPA
         """
-        self.registry['cost_home'] = users_home.groupby('region_id').apply(lambda d: (d['cmd_mnt'] * d.wgt).sum())
-        self.registry['cost_rpa'] = users_rpa.groupby('region_id').apply(lambda d: (d['cmd_mnt'] * d.wgt).sum())
+        self.registry['cost_home'] = users_home.groupby('region_id').apply(lambda d: (d['cmd_mnt'] * d.wgt).sum(), include_groups=False)
+        self.registry['cost_rpa'] = users_rpa.groupby('region_id').apply(lambda d: (d['cmd_mnt'] * d.wgt).sum(), include_groups=False)
         self.registry['cout_total'] = self.registry['cost_home'] + \
                                       self.registry['cost_rpa']
         return
@@ -127,7 +127,7 @@ class cmd:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

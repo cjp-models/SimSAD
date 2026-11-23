@@ -149,20 +149,17 @@ class ri:
         self.users[['serv_inf', 'serv_avq', 'serv_avd']] = 0.0
         # services for nurses coming from CLSC
         self.users['serv_inf'] = self.users['clsc_inf_hrs']
-        for r in range(1, 19):
-            self.users.loc[self.users.region_id == r, 'serv_avq'] = \
-                hrs_per_users_avq.loc[r]
-            self.users.loc[self.users.region_id == r, 'serv_avd'] = \
-                hrs_per_users_avd.loc[r]
-            self.users.loc[self.users.region_id == r, 'cost'] = \
-                self.registry.loc[r, 'cah'] * (1.0 +
-                                               self.policy.delta_cah_ri/100.0)
+        region = self.users['region_id']
+        self.users['serv_avq'] = region.map(hrs_per_users_avq)
+        self.users['serv_avd'] = region.map(hrs_per_users_avd)
+        self.users['cost'] = region.map(self.registry['cah']) * (
+            1.0 + self.policy.delta_cah_ri/100.0)
         for c in ['inf', 'avq', 'avd']:
             self.users['tx_serv_' + c] = 100.0 * (
                         self.users['serv_' + c] / self.users[
                     'needs_' + c])
-            self.users['tx_serv_' + c].clip(lower=0.0, upper=100.0,
-                                            inplace=True)
+            self.users['tx_serv_' + c] = self.users['tx_serv_' + c].clip(
+                lower=0.0, upper=100.0)
         self.users['cost'] *= 1 / 12
         return
 
@@ -175,10 +172,10 @@ class ri:
         users: dataframe
             Nombre d'usagers en RI-RTF par région, profil Iso-SMAF et groupe d'âge
         """
-        self.users = users.to_frame()
+        self.users = users.to_frame().copy()
         self.users.columns = ['wgt']
         self.users.loc[self.users.wgt.isna(), 'wgt'] = 0.0
-        self.users.wgt.clip(lower=0.0, inplace=True)
+        self.users['wgt'] = self.users['wgt'].clip(lower=0.0)
         self.users.wgt = self.users.wgt.astype('int64')
         sample_ratio = 0.25
         self.users.wgt *= sample_ratio
@@ -215,7 +212,7 @@ class ri:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table

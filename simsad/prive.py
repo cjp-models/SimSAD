@@ -182,18 +182,17 @@ class prive:
             else :
                 table = self.registry.loc[:,colvars]
         if domain == 'users':
-                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum()) for c in colvars], axis=1)
+                table = pd.concat([self.users.groupby(rowvars).apply(lambda d: (d[c] * d.wgt).sum(), include_groups=False) for c in colvars], axis=1)
                 table.columns = colvars
                 table = table[colvars]
         return table
     
 
-@njit((int64[:])(float64[:,:]), cache=True, parallel=True)
-def draw_multinomial(prob):
+@njit((int64[:])(float64[:,:], float64[:]), cache=True, parallel=True)
+def draw_multinomial(prob, u):
         n, m = prob.shape
         set = np.arange(m)
         result = np.zeros(n,dtype='int64')
-        u = np.random.uniform(low=0.0,high=1.0,size=n)
         for i in prange(n):
             cp = 0.0
             for j  in range(m):
